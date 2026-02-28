@@ -19,6 +19,7 @@ export default function Dashboard() {
     const [email, setEmail] = useState<string | null>(null)
     const [profile, setProfile] = useState<any>(null)
     const [links, setLinks] = useState<any[]>([])
+    const [clickEvents, setClickEvents] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
 
 
@@ -77,6 +78,13 @@ export default function Dashboard() {
 
             setLinks(linkData || [])
             setLoading(false)
+
+            const { data: clickData } = await supabase
+                .from('click_events')
+                .select('link_id, created_at, referrer')
+                .eq('user_id', user.id)
+
+            setClickEvents(clickData || [])
         }
 
         loadData()
@@ -247,7 +255,8 @@ export default function Dashboard() {
                     )}
 
                     {activeTab === 'analytics' && (
-                        <AnalyticsTab links={links} profile={profile} setShowUpgradeModal={setShowUpgradeModal} handleUpgrade={handleUpgrade} />
+                        <AnalyticsTab links={links} profile={profile} clickEvents={clickEvents}
+                            setShowUpgradeModal={setShowUpgradeModal} handleUpgrade={handleUpgrade} />
                     )}
                 </div>
             </div>
@@ -693,48 +702,65 @@ function LinksTab({ links, userId, profile, email, refreshLinks, upgradeRef, sho
 }
 
 /* ---------- Analytics Tab ---------- */
-function StatCard({ label, value, sub }: any) {
-    return (
-        <div className="bg-white dark:bg-[#1A1A1C] p-5 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm">
-            <p className="text-xs uppercase tracking-wider text-gray-400 mb-2">
-                {label}
-            </p>
-            <p className="text-lg font-bold text-black dark:text-white truncate">
-                {value}
-            </p>
-            {sub && (
-                <p className="text-xs text-gray-500 mt-1">
-                    {sub}
-                </p>
-            )}
-        </div>
-    )
-}
-function AnalyticsTab({ links, profile, setShowUpgradeModal, handleUpgrade }: any) {
-    const totalClicks = links.reduce(
-        (sum: number, link: any) => sum + (link.clicks || 0),
-        0
+function AnalyticsTab({ links, profile, clickEvents, handleUpgrade }: any) {
+    const isFree = profile?.plan === 'free'
+
+    const now = new Date()
+    const sevenDaysAgo = new Date()
+    sevenDaysAgo.setDate(now.getDate() - 7)
+
+    const last7Days = clickEvents.filter((e: any) =>
+        new Date(e.created_at) >= sevenDaysAgo
     )
 
+    const totalClicks = last7Days.length
     const totalProducts = links.length
 
-    const sorted = [...links].sort(
-        (a: any, b: any) => (b.clicks || 0) - (a.clicks || 0)
-    )
+    // 🔹 Group clicks per product (last 7 days)
+    const productMap: Record<string, number> = {}
 
-    const topProduct = sorted[0]
+    last7Days.forEach((event: any) => {
+        productMap[event.link_id] = (productMap[event.link_id] || 0) + 1
+    })
 
-    const maxClicks = Math.max(...links.map((l: any) => l.clicks || 0), 1)
+    const rankedProducts = links.map((link: any) => ({
+        ...link,
+        clicks: productMap[link.id] || 0
+    })).sort((a: any, b: any) => b.clicks - a.clicks)
 
-    const trendData = [12, 18, 9, 25, 16, 32, 21]
-    const maxTrend = Math.max(...trendData)
+    const topProduct = rankedProducts[0]
+    const maxClicks = Math.max(...rankedProducts.map((l: any) => l.clicks), 1)
 
-    const isFree = profile?.plan === 'free'
+    // 🔹 7-Day Trend
+    const trendData = Array(7).fill(0)
+
+    last7Days.forEach((event: any) => {
+        const diff =
+            Math.floor(
+                (now.getTime() - new Date(event.created_at).getTime()) /
+                (1000 * 60 * 60 * 24)
+            )
+        if (diff < 7) {
+            trendData[6 - diff]++
+        }
+    })
+
+    const maxTrend = Math.max(...trendData, 1)
+
+    // 🔹 Traffic Source
+    const sourceMap: Record<string, number> = {}
+
+    last7Days.forEach((event: any) => {
+        const source = event.referrer || 'direct'
+        sourceMap[source] = (sourceMap[source] || 0) + 1
+    })
+
+    const topSource =
+        Object.entries(sourceMap).sort((a, b) => b[1] - a[1])[0]?.[0] || '—'
 
     return (
         <div className="relative min-h-[400px]">
 
-            {/* Blur Overlay for Free */}
             {isFree && (
                 <div className="absolute inset-0 z-20 flex items-center justify-center backdrop-blur-md bg-white/70 dark:bg-black/70 rounded-xl">
                     <div className="text-center p-8 max-w-sm">
@@ -755,10 +781,8 @@ function AnalyticsTab({ links, profile, setShowUpgradeModal, handleUpgrade }: an
                 </div>
             )}
 
-            {/* Dim content if free */}
             <div className={isFree ? 'opacity-40 pointer-events-none' : ''}>
 
-                {/* Header */}
                 <div>
                     <h2 className="text-lg font-bold text-black dark:text-white border-b border-gray-100 dark:border-gray-800 pb-3">
                         Advanced Analytics
@@ -773,17 +797,17 @@ function AnalyticsTab({ links, profile, setShowUpgradeModal, handleUpgrade }: an
                     <>
                         {/* Metric Cards */}
                         <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-                            <StatCard label="Total Clicks" value={totalClicks} />
+                            <StatCard label="Total Clicks (7d)" value={totalClicks} />
                             <StatCard label="Total Products" value={totalProducts} />
                             <StatCard
-                                label="Top Product"
+                                label="Top Product (7d)"
                                 value={topProduct?.title || '—'}
                                 sub={`${topProduct?.clicks || 0} clicks`}
                             />
                             <StatCard
-                                label="Conversion Rate"
-                                value="—"
-                                sub="Coming soon"
+                                label="Top Traffic Source"
+                                value={topSource}
+                                sub="Last 7 days"
                             />
                         </div>
 
@@ -794,7 +818,7 @@ function AnalyticsTab({ links, profile, setShowUpgradeModal, handleUpgrade }: an
                             </h3>
 
                             <div className="flex items-end gap-2 h-32">
-                                {trendData.map((value, i) => (
+                                {trendData.map((value: number, i: number) => (
                                     <div key={i} className="flex-1 flex flex-col items-center">
                                         <div
                                             className="w-full bg-black rounded-t-md transition-all duration-500"
@@ -813,11 +837,11 @@ function AnalyticsTab({ links, profile, setShowUpgradeModal, handleUpgrade }: an
                         {/* Product Ranking */}
                         <div>
                             <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">
-                                Product Performance
+                                Product Performance (7d)
                             </h3>
 
                             <div className="space-y-4">
-                                {sorted.map((link: any, index: number) => (
+                                {rankedProducts.map((link: any, index: number) => (
                                     <div
                                         key={link.id}
                                         className="bg-white dark:bg-[#1A1A1C] p-4 rounded-xl border border-gray-100 dark:border-gray-800"
@@ -833,7 +857,7 @@ function AnalyticsTab({ links, profile, setShowUpgradeModal, handleUpgrade }: an
                                             </div>
 
                                             <span className="text-xs font-semibold text-gray-500">
-                                                {link.clicks || 0} clicks
+                                                {link.clicks} clicks
                                             </span>
                                         </div>
 
@@ -841,7 +865,7 @@ function AnalyticsTab({ links, profile, setShowUpgradeModal, handleUpgrade }: an
                                             <div
                                                 className="bg-black h-2 rounded-full transition-all duration-500"
                                                 style={{
-                                                    width: `${((link.clicks || 0) / maxClicks) * 100}%`
+                                                    width: `${(link.clicks / maxClicks) * 100}%`
                                                 }}
                                             ></div>
                                         </div>
@@ -852,7 +876,6 @@ function AnalyticsTab({ links, profile, setShowUpgradeModal, handleUpgrade }: an
                     </>
                 )}
             </div>
-
         </div>
     )
 }
