@@ -385,7 +385,7 @@ function ProfileTab({ profile, email }: any) {
                     @{profile?.username || '—'}
                 </span>
                 <p className="text-xs text-gray-400 mt-1">
-                    Your public shop link: bio.yourdomain.com/{profile?.username || ''}
+                    Your public shop link: bio.yourdomain.com/@{profile?.username || '—'}
                 </p>
             </div>
 
