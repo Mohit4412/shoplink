@@ -29,17 +29,38 @@ export async function GET(
         return NextResponse.redirect(new URL('/', request.url))
     }
 
-    // Increment clicks safely
+    // Detect referrer
+    const rawReferrer = request.headers.get('referer') || 'direct'
+
+    let source = 'direct'
+
+    if (rawReferrer.includes('instagram')) source = 'instagram'
+    else if (rawReferrer.includes('youtube')) source = 'youtube'
+    else if (rawReferrer.includes('facebook')) source = 'facebook'
+    else if (rawReferrer.includes('tiktok')) source = 'tiktok'
+    else if (rawReferrer !== 'direct') source = 'other'
+
+    // Insert click event (analytics)
+    await supabaseServer
+        .from('click_events')
+        .insert({
+            link_id: linkId,
+            user_id: product.user_id,
+            referrer: source
+        })
+
+    // Increment total clicks
     await supabaseServer
         .from('links')
         .update({ clicks: (product.clicks ?? 0) + 1 })
         .eq('id', linkId)
 
-    // Clean number (remove spaces, + etc)
+    // Clean number
     const cleanNumber = seller.whatsapp_number.replace(/\D/g, '')
 
     const message = encodeURIComponent(
-        `Hi 👋 I'm interested in "${product.title}"${product.price ? ` (Price: ${product.price})` : ''}.`
+        `Hi 👋 I'm interested in "${product.title}"${product.price ? ` (Price: ${product.price})` : ''
+        }.`
     )
 
     const whatsappUrl = `https://wa.me/${cleanNumber}?text=${message}`
