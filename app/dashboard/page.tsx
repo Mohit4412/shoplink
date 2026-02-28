@@ -724,15 +724,26 @@ function AnalyticsTab({ links, profile, clickEvents, handleUpgrade }: any) {
     const now = new Date()
     const sevenDaysAgo = new Date()
     sevenDaysAgo.setDate(now.getDate() - 7)
+
     const fourteenDaysAgo = new Date()
     fourteenDaysAgo.setDate(now.getDate() - 14)
 
+    // Last 7 days
+    const last7Days = clickEvents.filter((e: any) =>
+        new Date(e.created_at) >= sevenDaysAgo
+    )
+
+    const totalClicks = last7Days.length
+
+    // Previous 7 days
     const previous7Days = clickEvents.filter((e: any) => {
         const date = new Date(e.created_at)
         return date >= fourteenDaysAgo && date < sevenDaysAgo
     })
 
     const previousTotal = previous7Days.length
+
+    // Growth calculation (AFTER totalClicks exists)
     let growth = 0
 
     if (previousTotal > 0) {
@@ -741,11 +752,6 @@ function AnalyticsTab({ links, profile, clickEvents, handleUpgrade }: any) {
         growth = 100
     }
 
-    const last7Days = clickEvents.filter((e: any) =>
-        new Date(e.created_at) >= sevenDaysAgo
-    )
-
-    const totalClicks = last7Days.length
     const totalProducts = links.length
 
     // 🔹 Group clicks per product (last 7 days)
