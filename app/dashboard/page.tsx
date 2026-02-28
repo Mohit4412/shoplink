@@ -40,17 +40,29 @@ export default function Dashboard() {
             setUserId(data.user.id)
             setEmail(data.user.email ?? null)
 
-            const { data: profileData } = await supabase
+            const { data: profileData, error } = await supabase
                 .from('users')
                 .select('*')
                 .eq('id', data.user.id)
-                .single()
+                .maybeSingle()
 
-            if (!profileData?.username) {
-                router.push('/dashboard')
+            let finalProfile = profileData
+
+            if (!profileData) {
+                const { data: newProfile } = await supabase
+                    .from('users')
+                    .insert({
+                        id: data.user.id,
+                        email: data.user.email,
+                        plan: 'free'
+                    })
+                    .select()
+                    .single()
+
+                finalProfile = newProfile
             }
 
-            setProfile(profileData)
+            setProfile(finalProfile)
 
             const { data: linkData } = await supabase
                 .from('links')
@@ -368,7 +380,7 @@ function ProfileTab({ profile, email }: any) {
                     Username
                 </span>
                 <span className="font-medium text-gray-900 dark:text-gray-100">
-                    @{profile.username}
+                    @{profile?.username || '—'}
                 </span>
                 <p className="text-xs text-gray-400 mt-1">
                     Your public shop link: bio.yourdomain.com/{profile.username}
