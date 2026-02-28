@@ -51,7 +51,6 @@ export default function Dashboard() {
 
             let finalProfile = profileData
 
-            // Create profile row if missing
             if (!profileData) {
                 const { data: newProfile } = await supabase
                     .from('users')
@@ -66,19 +65,6 @@ export default function Dashboard() {
                     .single()
 
                 finalProfile = newProfile
-            }
-
-            const incomplete =
-                !finalProfile ||
-                !finalProfile.username ||
-                finalProfile.username.trim().length === 0 ||
-                !finalProfile.whatsapp_number ||
-                finalProfile.whatsapp_number.trim().length === 0
-
-            if (incomplete) {
-                setLoading(false)   // 👈 stop loading
-                router.replace('/onboarding')
-                return
             }
 
             setProfile(finalProfile)
