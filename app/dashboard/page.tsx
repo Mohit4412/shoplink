@@ -30,79 +30,59 @@ export default function Dashboard() {
         }
 
         const loadData = async () => {
-            try {
-                const { data: authData, error: authError } = await supabase.auth.getUser()
+            const { data } = await supabase.auth.getUser()
 
-                console.log("Auth user:", authData?.user)
-                console.log("Auth error:", authError)
-
-                if (!authData?.user) {
-                    router.push('/signup')
-                    return
-                }
-
-                const user = authData.user
-
-                setUserId(user.id)
-                setEmail(user.email ?? null)
-
-                // 🔍 Fetch profile safely
-                const { data: profileData, error: profileError } = await supabase
-                    .from('users')
-                    .select('*')
-                    .eq('id', user.id)
-                    .maybeSingle()
-
-                console.log("Profile data:", profileData)
-                console.log("Profile error:", profileError)
-
-                let finalProfile = profileData
-
-                // 🚨 If no profile row exists, create it
-                if (!profileData) {
-                    console.log("No profile found. Creating one...")
-
-                    const { data: newProfile, error: insertError } = await supabase
-                        .from('users')
-                        .insert({
-                            id: user.id,
-                            email: user.email,
-                            plan: 'free',
-                            username: null
-                        })
-                        .select()
-                        .single()
-
-                    console.log("Inserted profile:", newProfile)
-                    console.log("Insert error:", insertError)
-
-                    finalProfile = newProfile
-                }
-
-                setProfile(finalProfile)
-
-                // 🔥 Redirect to onboarding if profile incomplete
-                if (!finalProfile?.username || !finalProfile?.whatsapp_number) {
-                    router.push('/onboarding')
-                    return
-                }
-
-                // 📦 Load links
-                const { data: linkData, error: linkError } = await supabase
-                    .from('links')
-                    .select('*')
-                    .eq('user_id', user.id)
-                    .order('order_index', { ascending: true })
-
-                console.log("Links:", linkData)
-                console.log("Link error:", linkError)
-
-                setLinks(linkData || [])
-            } catch (err) {
-                console.error("Unexpected loadData error:", err)
-            } finally {
-                setLoading(false)
+            if (!data.user) {
+                router.push('/signup')
+                return
             }
+
+            const user = data.user
+
+            setUserId(user.id)
+            setEmail(user.email ?? null)
+
+            const { data: profileData } = await supabase
+                .from('users')
+                .select('*')
+                .eq('id', user.id)
+                .maybeSingle()
+
+            let finalProfile = profileData
+
+            // Create profile row if missing
+            if (!profileData) {
+                const { data: newProfile } = await supabase
+                    .from('users')
+                    .insert({
+                        id: user.id,
+                        email: user.email,
+                        plan: 'free',
+                        username: null,
+                        whatsapp_number: null
+                    })
+                    .select()
+                    .single()
+
+                finalProfile = newProfile
+            }
+
+            // 🚨 IMPORTANT: Redirect BEFORE setting profile state
+            if (!finalProfile?.username || !finalProfile?.whatsapp_number) {
+                router.push('/onboarding')
+                return
+            }
+
+            setProfile(finalProfile)
+
+            const { data: linkData } = await supabase
+                .from('links')
+                .select('*')
+                .eq('user_id', user.id)
+                .order('order_index', { ascending: true })
+
+            setLinks(linkData || [])
+            setLoading(false)
         }
 
         loadData()
