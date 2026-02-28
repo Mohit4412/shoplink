@@ -65,11 +65,12 @@ export default function SignupPage() {
         setLoading(false)
         router.push('/dashboard')
     }
-    <h1 style={{ color: 'red', fontSize: '40px' }}>
-        VERSION 2 SIGNUP
-    </h1>
+
     return (
         <div className="min-h-screen flex items-center justify-center bg-[#F7F7F7] px-4">
+            <h1 style={{ color: 'red', fontSize: '40px' }}>
+                VERSION 2 SIGNUP
+            </h1>
             <form
                 onSubmit={handleSignup}
                 className="w-full max-w-md bg-white p-8 rounded-2xl shadow-lg space-y-5"
