@@ -81,6 +81,12 @@ export default function Dashboard() {
 
                 setProfile(finalProfile)
 
+                // 🔥 Redirect to onboarding if profile incomplete
+                if (!finalProfile?.username || !finalProfile?.whatsapp_number) {
+                    router.push('/onboarding')
+                    return
+                }
+
                 // 📦 Load links
                 const { data: linkData, error: linkError } = await supabase
                     .from('links')
