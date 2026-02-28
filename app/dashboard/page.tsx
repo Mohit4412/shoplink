@@ -724,6 +724,22 @@ function AnalyticsTab({ links, profile, clickEvents, handleUpgrade }: any) {
     const now = new Date()
     const sevenDaysAgo = new Date()
     sevenDaysAgo.setDate(now.getDate() - 7)
+    const fourteenDaysAgo = new Date()
+    fourteenDaysAgo.setDate(now.getDate() - 14)
+
+    const previous7Days = clickEvents.filter((e: any) => {
+        const date = new Date(e.created_at)
+        return date >= fourteenDaysAgo && date < sevenDaysAgo
+    })
+
+    const previousTotal = previous7Days.length
+    let growth = 0
+
+    if (previousTotal > 0) {
+        growth = ((totalClicks - previousTotal) / previousTotal) * 100
+    } else if (totalClicks > 0) {
+        growth = 100
+    }
 
     const last7Days = clickEvents.filter((e: any) =>
         new Date(e.created_at) >= sevenDaysAgo
@@ -813,7 +829,17 @@ function AnalyticsTab({ links, profile, clickEvents, handleUpgrade }: any) {
                     <>
                         {/* Metric Cards */}
                         <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-                            <StatCard label="Total Clicks (7d)" value={totalClicks} />
+                            <StatCard
+                                label="Total Clicks (7d)"
+                                value={totalClicks}
+                                sub={
+                                    growth === 0
+                                        ? "No change"
+                                        : growth > 0
+                                            ? `+${growth.toFixed(1)}% vs last week`
+                                            : `${growth.toFixed(1)}% vs last week`
+                                }
+                            />
                             <StatCard label="Total Products" value={totalProducts} />
                             <StatCard
                                 label="Top Product (7d)"
