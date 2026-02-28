@@ -12,7 +12,7 @@ export default async function UserPage({
         .from('users')
         .select('*')
         .eq('username', username)
-        .single()
+        .maybeSingle()
 
     if (!user || userError) {
         return notFound()

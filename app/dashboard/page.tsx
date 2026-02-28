@@ -57,9 +57,13 @@ export default function Dashboard() {
                         plan: 'free'
                     })
                     .select()
-                    .single()
+                    .maybeSingle()
 
-                finalProfile = newProfile
+                finalProfile = newProfile || {
+                    id: data.user.id,
+                    email: data.user.email,
+                    plan: 'free'
+                }
             }
 
             setProfile(finalProfile)
@@ -159,17 +163,17 @@ export default function Dashboard() {
                         {profile?.plan && (
                             <button
                                 onClick={() => {
-                                    if (profile.plan === 'free') {
+                                    if (profile?.plan === 'free') {
                                         setShowUpgradeModal(true)
                                     }
                                 }}
                                 className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all cursor-pointer hover:opacity-80
-        ${profile.plan === 'pro'
+        ${profile?.plan === 'pro'
                                         ? 'bg-black text-white border-black dark:bg-white dark:text-black dark:border-white'
                                         : 'bg-gray-100 text-gray-700 border-gray-200 dark:bg-white/10 dark:text-gray-300 dark:border-white/10'
                                     }`}
                             >
-                                {profile.plan === 'pro' ? 'Pro Plan' : 'Free Plan'}
+                                {profile?.plan === 'pro' ? 'Pro Plan' : 'Free Plan'}
                             </button>
                         )}
 
@@ -347,7 +351,7 @@ function ProfileTab({ profile, email }: any) {
                 bio,
                 whatsapp_number: whatsapp
             })
-            .eq('id', profile.id)
+            .eq('id', profile?.id)
 
         setSaving(false)
         setSuccess(true)
@@ -383,7 +387,7 @@ function ProfileTab({ profile, email }: any) {
                     @{profile?.username || '—'}
                 </span>
                 <p className="text-xs text-gray-400 mt-1">
-                    Your public shop link: bio.yourdomain.com/{profile.username}
+                    Your public shop link: bio.yourdomain.com/{profile?.username || ''}
                 </p>
             </div>
 

@@ -12,7 +12,7 @@ export async function GET(
         .from('links')
         .select('*')
         .eq('id', linkId)
-        .single()
+        .maybeSingle()
 
     if (!product || !product.in_stock) {
         return NextResponse.redirect(new URL('/', request.url))
@@ -23,7 +23,7 @@ export async function GET(
         .from('users')
         .select('whatsapp_number')
         .eq('id', product.user_id)
-        .single()
+        .maybeSingle()
 
     if (!seller?.whatsapp_number) {
         return NextResponse.redirect(new URL('/', request.url))
