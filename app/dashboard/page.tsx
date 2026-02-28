@@ -48,19 +48,22 @@ export default function Dashboard() {
 
             let finalProfile = profileData
 
+            // If no profile row exists, create one automatically
             if (!profileData) {
                 const { data: newProfile } = await supabase
                     .from('users')
                     .insert({
                         id: data.user.id,
                         email: data.user.email,
-                        plan: 'free'
+                        plan: 'free',
+                        username: null
                     })
                     .select()
                     .single()
 
                 finalProfile = newProfile
             }
+
             setProfile(finalProfile)
 
             const { data: linkData } = await supabase
