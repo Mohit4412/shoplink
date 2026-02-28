@@ -8,6 +8,7 @@ type Tab = 'profile' | 'links' | 'analytics'
 type Theme = 'light' | 'dark'
 
 export default function Dashboard() {
+    const [needsOnboarding, setNeedsOnboarding] = useState<boolean | null>(null)
     const [showUpgradeModal, setShowUpgradeModal] = useState(false)
     const [showUpgrade, setShowUpgrade] = useState(false)
     const upgradeRef = useRef<HTMLDivElement | null>(null)
@@ -50,7 +51,6 @@ export default function Dashboard() {
 
             let finalProfile = profileData
 
-            // Create profile row if missing
             if (!profileData) {
                 const { data: newProfile } = await supabase
                     .from('users')
@@ -67,8 +67,6 @@ export default function Dashboard() {
                 finalProfile = newProfile
             }
 
-            // 🚨 IMPORTANT: Redirect BEFORE setting profile state
-            console.log("Final Profile:", finalProfile)
             const incomplete =
                 !finalProfile?.username ||
                 finalProfile.username.trim() === '' ||
