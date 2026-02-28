@@ -68,7 +68,14 @@ export default function Dashboard() {
             }
 
             // 🚨 IMPORTANT: Redirect BEFORE setting profile state
-            if (!finalProfile?.username || !finalProfile?.whatsapp_number) {
+            console.log("Final Profile:", finalProfile)
+            const incomplete =
+                !finalProfile?.username ||
+                finalProfile.username.trim() === '' ||
+                !finalProfile?.whatsapp_number ||
+                finalProfile.whatsapp_number.trim() === ''
+
+            if (incomplete) {
                 router.push('/onboarding')
                 return
             }
