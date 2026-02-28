@@ -79,6 +79,8 @@ export default function Dashboard() {
             }
 
             setProfile(finalProfile)
+            console.log("Username value:", finalProfile?.username)
+            console.log("Whatsapp value:", finalProfile?.whatsapp_number)
 
             const { data: linkData } = await supabase
                 .from('links')
