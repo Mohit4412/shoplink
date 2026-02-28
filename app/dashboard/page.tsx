@@ -30,50 +30,73 @@ export default function Dashboard() {
         }
 
         const loadData = async () => {
-            const { data } = await supabase.auth.getUser()
+            try {
+                const { data: authData, error: authError } = await supabase.auth.getUser()
 
-            if (!data.user) {
-                router.push('/signup')
-                return
-            }
+                console.log("Auth user:", authData?.user)
+                console.log("Auth error:", authError)
 
-            setUserId(data.user.id)
-            setEmail(data.user.email ?? null)
+                if (!authData?.user) {
+                    router.push('/signup')
+                    return
+                }
 
-            const { data: profileData } = await supabase
-                .from('users')
-                .select('*')
-                .eq('id', data.user.id)
-                .maybeSingle()
+                const user = authData.user
 
-            let finalProfile = profileData
+                setUserId(user.id)
+                setEmail(user.email ?? null)
 
-            // If no profile row exists, create one automatically
-            if (!profileData) {
-                const { data: newProfile } = await supabase
+                // 🔍 Fetch profile safely
+                const { data: profileData, error: profileError } = await supabase
                     .from('users')
-                    .insert({
-                        id: data.user.id,
-                        email: data.user.email,
-                        plan: 'free',
-                        username: null
-                    })
-                    .select()
-                    .single()
+                    .select('*')
+                    .eq('id', user.id)
+                    .maybeSingle()
 
-                finalProfile = newProfile
+                console.log("Profile data:", profileData)
+                console.log("Profile error:", profileError)
+
+                let finalProfile = profileData
+
+                // 🚨 If no profile row exists, create it
+                if (!profileData) {
+                    console.log("No profile found. Creating one...")
+
+                    const { data: newProfile, error: insertError } = await supabase
+                        .from('users')
+                        .insert({
+                            id: user.id,
+                            email: user.email,
+                            plan: 'free',
+                            username: null
+                        })
+                        .select()
+                        .single()
+
+                    console.log("Inserted profile:", newProfile)
+                    console.log("Insert error:", insertError)
+
+                    finalProfile = newProfile
+                }
+
+                setProfile(finalProfile)
+
+                // 📦 Load links
+                const { data: linkData, error: linkError } = await supabase
+                    .from('links')
+                    .select('*')
+                    .eq('user_id', user.id)
+                    .order('order_index', { ascending: true })
+
+                console.log("Links:", linkData)
+                console.log("Link error:", linkError)
+
+                setLinks(linkData || [])
+            } catch (err) {
+                console.error("Unexpected loadData error:", err)
+            } finally {
+                setLoading(false)
             }
-
-            setProfile(finalProfile)
-
-            const { data: linkData } = await supabase
-                .from('links')
-                .select('*')
-                .eq('user_id', data.user.id)
-                .order('order_index', { ascending: true })
-
-            setLinks(linkData || [])
-            setLoading(false)
         }
 
         loadData()
