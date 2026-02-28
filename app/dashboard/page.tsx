@@ -34,7 +34,7 @@ export default function Dashboard() {
             const { data } = await supabase.auth.getUser()
 
             if (!data.user) {
-                router.push('/signup')
+                router.replace('/signup')
                 return
             }
 
@@ -51,6 +51,7 @@ export default function Dashboard() {
 
             let finalProfile = profileData
 
+            // Create profile row if missing
             if (!profileData) {
                 const { data: newProfile } = await supabase
                     .from('users')
@@ -68,19 +69,19 @@ export default function Dashboard() {
             }
 
             const incomplete =
-                !finalProfile?.username ||
-                finalProfile.username.trim() === '' ||
-                !finalProfile?.whatsapp_number ||
-                finalProfile.whatsapp_number.trim() === ''
+                !finalProfile ||
+                !finalProfile.username ||
+                finalProfile.username.trim().length === 0 ||
+                !finalProfile.whatsapp_number ||
+                finalProfile.whatsapp_number.trim().length === 0
 
             if (incomplete) {
-                router.push('/onboarding')
+                setLoading(false)   // 👈 stop loading
+                router.replace('/onboarding')
                 return
             }
 
             setProfile(finalProfile)
-            console.log("Username value:", finalProfile?.username)
-            console.log("Whatsapp value:", finalProfile?.whatsapp_number)
 
             const { data: linkData } = await supabase
                 .from('links')
@@ -155,7 +156,7 @@ export default function Dashboard() {
             window.location.href = data.url
         }
     }
-
+    if (loading) return null
     return (
         <div className="min-h-screen bg-[#F7F7F7] dark:bg-[#121212] text-gray-900 dark:text-gray-100 font-sans sm:py-12 selection:bg-gray-200 transition-colors duration-200">
             <div className="max-w-3xl mx-auto px-4 sm:px-6">
