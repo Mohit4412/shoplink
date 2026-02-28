@@ -710,9 +710,9 @@ function StatCard({ label, value, sub }: any) {
                 {value}
             </p>
             {sub && (
-                <p className="text-xs text-gray-500 mt-1">
+                <div className="text-xs mt-1">
                     {sub}
-                </p>
+                </div>
             )}
         </div>
     )
@@ -751,7 +751,27 @@ function AnalyticsTab({ links, profile, clickEvents, handleUpgrade }: any) {
     } else if (totalClicks > 0) {
         growth = 100
     }
+    const isPositive = growth > 0
+    const isNegative = growth < 0
 
+    const growthLabel =
+        growth === 0
+            ? "No change"
+            : `${isPositive ? "+" : ""}${growth.toFixed(1)}% vs last week`
+
+    const growthColor =
+        growth === 0
+            ? "text-gray-500"
+            : isPositive
+                ? "text-green-600"
+                : "text-red-600"
+
+    const growthArrow =
+        growth === 0
+            ? ""
+            : isPositive
+                ? "↑"
+                : "↓"
     const totalProducts = links.length
 
     // 🔹 Group clicks per product (last 7 days)
@@ -839,11 +859,16 @@ function AnalyticsTab({ links, profile, clickEvents, handleUpgrade }: any) {
                                 label="Total Clicks (7d)"
                                 value={totalClicks}
                                 sub={
-                                    growth === 0
-                                        ? "No change"
-                                        : growth > 0
-                                            ? `+${growth.toFixed(1)}% vs last week`
-                                            : `${growth.toFixed(1)}% vs last week`
+                                    <span
+                                        className={`flex items-center gap-1 font-medium ${growthColor} transition-all duration-500`}
+                                    >
+                                        {growthArrow && (
+                                            <span className="text-sm transition-transform duration-300 inline-block hover:-translate-y-0.5">
+                                                {growthArrow}
+                                            </span>
+                                        )}
+                                        {growthLabel}
+                                    </span>
                                 }
                             />
                             <StatCard label="Total Products" value={totalProducts} />
