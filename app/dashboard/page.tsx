@@ -802,7 +802,7 @@ function AnalyticsTab({ links, profile, clickEvents, handleUpgrade }: any) {
             trendData[6 - diff]++
         }
     })
-
+    console.log("Click Events:", clickEvents)
     const maxTrend = Math.max(...trendData, 1)
 
     // 🔹 Traffic Source
