@@ -40,7 +40,7 @@ export default function Dashboard() {
             setUserId(data.user.id)
             setEmail(data.user.email ?? null)
 
-            const { data: profileData, error } = await supabase
+            const { data: profileData } = await supabase
                 .from('users')
                 .select('*')
                 .eq('id', data.user.id)
@@ -57,15 +57,10 @@ export default function Dashboard() {
                         plan: 'free'
                     })
                     .select()
-                    .maybeSingle()
+                    .single()
 
-                finalProfile = newProfile || {
-                    id: data.user.id,
-                    email: data.user.email,
-                    plan: 'free'
-                }
+                finalProfile = newProfile
             }
-
             setProfile(finalProfile)
 
             const { data: linkData } = await supabase
