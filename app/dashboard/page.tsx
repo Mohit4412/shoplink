@@ -700,7 +700,23 @@ function LinksTab({ links, userId, profile, email, refreshLinks, upgradeRef, sho
         </div >
     )
 }
-
+function StatCard({ label, value, sub }: any) {
+    return (
+        <div className="bg-white dark:bg-[#1A1A1C] p-5 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm">
+            <p className="text-xs uppercase tracking-wider text-gray-400 mb-2">
+                {label}
+            </p>
+            <p className="text-lg font-bold text-black dark:text-white truncate">
+                {value}
+            </p>
+            {sub && (
+                <p className="text-xs text-gray-500 mt-1">
+                    {sub}
+                </p>
+            )}
+        </div>
+    )
+}
 /* ---------- Analytics Tab ---------- */
 function AnalyticsTab({ links, profile, clickEvents, handleUpgrade }: any) {
     const isFree = profile?.plan === 'free'
