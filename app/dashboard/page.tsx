@@ -817,30 +817,30 @@ function AnalyticsTab({ links, profile, clickEvents, handleUpgrade }: any) {
         1
     )
 
-    // --- 7 DAY TREND (REAL CALENDAR DAYS) ---
-    // --- 7 DAY TREND (Timezone Safe) ---
+    // --- 7 DAY TREND (Aligned With totalClicks) ---
 
-    const trendData: number[] = []
+    const trendData: number[] = Array(7).fill(0)
     const trendLabels: string[] = []
 
+    last7DaysEvents.forEach((event: any) => {
+        const eventDate = new Date(event.created_at)
+
+        const diff =
+            Math.floor(
+                (now.getTime() - eventDate.getTime()) /
+                (1000 * 60 * 60 * 24)
+            )
+
+        if (diff >= 0 && diff < 7) {
+            trendData[6 - diff]++
+        }
+    })
+
     for (let i = 6; i >= 0; i--) {
-        const dayStart = new Date()
-        dayStart.setHours(0, 0, 0, 0)
-        dayStart.setDate(dayStart.getDate() - i)
-
-
-        const dayEnd = new Date(dayStart)
-        dayEnd.setHours(23, 59, 59, 999)
-        console.log("Trend data:", trendData)
-        const count = last7DaysEvents.filter((event: any) => {
-            const eventDate = new Date(event.created_at)
-            return eventDate >= dayStart && eventDate <= dayEnd
-        }).length
-
-        trendData.push(count)
-
+        const d = new Date()
+        d.setDate(now.getDate() - i)
         trendLabels.push(
-            dayStart.toLocaleDateString("en-IN", { weekday: "short" })
+            d.toLocaleDateString("en-IN", { weekday: "short" })
         )
     }
 
