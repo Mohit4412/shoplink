@@ -2,14 +2,15 @@
 
 export const dynamic = 'force-dynamic'
 import { useEffect, useState, useRef } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { supabase } from '@/lib/supabaseClient'
-import { useSearchParams } from 'next/navigation'
+import ConversionToast from './ConversionToast'
 
 type Tab = 'profile' | 'links' | 'analytics'
 type Theme = 'light' | 'dark'
 
 export default function Dashboard() {
+    const searchParams = useSearchParams()
     const [needsOnboarding, setNeedsOnboarding] = useState<boolean | null>(null)
     const [showUpgradeModal, setShowUpgradeModal] = useState(false)
     const [showUpgrade, setShowUpgrade] = useState(false)
@@ -23,7 +24,6 @@ export default function Dashboard() {
     const [links, setLinks] = useState<any[]>([])
     const [clickEvents, setClickEvents] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
-    const searchParams = useSearchParams()
     const conversionSuccess = searchParams.get('conversion') === 'success'
 
 
@@ -164,194 +164,190 @@ export default function Dashboard() {
             window.location.href = data.url
         }
     }
-    if (loading) return null
-    {
-        conversionSuccess && (
-            <div className="mb-4 p-4 rounded-xl bg-green-50 border border-green-200 text-green-700 font-medium">
-                ✅ Order confirmed successfully.
-            </div>
-        )
-    }
+
     return (
-        <div className="min-h-screen bg-[#F7F7F7] dark:bg-[#121212] text-gray-900 dark:text-gray-100 font-sans sm:py-12 selection:bg-gray-200 transition-colors duration-200">
-            <div className="max-w-3xl mx-auto px-4 sm:px-6">
+        <>
+            <ConversionToast />
+            <div className="min-h-screen bg-[#F7F7F7] dark:bg-[#121212] text-gray-900 dark:text-gray-100 font-sans sm:py-12 selection:bg-gray-200 transition-colors duration-200">
+                <div className="max-w-3xl mx-auto px-4 sm:px-6">
 
-                <header className="mb-8 md:mb-10 flex justify-between items-start">
+                    <header className="mb-8 md:mb-10 flex justify-between items-start">
 
-                    <div>
-                        <h1 className="text-3xl font-bold tracking-tight text-black dark:text-white">
-                            Dashboard
-                        </h1>
-                        <p className="text-gray-500 dark:text-gray-400 mt-2 text-sm font-medium">
-                            Manage your boutique, products, and insights.
-                        </p>
-                    </div>
-
-                    <div className="flex items-center gap-3">
-
-                        {/* 🔥 Plan Badge */}
-                        {profile?.plan && (
-                            <button
-                                onClick={() => {
-                                    if (profile?.plan === 'free') {
-                                        setShowUpgradeModal(true)
-                                    }
-                                }}
-                                className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all cursor-pointer hover:opacity-80
-        ${profile?.plan === 'pro'
-                                        ? 'bg-black text-white border-black dark:bg-white dark:text-black dark:border-white'
-                                        : 'bg-gray-100 text-gray-700 border-gray-200 dark:bg-white/10 dark:text-gray-300 dark:border-white/10'
-                                    }`}
-                            >
-                                {profile?.plan === 'pro' ? 'Pro Plan' : 'Free Plan'}
-                            </button>
-                        )}
-
-                        {/* 🌙 Dark Mode Toggle */}
-                        <button
-                            onClick={toggleTheme}
-                            className="p-2.5 rounded-full bg-white dark:bg-[#242424] text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-[#2a2a2a] transition shadow-sm border border-gray-200 dark:border-white/10"
-                            aria-label="Toggle Dark Mode"
-                        >
-                            {theme === 'dark' ? (
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5"
-                                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
-                                    />
-                                </svg>
-                            ) : (
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5"
-                                        d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
-                                    />
-                                </svg>
-                            )}
-                        </button>
-
-                    </div>
-                </header>
-
-                {/* Tabs */}
-                <div className="flex gap-1 mb-8 bg-gray-100/80 dark:bg-white/5 p-1 rounded-xl w-full max-w-md transition-colors duration-200">
-                    {['profile', 'links', 'analytics'].map((tab) => (
-                        <button
-                            key={tab}
-                            onClick={() => setActiveTab(tab as Tab)}
-                            className={`flex-1 capitalize py-2.5 px-4 rounded-[0.6rem] text-sm font-semibold transition-all duration-200 ${activeTab === tab
-                                ? 'bg-white dark:bg-[#242424] text-black dark:text-white shadow-sm'
-                                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-white/50 dark:hover:bg-white/10'
-                                }`}
-                        >
-                            {tab === 'links' ? 'Products' : tab}
-                        </button>
-                    ))}
-                </div>
-
-                {/* Tab Content Cards */}
-                <div className="bg-white dark:bg-[#1a1a1a] rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none border border-gray-100 dark:border-white/10 p-6 md:p-8 min-h-[400px] transition-colors duration-200">
-                    {activeTab === 'profile' && (
-                        <ProfileTab profile={profile} email={email} />
-                    )}
-
-                    {activeTab === 'links' && (
-                        <LinksTab
-                            links={links}
-                            userId={userId}
-                            profile={profile}
-                            email={email}
-                            upgradeRef={upgradeRef}
-                            showUpgrade={showUpgrade}
-                            setShowUpgrade={setShowUpgrade}
-                            setShowUpgradeModal={setShowUpgradeModal}
-                            refreshLinks={async () => {
-                                const { data } = await supabase
-                                    .from('links')
-                                    .select('*')
-                                    .eq('user_id', userId)
-                                    .order('order_index', { ascending: true })
-
-                                setLinks(data || [])
-                            }}
-                        />
-                    )}
-
-                    {activeTab === 'analytics' && (
-                        <AnalyticsTab links={links} profile={profile} clickEvents={clickEvents}
-                            setShowUpgradeModal={setShowUpgradeModal} handleUpgrade={handleUpgrade} />
-                    )}
-                </div>
-            </div>
-            {showUpgradeModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center">
-
-                    {/* Backdrop */}
-                    <div
-                        className="absolute inset-0 bg-black/60 backdrop-blur-md"
-                        onClick={() => setShowUpgradeModal(false)}
-                    />
-
-                    {/* Modal */}
-                    <div className="relative w-full max-w-lg mx-4">
-
-                        <div className="relative bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#111111] text-white rounded-3xl shadow-2xl border border-white/10 p-10 overflow-hidden">
-
-                            {/* Glow Accent */}
-                            <div className="absolute -top-24 -right-24 w-56 h-56 bg-white/10 rounded-full blur-3xl" />
-
-                            {/* Close */}
-                            <button
-                                onClick={handleUpgrade}
-                                className="w-full bg-black text-white py-3 rounded-xl font-semibold hover:bg-gray-800 transition"
-                            >
-                                Upgrade Now
-                            </button>
-
-                            {/* Crown */}
-                            <div className="text-center mb-8">
-                                <div className="text-4xl mb-3">👑</div>
-                                <h2 className="text-2xl font-bold tracking-tight">
-                                    Upgrade to Pro
-                                </h2>
-                                <p className="text-white/60 text-sm mt-2">
-                                    Unlock unlimited selling power
-                                </p>
-                            </div>
-
-                            {/* Price */}
-                            <div className="text-center mb-8">
-                                <div className="flex items-end justify-center gap-2">
-                                    <span className="text-5xl font-bold">₹149</span>
-                                    <span className="text-white/60 text-sm mb-1">/ month</span>
-                                </div>
-                                <p className="text-xs text-white/40 mt-2">
-                                    Cancel anytime. No hidden charges.
-                                </p>
-                            </div>
-
-                            {/* Features */}
-                            <div className="space-y-4 mb-10 text-sm">
-                                <Feature>Unlimited products</Feature>
-                                <Feature>Advanced analytics & trends</Feature>
-                                <Feature>Remove “Powered by” branding</Feature>
-                                <Feature>Priority future features</Feature>
-                            </div>
-
-                            {/* CTA */}
-                            <button
-                                onClick={handleUpgrade}
-                                className="w-full bg-black text-white py-3 rounded-xl font-semibold hover:bg-gray-800 transition"
-                            >
-                                Upgrade Now
-                            </button>
-
-                            <p className="text-center text-xs text-white/40 mt-5">
-                                Secure payments powered by Stripe
+                        <div>
+                            <h1 className="text-3xl font-bold tracking-tight text-black dark:text-white">
+                                Dashboard
+                            </h1>
+                            <p className="text-gray-500 dark:text-gray-400 mt-2 text-sm font-medium">
+                                Manage your boutique, products, and insights.
                             </p>
                         </div>
+
+                        <div className="flex items-center gap-3">
+
+                            {/* 🔥 Plan Badge */}
+                            {profile?.plan && (
+                                <button
+                                    onClick={() => {
+                                        if (profile?.plan === 'free') {
+                                            setShowUpgradeModal(true)
+                                        }
+                                    }}
+                                    className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all cursor-pointer hover:opacity-80
+        ${profile?.plan === 'pro'
+                                            ? 'bg-black text-white border-black dark:bg-white dark:text-black dark:border-white'
+                                            : 'bg-gray-100 text-gray-700 border-gray-200 dark:bg-white/10 dark:text-gray-300 dark:border-white/10'
+                                        }`}
+                                >
+                                    {profile?.plan === 'pro' ? 'Pro Plan' : 'Free Plan'}
+                                </button>
+                            )}
+
+                            {/* 🌙 Dark Mode Toggle */}
+                            <button
+                                onClick={toggleTheme}
+                                className="p-2.5 rounded-full bg-white dark:bg-[#242424] text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-[#2a2a2a] transition shadow-sm border border-gray-200 dark:border-white/10"
+                                aria-label="Toggle Dark Mode"
+                            >
+                                {theme === 'dark' ? (
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5"
+                                            d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+                                        />
+                                    </svg>
+                                ) : (
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5"
+                                            d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+                                        />
+                                    </svg>
+                                )}
+                            </button>
+
+                        </div>
+                    </header>
+
+                    {/* Tabs */}
+                    <div className="flex gap-1 mb-8 bg-gray-100/80 dark:bg-white/5 p-1 rounded-xl w-full max-w-md transition-colors duration-200">
+                        {['profile', 'links', 'analytics'].map((tab) => (
+                            <button
+                                key={tab}
+                                onClick={() => setActiveTab(tab as Tab)}
+                                className={`flex-1 capitalize py-2.5 px-4 rounded-[0.6rem] text-sm font-semibold transition-all duration-200 ${activeTab === tab
+                                    ? 'bg-white dark:bg-[#242424] text-black dark:text-white shadow-sm'
+                                    : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-white/50 dark:hover:bg-white/10'
+                                    }`}
+                            >
+                                {tab === 'links' ? 'Products' : tab}
+                            </button>
+                        ))}
+                    </div>
+
+                    {/* Tab Content Cards */}
+                    <div className="bg-white dark:bg-[#1a1a1a] rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none border border-gray-100 dark:border-white/10 p-6 md:p-8 min-h-[400px] transition-colors duration-200">
+                        {activeTab === 'profile' && (
+                            <ProfileTab profile={profile} email={email} />
+                        )}
+
+                        {activeTab === 'links' && (
+                            <LinksTab
+                                links={links}
+                                userId={userId}
+                                profile={profile}
+                                email={email}
+                                upgradeRef={upgradeRef}
+                                showUpgrade={showUpgrade}
+                                setShowUpgrade={setShowUpgrade}
+                                setShowUpgradeModal={setShowUpgradeModal}
+                                refreshLinks={async () => {
+                                    const { data } = await supabase
+                                        .from('links')
+                                        .select('*')
+                                        .eq('user_id', userId)
+                                        .order('order_index', { ascending: true })
+
+                                    setLinks(data || [])
+                                }}
+                            />
+                        )}
+
+                        {activeTab === 'analytics' && (
+                            <AnalyticsTab links={links} profile={profile} clickEvents={clickEvents}
+                                setShowUpgradeModal={setShowUpgradeModal} handleUpgrade={handleUpgrade} />
+                        )}
                     </div>
                 </div>
-            )}
-        </div>
+                {showUpgradeModal && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center">
+
+                        {/* Backdrop */}
+                        <div
+                            className="absolute inset-0 bg-black/60 backdrop-blur-md"
+                            onClick={() => setShowUpgradeModal(false)}
+                        />
+
+                        {/* Modal */}
+                        <div className="relative w-full max-w-lg mx-4">
+
+                            <div className="relative bg-gradient-to-br from-[#0f0f0f] via-[#1a1a1a] to-[#111111] text-white rounded-3xl shadow-2xl border border-white/10 p-10 overflow-hidden">
+
+                                {/* Glow Accent */}
+                                <div className="absolute -top-24 -right-24 w-56 h-56 bg-white/10 rounded-full blur-3xl" />
+
+                                {/* Close */}
+                                <button
+                                    onClick={handleUpgrade}
+                                    className="w-full bg-black text-white py-3 rounded-xl font-semibold hover:bg-gray-800 transition"
+                                >
+                                    Upgrade Now
+                                </button>
+
+                                {/* Crown */}
+                                <div className="text-center mb-8">
+                                    <div className="text-4xl mb-3">👑</div>
+                                    <h2 className="text-2xl font-bold tracking-tight">
+                                        Upgrade to Pro
+                                    </h2>
+                                    <p className="text-white/60 text-sm mt-2">
+                                        Unlock unlimited selling power
+                                    </p>
+                                </div>
+
+                                {/* Price */}
+                                <div className="text-center mb-8">
+                                    <div className="flex items-end justify-center gap-2">
+                                        <span className="text-5xl font-bold">₹149</span>
+                                        <span className="text-white/60 text-sm mb-1">/ month</span>
+                                    </div>
+                                    <p className="text-xs text-white/40 mt-2">
+                                        Cancel anytime. No hidden charges.
+                                    </p>
+                                </div>
+
+                                {/* Features */}
+                                <div className="space-y-4 mb-10 text-sm">
+                                    <Feature>Unlimited products</Feature>
+                                    <Feature>Advanced analytics & trends</Feature>
+                                    <Feature>Remove “Powered by” branding</Feature>
+                                    <Feature>Priority future features</Feature>
+                                </div>
+
+                                {/* CTA */}
+                                <button
+                                    onClick={handleUpgrade}
+                                    className="w-full bg-black text-white py-3 rounded-xl font-semibold hover:bg-gray-800 transition"
+                                >
+                                    Upgrade Now
+                                </button>
+
+                                <p className="text-center text-xs text-white/40 mt-5">
+                                    Secure payments powered by Stripe
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </div>
+        </>
     )
 }
 function Feature({ children }: any) {
