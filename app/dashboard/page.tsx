@@ -920,7 +920,7 @@ function AnalyticsTab({ links, profile, clickEvents, handleUpgrade, conversions 
         )[0]?.[0] || "—"
 
     return (
-        <div className="relative min-h-[500px] bg-white/80 dark:bg-[#121212] backdrop-blur-xl border border-gray-200 dark:border-white/10 rounded-3xl shadow-[0_10px_40px_rgba(0,0,0,0.06)] dark:shadow-none p-8 transition-all duration-300">
+        <div className="relative min-h-[500px] bg-white/80 dark:bg-[#121212] backdrop-blur-xl border border-gray-200 dark:border-white/10 rounded-3xl shadow-[0_10px_40px_rgba(0,0,0,0.06)] dark:shadow-none p-2 transition-all duration-300">
             {isFree && (
                 <div className="absolute inset-0 z-20 flex items-center justify-center backdrop-blur-xl bg-white/60 dark:bg-black/70 rounded-3xl border border-white/30 dark:border-white/10">                    <div className="text-center p-10 max-w-sm bg-white dark:bg-[#1b1b1b] rounded-2xl shadow-xl border border-gray-200 dark:border-white/10">
                     <div className="text-3xl mb-3">📊</div>
