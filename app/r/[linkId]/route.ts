@@ -61,7 +61,7 @@ export async function GET(
     const orderRef = `SL-${clickEvent.id.slice(0, 8).toUpperCase()}`
 
     // IMPORTANT: replace with your real domain later
-    const confirmUrl = `https://yourdomain.com/confirm/${orderRef}`
+    const confirmUrl = `https://shoplink-rho.vercel.app/confirm/${orderRef}`
 
     const cleanNumber = seller.whatsapp_number.replace(/\D/g, '')
 
