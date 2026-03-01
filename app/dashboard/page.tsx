@@ -732,28 +732,30 @@ function AnalyticsTab({ links, profile, clickEvents, handleUpgrade }: any) {
     const isFree = profile?.plan === 'free'
 
     const now = new Date()
-    const sevenDaysAgo = new Date()
-    sevenDaysAgo.setDate(now.getDate() - 7)
+    const todayStart = new Date(now)
+    todayStart.setHours(0, 0, 0, 0)
 
-    const fourteenDaysAgo = new Date()
-    fourteenDaysAgo.setDate(now.getDate() - 14)
+    const sevenDaysAgo = new Date(todayStart)
+    sevenDaysAgo.setDate(todayStart.getDate() - 6)
 
-    // Last 7 days
-    const last7Days = clickEvents.filter((e: any) =>
-        new Date(e.created_at) >= sevenDaysAgo
-    )
+    const fourteenDaysAgo = new Date(todayStart)
+    fourteenDaysAgo.setDate(todayStart.getDate() - 13)
 
-    const totalClicks = last7Days.length
-
-    // Previous 7 days
-    const previous7Days = clickEvents.filter((e: any) => {
-        const date = new Date(e.created_at)
-        return date >= fourteenDaysAgo && date < sevenDaysAgo
+    // --- FILTER EVENTS ---
+    const last7DaysEvents = clickEvents.filter((e: any) => {
+        const d = new Date(e.created_at)
+        return d >= sevenDaysAgo
     })
 
-    const previousTotal = previous7Days.length
+    const previous7DaysEvents = clickEvents.filter((e: any) => {
+        const d = new Date(e.created_at)
+        return d >= fourteenDaysAgo && d < sevenDaysAgo
+    })
 
-    // Growth calculation (AFTER totalClicks exists)
+    const totalClicks = last7DaysEvents.length
+    const previousTotal = previous7DaysEvents.length
+
+    // --- GROWTH ---
     let growth = 0
 
     if (previousTotal > 0) {
@@ -761,6 +763,7 @@ function AnalyticsTab({ links, profile, clickEvents, handleUpgrade }: any) {
     } else if (totalClicks > 0) {
         growth = 100
     }
+
     const isPositive = growth > 0
     const isNegative = growth < 0
 
@@ -782,49 +785,74 @@ function AnalyticsTab({ links, profile, clickEvents, handleUpgrade }: any) {
             : isPositive
                 ? "↑"
                 : "↓"
+
     const totalProducts = links.length
 
-    // 🔹 Group clicks per product (last 7 days)
+    // --- PRODUCT PERFORMANCE ---
     const productMap: Record<string, number> = {}
 
-    last7Days.forEach((event: any) => {
-        productMap[event.link_id] = (productMap[event.link_id] || 0) + 1
+    last7DaysEvents.forEach((event: any) => {
+        productMap[event.link_id] =
+            (productMap[event.link_id] || 0) + 1
     })
 
-    const rankedProducts = links.map((link: any) => ({
-        ...link,
-        clicks: productMap[link.id] || 0
-    })).sort((a: any, b: any) => b.clicks - a.clicks)
+    const rankedProducts = links
+        .map((link: any) => ({
+            ...link,
+            clicks: productMap[link.id] || 0
+        }))
+        .sort((a: any, b: any) => b.clicks - a.clicks)
 
     const topProduct = rankedProducts[0]
-    const maxClicks = Math.max(...rankedProducts.map((l: any) => l.clicks), 1)
+    const maxClicks = Math.max(
+        ...rankedProducts.map((l: any) => l.clicks),
+        1
+    )
 
-    // 🔹 7-Day Trend
-    const trendData = Array(7).fill(0)
+    // --- 7 DAY TREND (REAL CALENDAR DAYS) ---
+    const trendData: number[] = []
+    const trendLabels: string[] = []
 
-    last7Days.forEach((event: any) => {
-        const diff =
-            Math.floor(
-                (now.getTime() - new Date(event.created_at).getTime()) /
-                (1000 * 60 * 60 * 24)
+    for (let i = 6; i >= 0; i--) {
+        const day = new Date(todayStart)
+        day.setDate(todayStart.getDate() - i)
+
+        const dayStr = day.toISOString().split("T")[0]
+
+        const count = last7DaysEvents.filter((event: any) => {
+            return (
+                new Date(event.created_at)
+                    .toISOString()
+                    .split("T")[0] === dayStr
             )
-        if (diff < 7) {
-            trendData[6 - diff]++
-        }
-    })
-    console.log("Click Events:", clickEvents)
+        }).length
+
+        trendData.push(count)
+
+        trendLabels.push(
+            day.toLocaleDateString("en-IN", { weekday: "short" })
+        )
+    }
+
     const maxTrend = Math.max(...trendData, 1)
 
-    // 🔹 Traffic Source
+    // --- TRAFFIC SOURCE ---
     const sourceMap: Record<string, number> = {}
 
-    last7Days.forEach((event: any) => {
-        const source = event.referrer || 'direct'
-        sourceMap[source] = (sourceMap[source] || 0) + 1
+    last7DaysEvents.forEach((event: any) => {
+        const source =
+            event.referrer && event.referrer !== "other"
+                ? event.referrer
+                : "Direct"
+
+        sourceMap[source] =
+            (sourceMap[source] || 0) + 1
     })
 
     const topSource =
-        Object.entries(sourceMap).sort((a, b) => b[1] - a[1])[0]?.[0] || '—'
+        Object.entries(sourceMap).sort(
+            (a, b) => b[1] - a[1]
+        )[0]?.[0] || "—"
 
     return (
         <div className="relative min-h-[400px]">
@@ -851,11 +879,9 @@ function AnalyticsTab({ links, profile, clickEvents, handleUpgrade }: any) {
 
             <div className={isFree ? 'opacity-40 pointer-events-none' : ''}>
 
-                <div>
-                    <h2 className="text-lg font-bold text-black dark:text-white border-b border-gray-100 dark:border-gray-800 pb-3">
-                        Advanced Analytics
-                    </h2>
-                </div>
+                <h2 className="text-lg font-bold text-black dark:text-white border-b border-gray-100 dark:border-gray-800 pb-3">
+                    Advanced Analytics
+                </h2>
 
                 {links.length === 0 ? (
                     <div className="text-center py-12 bg-gray-50 dark:bg-[#1A1A1C] rounded-xl border border-dashed border-gray-200 dark:border-gray-800">
@@ -863,17 +889,15 @@ function AnalyticsTab({ links, profile, clickEvents, handleUpgrade }: any) {
                     </div>
                 ) : (
                     <>
-                        {/* Metric Cards */}
-                        <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                        {/* METRICS */}
+                        <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mt-6">
                             <StatCard
                                 label="Total Clicks (7d)"
                                 value={totalClicks}
                                 sub={
-                                    <span
-                                        className={`flex items-center gap-1 font-medium ${growthColor} transition-all duration-500`}
-                                    >
+                                    <span className={`flex items-center gap-1 font-medium ${growthColor}`}>
                                         {growthArrow && (
-                                            <span className="text-sm transition-transform duration-300 inline-block hover:-translate-y-0.5">
+                                            <span className="transition-transform duration-300 hover:-translate-y-0.5">
                                                 {growthArrow}
                                             </span>
                                         )}
@@ -894,31 +918,31 @@ function AnalyticsTab({ links, profile, clickEvents, handleUpgrade }: any) {
                             />
                         </div>
 
-                        {/* 7-Day Trend */}
-                        <div>
+                        {/* 7 DAY TREND */}
+                        <div className="mt-10">
                             <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">
                                 7-Day Click Trend
                             </h3>
 
                             <div className="flex items-end gap-2 h-32">
-                                {trendData.map((value: number, i: number) => (
+                                {trendData.map((value, i) => (
                                     <div key={i} className="flex-1 flex flex-col items-center">
                                         <div
                                             className="w-full bg-black rounded-t-md transition-all duration-500"
                                             style={{
                                                 height: `${(value / maxTrend) * 100}%`
                                             }}
-                                        ></div>
+                                        />
                                         <span className="text-[10px] text-gray-400 mt-2">
-                                            D{i + 1}
+                                            {trendLabels[i]}
                                         </span>
                                     </div>
                                 ))}
                             </div>
                         </div>
 
-                        {/* Product Ranking */}
-                        <div>
+                        {/* PRODUCT PERFORMANCE */}
+                        <div className="mt-10">
                             <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">
                                 Product Performance (7d)
                             </h3>
@@ -950,7 +974,7 @@ function AnalyticsTab({ links, profile, clickEvents, handleUpgrade }: any) {
                                                 style={{
                                                     width: `${(link.clicks / maxClicks) * 100}%`
                                                 }}
-                                            ></div>
+                                            />
                                         </div>
                                     </div>
                                 ))}
