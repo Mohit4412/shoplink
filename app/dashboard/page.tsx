@@ -767,6 +767,21 @@ function AnalyticsTab({ links, profile, clickEvents, handleUpgrade, conversions 
     })
 
     const totalClicks = last7DaysEvents.length
+
+    // --- FILTER CONVERSIONS (7D) ---
+    // --- FILTER CONVERSIONS (7D) ---
+    const last7DaysConversions = (conversions || []).filter((c: any) => {
+        const conversionDate = new Date(c.created_at)
+        return conversionDate >= sevenDaysAgo && conversionDate <= now
+    })
+
+    const totalConversions = last7DaysConversions.length
+
+    // --- CONVERSION RATE ---
+    const conversionRate =
+        totalClicks > 0
+            ? ((totalConversions / totalClicks) * 100).toFixed(1)
+            : "0.0"
     const previousTotal = previous7DaysEvents.length
 
     // --- GROWTH ---
