@@ -817,32 +817,33 @@ function AnalyticsTab({ links, profile, clickEvents, handleUpgrade }: any) {
         1
     )
 
-    // --- 7 DAY TREND (Aligned With totalClicks) ---
+    // --- 7 DAY TREND (Calendar Accurate) ---
 
     const trendData: number[] = Array(7).fill(0)
     const trendLabels: string[] = []
 
-    last7DaysEvents.forEach((event: any) => {
-        const eventDate = new Date(event.created_at)
-
-        const diff =
-            Math.floor(
-                (now.getTime() - eventDate.getTime()) /
-                (1000 * 60 * 60 * 24)
-            )
-        console.log("Click Events:", clickEvents)
-        if (diff >= 0 && diff < 7) {
-            trendData[6 - diff]++
-        }
-    })
-
+    // Build 7 calendar days (oldest → newest)
     for (let i = 6; i >= 0; i--) {
-        const d = new Date()
-        d.setDate(now.getDate() - i)
+        const dayStart = new Date(todayStart)
+        dayStart.setDate(todayStart.getDate() - i)
+
+        const dayEnd = new Date(dayStart)
+        dayEnd.setHours(23, 59, 59, 999)
+
         trendLabels.push(
-            d.toLocaleDateString("en-IN", { weekday: "short" })
+            dayStart.toLocaleDateString("en-IN", { weekday: "short" })
         )
+
+        clickEvents.forEach((event: any) => {
+            const eventDate = new Date(event.created_at)
+
+            if (eventDate >= dayStart && eventDate <= dayEnd) {
+                trendData[6 - i]++
+            }
+        })
     }
+
+    console.log("Trend data:", trendData)
 
     const maxTrend = Math.max(...trendData, 1)
 
