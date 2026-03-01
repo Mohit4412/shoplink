@@ -887,31 +887,29 @@ function AnalyticsTab({ links, profile, clickEvents, handleUpgrade, conversions 
         )[0]?.[0] || "—"
 
     return (
-        <div className="relative min-h-[400px]">
-
+        <div className="relative min-h-[500px] bg-white/80 dark:bg-[#121212] backdrop-blur-xl border border-gray-200 dark:border-white/10 rounded-3xl shadow-[0_10px_40px_rgba(0,0,0,0.06)] dark:shadow-none p-8 transition-all duration-300">
             {isFree && (
-                <div className="absolute inset-0 z-20 flex items-center justify-center backdrop-blur-md bg-white/70 dark:bg-black/70 rounded-xl">
-                    <div className="text-center p-8 max-w-sm">
-                        <div className="text-3xl mb-3">📊</div>
-                        <h3 className="text-lg font-semibold mb-2">
-                            Advanced Analytics
-                        </h3>
-                        <p className="text-sm text-gray-600 dark:text-gray-300 mb-5">
-                            Unlock product insights with Pro.
-                        </p>
-                        <button
-                            onClick={handleUpgrade}
-                            className="w-full bg-black text-white py-3 rounded-xl font-semibold hover:bg-gray-800 transition"
-                        >
-                            Upgrade Now
-                        </button>
-                    </div>
+                <div className="absolute inset-0 z-20 flex items-center justify-center backdrop-blur-xl bg-white/60 dark:bg-black/70 rounded-3xl border border-white/30 dark:border-white/10">                    <div className="text-center p-10 max-w-sm bg-white dark:bg-[#1b1b1b] rounded-2xl shadow-xl border border-gray-200 dark:border-white/10">
+                    <div className="text-3xl mb-3">📊</div>
+                    <h3 className="text-lg font-semibold mb-2">
+                        Advanced Analytics
+                    </h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-300 mb-5">
+                        Unlock product insights with Pro.
+                    </p>
+                    <button
+                        onClick={handleUpgrade}
+                        className="w-full bg-black text-white py-3 rounded-xl font-semibold hover:bg-gray-800 transition"
+                    >
+                        Upgrade Now
+                    </button>
+                </div>
                 </div>
             )}
 
             <div className={isFree ? 'opacity-40 pointer-events-none' : ''}>
 
-                <h2 className="text-lg font-bold text-black dark:text-white border-b border-gray-100 dark:border-gray-800 pb-3">
+                <h2 className="text-2xl font-bold tracking-tight text-black dark:text-white mb-8">
                     Advanced Analytics
                 </h2>
 
@@ -922,28 +920,27 @@ function AnalyticsTab({ links, profile, clickEvents, handleUpgrade, conversions 
                 ) : (
                     <>
                         {/* METRICS */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mt-6">
-                            <StatCard
-                                label="Total Clicks (7d)"
-                                value={totalClicks}
-                                sub={
-                                    <span className={`flex items-center gap-1 font-medium ${growthColor}`}>
-                                        {growthArrow && (
-                                            <span className="transition-transform duration-300 hover:-translate-y-0.5">
-                                                {growthArrow}
-                                            </span>
-                                        )}
-                                        {growthLabel}
-                                    </span>
-                                }
-                            />
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-6 gap-6"><StatCard
+                            label="Total Clicks (7d)"
+                            value={totalClicks}
+                            sub={
+                                <span className={`flex items-center gap-1 font-medium ${growthColor}`}>
+                                    {growthArrow && (
+                                        <span className="transition-transform duration-300 hover:-translate-y-0.5">
+                                            {growthArrow}
+                                        </span>
+                                    )}
+                                    {growthLabel}
+                                </span>
+                            }
+                        />
                             <StatCard
                                 label="TOTAL CONVERSIONS (7D)"
                                 value={totalConversions}
                             />
                             <StatCard
                                 label="CONVERSION RATE"
-                                value={`${conversionRate}%`}
+                                value={conversionRate + "%"}
                                 sub={`${totalConversions} of ${totalClicks} clicks`}
                             />
                             <StatCard label="Total Products" value={totalProducts} />
