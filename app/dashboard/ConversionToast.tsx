@@ -9,9 +9,17 @@ export default function ConversionToast() {
 
     useEffect(() => {
         if (success === 'success') {
-            alert('🎉 Order confirmed successfully!')
+            const url = new URL(window.location.href)
+            url.searchParams.delete('conversion')
+            window.history.replaceState({}, '', url.toString())
         }
     }, [success])
 
-    return null
+    if (success !== 'success') return null
+
+    return (
+        <div className="fixed top-6 right-6 bg-black text-white px-4 py-3 rounded-xl shadow-xl z-50">
+            🎉 Order confirmed successfully!
+        </div>
+    )
 }

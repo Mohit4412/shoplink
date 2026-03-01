@@ -23,7 +23,7 @@ export default function Dashboard() {
     const [links, setLinks] = useState<any[]>([])
     const [clickEvents, setClickEvents] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
-
+    const [conversions, setConversions] = useState<any[]>([])
 
     useEffect(() => {
         // Initialize theme
@@ -89,14 +89,19 @@ export default function Dashboard() {
         const fetchClickEvents = async () => {
             if (!userId) return
 
-            console.log("Dashboard user.id:", userId)
-
             const { data: clickData } = await supabase
                 .from('click_events')
                 .select('link_id, created_at, referrer')
                 .eq('user_id', userId)
 
             setClickEvents(clickData || [])
+
+            const { data: conversionData } = await supabase
+                .from('conversions')
+                .select('click_event_id, created_at')
+                .eq('user_id', userId)
+
+            setConversions(conversionData || [])
         }
 
         fetchClickEvents()
@@ -270,7 +275,7 @@ export default function Dashboard() {
 
                         {activeTab === 'analytics' && (
                             <AnalyticsTab links={links} profile={profile} clickEvents={clickEvents}
-                                setShowUpgradeModal={setShowUpgradeModal} handleUpgrade={handleUpgrade} />
+                                setShowUpgradeModal={setShowUpgradeModal} conversions={conversions} handleUpgrade={handleUpgrade} />
                         )}
                     </div>
                 </div>
@@ -733,7 +738,7 @@ function StatCard({ label, value, sub }: any) {
     )
 }
 /* ---------- Analytics Tab ---------- */
-function AnalyticsTab({ links, profile, clickEvents, handleUpgrade }: any) {
+function AnalyticsTab({ links, profile, clickEvents, handleUpgrade, conversions }: any) {
     const isFree = profile?.plan === 'free'
 
     const now = new Date()
