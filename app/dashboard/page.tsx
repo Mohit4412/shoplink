@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabaseClient'
+import { useSearchParams } from 'next/navigation'
 
 type Tab = 'profile' | 'links' | 'analytics'
 type Theme = 'light' | 'dark'
@@ -21,6 +22,8 @@ export default function Dashboard() {
     const [links, setLinks] = useState<any[]>([])
     const [clickEvents, setClickEvents] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
+    const searchParams = useSearchParams()
+    const conversionSuccess = searchParams.get('conversion') === 'success'
 
 
     useEffect(() => {
@@ -161,6 +164,13 @@ export default function Dashboard() {
         }
     }
     if (loading) return null
+    {
+        conversionSuccess && (
+            <div className="mb-4 p-4 rounded-xl bg-green-50 border border-green-200 text-green-700 font-medium">
+                ✅ Order confirmed successfully.
+            </div>
+        )
+    }
     return (
         <div className="min-h-screen bg-[#F7F7F7] dark:bg-[#121212] text-gray-900 dark:text-gray-100 font-sans sm:py-12 selection:bg-gray-200 transition-colors duration-200">
             <div className="max-w-3xl mx-auto px-4 sm:px-6">
