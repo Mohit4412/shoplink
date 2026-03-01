@@ -40,14 +40,16 @@ export async function GET(
     else if (rawReferrer.includes('tiktok')) source = 'tiktok'
     else if (rawReferrer !== 'direct') source = 'other'
 
-    // Insert click event (analytics)
-    await supabaseServer
+    // Insert click event
+    const { data: clickEvent } = await supabaseServer
         .from('click_events')
         .insert({
             link_id: linkId,
             user_id: product.user_id,
             referrer: source
         })
+        .select()
+        .single()
 
     // Increment total clicks
     await supabaseServer
@@ -55,12 +57,22 @@ export async function GET(
         .update({ clicks: (product.clicks ?? 0) + 1 })
         .eq('id', linkId)
 
-    // Clean number
+    // 🔥 Generate Order Reference
+    const orderRef = `SL-${clickEvent.id.slice(0, 8).toUpperCase()}`
+
+    // IMPORTANT: replace with your real domain later
+    const confirmUrl = `https://yourdomain.com/confirm/${orderRef}`
+
     const cleanNumber = seller.whatsapp_number.replace(/\D/g, '')
 
     const message = encodeURIComponent(
         `Hi 👋 I'm interested in "${product.title}"${product.price ? ` (Price: ${product.price})` : ''
-        }.`
+        }.
+
+Order Ref: ${orderRef}
+
+Confirm Order:
+${confirmUrl}`
     )
 
     const whatsappUrl = `https://wa.me/${cleanNumber}?text=${message}`
