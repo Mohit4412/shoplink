@@ -744,11 +744,7 @@ function AnalyticsTab({ links, profile, clickEvents, handleUpgrade }: any) {
     // --- FILTER EVENTS ---
     const last7DaysEvents = clickEvents.filter((e: any) => {
         const eventDate = new Date(e.created_at)
-        const diffInDays =
-            (now.getTime() - eventDate.getTime()) /
-            (1000 * 60 * 60 * 24)
-
-        return diffInDays >= 0 && diffInDays < 7
+        return eventDate >= sevenDaysAgo && eventDate <= now
     })
 
     const previous7DaysEvents = clickEvents.filter((e: any) => {
