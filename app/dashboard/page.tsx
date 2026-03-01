@@ -31,7 +31,7 @@ export default function Dashboard() {
             document.documentElement.classList.add('dark')
         }
 
-        const loadData = async () => {
+        const loadBasicData = async () => {
             const { data } = await supabase.auth.getUser()
 
             if (!data.user) {
@@ -78,18 +78,27 @@ export default function Dashboard() {
 
             setLinks(linkData || [])
             setLoading(false)
-            console.log("Dashboard user.id:", user.id)
+        }
+
+        loadBasicData()
+    }, [router])
+
+    useEffect(() => {
+        const fetchClickEvents = async () => {
+            if (!userId) return
+
+            console.log("Dashboard user.id:", userId)
 
             const { data: clickData } = await supabase
                 .from('click_events')
                 .select('link_id, created_at, referrer')
-                .eq('user_id', user.id)
+                .eq('user_id', userId)
 
             setClickEvents(clickData || [])
         }
 
-        loadData()
-    }, [router])
+        fetchClickEvents()
+    }, [userId])
 
     const toggleTheme = () => {
         if (theme === 'light') {
