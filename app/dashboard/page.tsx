@@ -721,13 +721,42 @@ function LinksTab({ links, userId, profile, email, refreshLinks, upgradeRef, sho
     )
 }
 function StatCard({ label, value, sub }: any) {
+    const [displayValue, setDisplayValue] = useState(0)
+
+    useEffect(() => {
+        if (typeof value !== "number") return
+
+        let start = 0
+        const duration = 800
+        const increment = value / (duration / 16)
+
+        const counter = setInterval(() => {
+            start += increment
+            if (start >= value) {
+                setDisplayValue(value)
+                clearInterval(counter)
+            } else {
+                setDisplayValue(Math.floor(start))
+            }
+        }, 16)
+
+        return () => clearInterval(counter)
+    }, [value])
     return (
-        <div className="bg-white dark:bg-[#1A1A1C] p-5 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm">
+        <div className=" group
+    bg-white dark:bg-[#1A1A1C]
+    p-5
+    rounded-2xl
+    border border-gray-200 dark:border-gray-800
+    shadow-sm
+    hover:shadow-[0_0_0_1px_rgba(0,0,0,0.04),0_8px_30px_rgba(0,0,0,0.06)]
+    dark:hover:shadow-[0_0_0_1px_rgba(255,255,255,0.05)]
+    transition-all duration-300">
             <p className="text-xs uppercase tracking-wider text-gray-400 mb-2">
                 {label}
             </p>
             <p className="text-lg font-bold text-black dark:text-white truncate">
-                {value}
+                {typeof value === "number" ? displayValue : value}
             </p>
             {sub && (
                 <div className="text-xs mt-1">
@@ -778,10 +807,14 @@ function AnalyticsTab({ links, profile, clickEvents, handleUpgrade, conversions 
     const totalConversions = last7DaysConversions.length
 
     // --- CONVERSION RATE ---
-    const conversionRate =
+    const conversionRateNumber =
         totalClicks > 0
-            ? ((totalConversions / totalClicks) * 100).toFixed(1)
-            : "0.0"
+            ? (totalConversions / totalClicks) * 100
+            : 0
+
+    const conversionRate = conversionRateNumber.toFixed(1)
+
+    const isHighConversion = conversionRateNumber >= 25
     const previousTotal = previous7DaysEvents.length
 
     // --- GROWTH ---
@@ -920,20 +953,21 @@ function AnalyticsTab({ links, profile, clickEvents, handleUpgrade, conversions 
                 ) : (
                     <>
                         {/* METRICS */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-6 gap-6"><StatCard
-                            label="Total Clicks (7d)"
-                            value={totalClicks}
-                            sub={
-                                <span className={`flex items-center gap-1 font-medium ${growthColor}`}>
-                                    {growthArrow && (
-                                        <span className="transition-transform duration-300 hover:-translate-y-0.5">
-                                            {growthArrow}
-                                        </span>
-                                    )}
-                                    {growthLabel}
-                                </span>
-                            }
-                        />
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-6 gap-6">
+                            <StatCard
+                                label="Total Clicks (7d)"
+                                value={totalClicks}
+                                sub={
+                                    <span className={`flex items-center gap-1 font-medium ${growthColor}`}>
+                                        {growthArrow && (
+                                            <span className="transition-transform duration-300 hover:-translate-y-0.5">
+                                                {growthArrow}
+                                            </span>
+                                        )}
+                                        {growthLabel}
+                                    </span>
+                                }
+                            />
                             <StatCard
                                 label="TOTAL CONVERSIONS (7D)"
                                 value={totalConversions}
@@ -941,7 +975,11 @@ function AnalyticsTab({ links, profile, clickEvents, handleUpgrade, conversions 
                             <StatCard
                                 label="CONVERSION RATE"
                                 value={conversionRate + "%"}
-                                sub={`${totalConversions} of ${totalClicks} clicks`}
+                                sub={
+                                    <span className={isHighConversion ? "text-green-500 font-semibold" : ""}>
+                                        {totalConversions} of {totalClicks} clicks
+                                    </span>
+                                }
                             />
                             <StatCard label="Total Products" value={totalProducts} />
                             <StatCard
@@ -966,7 +1004,7 @@ function AnalyticsTab({ links, profile, clickEvents, handleUpgrade, conversions 
                                 {trendData.map((value, i) => (
                                     <div key={i} className="flex-1 flex flex-col items-center">
                                         <div
-                                            className="w-full bg-black rounded-t-md transition-all duration-500"
+                                            className="w-full bg-gradient-to-t from-black to-gray-400 dark:from-white dark:to-gray-500 rounded-t-md transition-all duration-500"
                                             style={{
                                                 height: `${(value / maxTrend) * 100}%`
                                             }}
@@ -1008,7 +1046,7 @@ function AnalyticsTab({ links, profile, clickEvents, handleUpgrade, conversions 
 
                                         <div className="w-full bg-gray-100 dark:bg-gray-800 rounded-full h-2">
                                             <div
-                                                className="bg-black h-2 rounded-full transition-all duration-500"
+                                                className="bg-black h-2 rounded-full transition-all duration-700 ease-out"
                                                 style={{
                                                     width: `${(link.clicks / maxClicks) * 100}%`
                                                 }}
