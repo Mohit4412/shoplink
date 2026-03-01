@@ -2,7 +2,6 @@
 
 export const dynamic = 'force-dynamic'
 import { useEffect, useState, useRef } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
 import { supabase } from '@/lib/supabaseClient'
 import ConversionToast from './ConversionToast'
 
@@ -10,7 +9,6 @@ type Tab = 'profile' | 'links' | 'analytics'
 type Theme = 'light' | 'dark'
 
 export default function Dashboard() {
-    const searchParams = useSearchParams()
     const [needsOnboarding, setNeedsOnboarding] = useState<boolean | null>(null)
     const [showUpgradeModal, setShowUpgradeModal] = useState(false)
     const [showUpgrade, setShowUpgrade] = useState(false)
@@ -24,7 +22,6 @@ export default function Dashboard() {
     const [links, setLinks] = useState<any[]>([])
     const [clickEvents, setClickEvents] = useState<any[]>([])
     const [loading, setLoading] = useState(true)
-    const conversionSuccess = searchParams.get('conversion') === 'success'
 
 
     useEffect(() => {
