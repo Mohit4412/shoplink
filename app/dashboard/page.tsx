@@ -743,13 +743,21 @@ function AnalyticsTab({ links, profile, clickEvents, handleUpgrade }: any) {
 
     // --- FILTER EVENTS ---
     const last7DaysEvents = clickEvents.filter((e: any) => {
-        const d = new Date(e.created_at)
-        return d >= sevenDaysAgo
+        const eventDate = new Date(e.created_at)
+        const diffInDays =
+            (now.getTime() - eventDate.getTime()) /
+            (1000 * 60 * 60 * 24)
+
+        return diffInDays >= 0 && diffInDays < 7
     })
 
     const previous7DaysEvents = clickEvents.filter((e: any) => {
-        const d = new Date(e.created_at)
-        return d >= fourteenDaysAgo && d < sevenDaysAgo
+        const eventDate = new Date(e.created_at)
+        const diffInDays =
+            (now.getTime() - eventDate.getTime()) /
+            (1000 * 60 * 60 * 24)
+
+        return diffInDays >= 7 && diffInDays < 14
     })
 
     const totalClicks = last7DaysEvents.length
