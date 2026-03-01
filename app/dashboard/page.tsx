@@ -78,6 +78,7 @@ export default function Dashboard() {
 
             setLinks(linkData || [])
             setLoading(false)
+            console.log("Dashboard user.id:", user.id)
 
             const { data: clickData } = await supabase
                 .from('click_events')
