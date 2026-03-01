@@ -830,7 +830,7 @@ function AnalyticsTab({ links, profile, clickEvents, handleUpgrade }: any) {
                 (now.getTime() - eventDate.getTime()) /
                 (1000 * 60 * 60 * 24)
             )
-
+        console.log("Click Events:", clickEvents)
         if (diff >= 0 && diff < 7) {
             trendData[6 - diff]++
         }
