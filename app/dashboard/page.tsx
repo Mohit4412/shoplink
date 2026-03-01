@@ -907,7 +907,7 @@ function AnalyticsTab({ links, profile, clickEvents, handleUpgrade, conversions 
                 ) : (
                     <>
                         {/* METRICS */}
-                        <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mt-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mt-6">
                             <StatCard
                                 label="Total Clicks (7d)"
                                 value={totalClicks}
@@ -921,6 +921,15 @@ function AnalyticsTab({ links, profile, clickEvents, handleUpgrade, conversions 
                                         {growthLabel}
                                     </span>
                                 }
+                            />
+                            <StatCard
+                                label="TOTAL CONVERSIONS (7D)"
+                                value={totalConversions}
+                            />
+                            <StatCard
+                                label="CONVERSION RATE"
+                                value={`${conversionRate}%`}
+                                sub={`${totalConversions} of ${totalClicks} clicks`}
                             />
                             <StatCard label="Total Products" value={totalProducts} />
                             <StatCard
