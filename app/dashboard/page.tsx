@@ -87,8 +87,6 @@ export default function Dashboard() {
         const fetchClickEvents = async () => {
             if (!userId) return
 
-            console.log("Dashboard user.id:", userId)
-
             const { data: clickData } = await supabase
                 .from('click_events')
                 .select('link_id, created_at, referrer')
