@@ -17,7 +17,7 @@ export async function GET(
     const { data: clickEvent } = await supabaseServer
         .from('click_events')
         .select('*')
-        .ilike('id', `${shortId}%`)
+        .eq('order_ref', ref)
         .maybeSingle()
 
     if (!clickEvent) {

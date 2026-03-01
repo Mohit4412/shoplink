@@ -33,23 +33,24 @@ export async function GET(
     const rawReferrer = request.headers.get('referer') || 'direct'
 
     let source = 'direct'
-
     if (rawReferrer.includes('instagram')) source = 'instagram'
     else if (rawReferrer.includes('youtube')) source = 'youtube'
     else if (rawReferrer.includes('facebook')) source = 'facebook'
     else if (rawReferrer.includes('tiktok')) source = 'tiktok'
     else if (rawReferrer !== 'direct') source = 'other'
 
-    // Insert click event
-    const { data: clickEvent } = await supabaseServer
+    // ✅ Generate order reference ONCE
+    const orderRef = `SL-${crypto.randomUUID().slice(0, 8).toUpperCase()}`
+
+    // Insert click event with order_ref
+    await supabaseServer
         .from('click_events')
         .insert({
             link_id: linkId,
             user_id: product.user_id,
-            referrer: source
+            referrer: source,
+            order_ref: orderRef
         })
-        .select()
-        .single()
 
     // Increment total clicks
     await supabaseServer
@@ -57,10 +58,6 @@ export async function GET(
         .update({ clicks: (product.clicks ?? 0) + 1 })
         .eq('id', linkId)
 
-    // 🔥 Generate Order Reference
-    const orderRef = `SL-${clickEvent.id.slice(0, 8).toUpperCase()}`
-
-    // IMPORTANT: replace with your real domain later
     const confirmUrl = `https://shoplink-rho.vercel.app/confirm/${orderRef}`
 
     const cleanNumber = seller.whatsapp_number.replace(/\D/g, '')
