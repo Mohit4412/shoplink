@@ -167,6 +167,16 @@ export default function Dashboard() {
             window.location.href = data.url
         }
     }
+    const getMotivation = () => {
+        const messages = [
+            "let’s grow your sales today 🚀",
+            "your store is building momentum 🔥",
+            "consistency builds empires 💼",
+            "small clicks turn into big revenue 💰"
+        ]
+
+        return messages[Math.floor(Math.random() * messages.length)]
+    }
 
     return (
         <>
@@ -180,6 +190,11 @@ export default function Dashboard() {
                             <h1 className="text-3xl font-bold tracking-tight text-black dark:text-white">
                                 Dashboard
                             </h1>
+                            {profile?.first_name && (
+                                <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+                                    Hi {profile.first_name}, {getMotivation()}
+                                </p>
+                            )}
                             <p className="text-gray-500 dark:text-gray-400 mt-2 text-sm font-medium">
                                 Manage your boutique, products, and insights.
                             </p>

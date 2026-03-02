@@ -23,6 +23,7 @@ export default function SignupPage() {
     const [phone, setPhone] = useState('')
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
+    const [firstName, setFirstName] = useState("")
 
     const [usernameStatus, setUsernameStatus] = useState<
         'idle' | 'checking' | 'available' | 'taken'
@@ -131,6 +132,7 @@ export default function SignupPage() {
             await supabase.from('users').insert({
                 id: data.user.id,
                 email: data.user.email,
+                first_name: firstName.trim(),
                 username: username.toLowerCase(),
                 whatsapp_number: `${countryCode}${phone}`,
                 plan: 'free'
@@ -150,6 +152,14 @@ export default function SignupPage() {
                 <h1 className="text-2xl font-bold text-center">
                     Create Your Shop
                 </h1>
+
+                <input
+                    type="text"
+                    placeholder="First Name"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    className="..."
+                />
 
                 <input
                     type="email"
