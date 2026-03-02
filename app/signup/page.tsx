@@ -158,7 +158,7 @@ export default function SignupPage() {
                     placeholder="First Name"
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
-                    className="..."
+                    className="w-full border p-3 rounded-xl"
                 />
 
                 <input
