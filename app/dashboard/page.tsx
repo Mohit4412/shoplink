@@ -423,8 +423,7 @@ function ProfileTab({ profile, email }: any) {
             </div>
 
             {/* Profile Content */}
-            <div className="max-w-md space-y-8">
-
+            <form onSubmit={saveProfile} className="max-w-md space-y-8">
                 {/* Email */}
                 <div>
                     <p className="text-xs uppercase tracking-wider text-gray-400 mb-2">
@@ -440,9 +439,12 @@ function ProfileTab({ profile, email }: any) {
                     <p className="text-xs uppercase tracking-wider text-gray-400 mb-2">
                         Username
                     </p>
-                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                        {profile?.username || "Not set"}
-                    </p>
+                    <input
+                        type="text"
+                        value={profile?.username || ""}
+                        disabled
+                        className="w-full text-sm bg-transparent border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-black"
+                    />
                 </div>
 
                 {/* WhatsApp */}
@@ -450,13 +452,42 @@ function ProfileTab({ profile, email }: any) {
                     <p className="text-xs uppercase tracking-wider text-gray-400 mb-2">
                         WhatsApp
                     </p>
-                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                        {profile?.whatsapp_number || "Not set"}
-                    </p>
+                    <input
+                        type="text"
+                        value={whatsapp}
+                        onChange={(e) => setWhatsapp(e.target.value)}
+                        placeholder="Enter WhatsApp number"
+                        className="w-full text-sm bg-transparent border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-black"
+                    />
                 </div>
+                {/* Bio */}
+                <div>
+                    <p className="text-xs uppercase tracking-wider text-gray-400 mb-2">
+                        Bio
+                    </p>
 
-            </div>
+                    <textarea
+                        value={bio}
+                        onChange={(e) => setBio(e.target.value)}
+                        placeholder="Write a short bio about your store..."
+                        rows={3}
+                        className="w-full text-sm bg-transparent border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-black resize-none"
+                    />
+                </div>
+                <button
+                    type="submit"
+                    disabled={saving}
+                    className="px-6 py-2.5 text-sm font-semibold rounded-xl bg-black text-white hover:opacity-90 transition disabled:opacity-50"
+                >
+                    {saving ? "Saving..." : "Save Changes"}
+                </button>
+                {success && (
+                    <p className="text-sm text-green-600 mt-2">
+                        Profile updated successfully.
+                    </p>
+                )}
 
+            </form>
             {/* Logout */}
             <div className="pt-8 border-t border-gray-100 dark:border-gray-800">
                 <button
