@@ -396,59 +396,52 @@ function ProfileTab({ profile, email }: any) {
     }
 
     return (
-        <div className="max-w-xl mx-auto space-y-8">
+        <div className="space-y-10">
 
-            {/* Profile Card */}
-            <div className="
-      bg-white dark:bg-[#1A1A1C]
-      rounded-2xl
-      border border-gray-200 dark:border-gray-800
-      p-8
-      shadow-sm
-      transition-all
-    ">
-
-                <h2 className="text-xl font-semibold mb-6 text-black dark:text-white">
+            {/* Section Title */}
+            <div>
+                <h2 className="text-lg font-bold text-black dark:text-white border-b border-gray-100 dark:border-gray-800 pb-3">
                     Profile Information
                 </h2>
-
-                <div className="space-y-5">
-
-                    {/* Email */}
-                    <div>
-                        <p className="text-xs uppercase tracking-wider text-gray-400 mb-1">
-                            Email
-                        </p>
-                        <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                            {email}
-                        </p>
-                    </div>
-
-                    {/* Username */}
-                    <div>
-                        <p className="text-xs uppercase tracking-wider text-gray-400 mb-1">
-                            Username
-                        </p>
-                        <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                            {profile?.username || "Not set"}
-                        </p>
-                    </div>
-
-                    {/* WhatsApp */}
-                    <div>
-                        <p className="text-xs uppercase tracking-wider text-gray-400 mb-1">
-                            WhatsApp
-                        </p>
-                        <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                            {profile?.whatsapp_number || "Not set"}
-                        </p>
-                    </div>
-
-                </div>
             </div>
 
-            {/* Logout Section */}
-            <div className="flex justify-end">
+            {/* Profile Content */}
+            <div className="max-w-md space-y-8">
+
+                {/* Email */}
+                <div>
+                    <p className="text-xs uppercase tracking-wider text-gray-400 mb-2">
+                        Email
+                    </p>
+                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                        {email}
+                    </p>
+                </div>
+
+                {/* Username */}
+                <div>
+                    <p className="text-xs uppercase tracking-wider text-gray-400 mb-2">
+                        Username
+                    </p>
+                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                        {profile?.username || "Not set"}
+                    </p>
+                </div>
+
+                {/* WhatsApp */}
+                <div>
+                    <p className="text-xs uppercase tracking-wider text-gray-400 mb-2">
+                        WhatsApp
+                    </p>
+                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                        {profile?.whatsapp_number || "Not set"}
+                    </p>
+                </div>
+
+            </div>
+
+            {/* Logout */}
+            <div className="pt-8 border-t border-gray-100 dark:border-gray-800">
                 <button
                     onClick={handleLogout}
                     className="
