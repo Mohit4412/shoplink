@@ -370,6 +370,8 @@ function ProfileTab({ profile, email }: any) {
     const [saving, setSaving] = useState(false)
     const [success, setSuccess] = useState(false)
     const router = useRouter()
+    const [editingUsername, setEditingUsername] = useState(false)
+    const [username, setUsername] = useState(profile?.username || "")
 
     const handleLogout = async () => {
         await supabase.auth.signOut()
@@ -385,13 +387,13 @@ function ProfileTab({ profile, email }: any) {
             .from('users')
             .update({
                 bio,
-                whatsapp_number: whatsapp
+                whatsapp_number: whatsapp,
+                username
             })
             .eq('id', profile?.id)
 
         setSaving(false)
-        setSuccess(true)
-
+        setEditingUsername(false)
         setTimeout(() => setSuccess(false), 3000)
     }
 
@@ -435,15 +437,30 @@ function ProfileTab({ profile, email }: any) {
                 </div>
 
                 {/* Username */}
+                {/* Username */}
                 <div>
-                    <p className="text-xs uppercase tracking-wider text-gray-400 mb-2">
-                        Username
-                    </p>
+                    <div className="flex items-center justify-between mb-2">
+                        <p className="text-xs uppercase tracking-wider text-gray-400">
+                            Username
+                        </p>
+
+                        {!editingUsername && (
+                            <button
+                                type="button"
+                                onClick={() => setEditingUsername(true)}
+                                className="text-xs text-gray-500 hover:text-black dark:hover:text-white transition"
+                            >
+                                Change
+                            </button>
+                        )}
+                    </div>
+
                     <input
                         type="text"
-                        value={profile?.username || ""}
-                        disabled
-                        className="w-full text-sm bg-transparent border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-black"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        disabled={!editingUsername}
+                        className="w-full text-sm bg-transparent border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-black disabled:opacity-60"
                     />
                 </div>
 
