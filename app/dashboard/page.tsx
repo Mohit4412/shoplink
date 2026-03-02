@@ -191,10 +191,6 @@ export default function Dashboard() {
                                 Dashboard
                             </h1>
 
-                            <p className="text-gray-500 dark:text-gray-400 mt-2 text-sm font-medium">
-                                Manage your boutique, products, and insights.
-                            </p>
-
                             {profile?.first_name && (
                                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
                                     <span className="font-semibold text-black dark:text-white">
