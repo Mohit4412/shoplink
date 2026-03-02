@@ -944,21 +944,20 @@ function AnalyticsTab({ links, profile, clickEvents, handleUpgrade, conversions 
                 ) : (
                     <>
                         {/* METRICS */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-6 gap-6">
-                            <StatCard
-                                label="Total Clicks (7d)"
-                                value={totalClicks}
-                                sub={
-                                    <span className={`flex items-center gap-1 font-medium ${growthColor}`}>
-                                        {growthArrow && (
-                                            <span className="transition-transform duration-300 hover:-translate-y-0.5">
-                                                {growthArrow}
-                                            </span>
-                                        )}
-                                        {growthLabel}
-                                    </span>
-                                }
-                            />
+                        <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-6 gap-6">                            <StatCard
+                            label="Total Clicks (7d)"
+                            value={totalClicks}
+                            sub={
+                                <span className={`flex items-center gap-1 font-medium ${growthColor}`}>
+                                    {growthArrow && (
+                                        <span className="transition-transform duration-300 hover:-translate-y-0.5">
+                                            {growthArrow}
+                                        </span>
+                                    )}
+                                    {growthLabel}
+                                </span>
+                            }
+                        />
                             <StatCard
                                 label="TOTAL CONVERSIONS (7D)"
                                 value={totalConversions}
