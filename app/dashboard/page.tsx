@@ -398,11 +398,28 @@ function ProfileTab({ profile, email }: any) {
     return (
         <div className="space-y-10">
 
-            {/* Section Title */}
-            <div>
-                <h2 className="text-lg font-bold text-black dark:text-white border-b border-gray-100 dark:border-gray-800 pb-3">
-                    Profile Information
-                </h2>
+            {/* Premium Header */}
+            <div className="flex items-center justify-between border-b border-gray-100 dark:border-gray-800 pb-4">
+
+                <div>
+                    <h2 className="text-lg font-bold text-black dark:text-white">
+                        Profile
+                    </h2>
+
+                    <p className="text-xs text-gray-500 mt-1">
+                        Member since {new Date(profile?.created_at).toLocaleDateString("en-IN", {
+                            month: "short",
+                            year: "numeric"
+                        })}
+                    </p>
+                </div>
+
+                {profile?.plan === "pro" && (
+                    <span className="px-3 py-1 text-xs font-semibold rounded-full bg-black text-white">
+                        👑 Pro Member
+                    </span>
+                )}
+
             </div>
 
             {/* Profile Content */}
