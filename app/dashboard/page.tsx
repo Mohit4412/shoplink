@@ -404,12 +404,42 @@ function ProfileTab({ profile, email }: any) {
         setSaving(true)
         setSuccess(false)
 
+        const cleanUsername = username.trim().toLowerCase()
+
+        // 1️⃣ Validate format
+        if (!cleanUsername.match(/^[a-z0-9_]+$/)) {
+            alert("Username must contain only lowercase letters, numbers, or underscores.")
+            setSaving(false)
+            return
+        }
+
+        if (cleanUsername.length < 3) {
+            alert("Username must be at least 3 characters long.")
+            setSaving(false)
+            return
+        }
+
+        // 2️⃣ Check availability (exclude current user)
+        const { data: existingUser } = await supabase
+            .from("users")
+            .select("id")
+            .eq("username", cleanUsername)
+            .neq("id", profile?.id)
+            .maybeSingle()
+
+        if (existingUser) {
+            alert("Username already taken.")
+            setSaving(false)
+            return
+        }
+
+        // 3️⃣ Update profile
         const { error } = await supabase
             .from("users")
             .update({
                 bio,
                 whatsapp_number: whatsapp,
-                username
+                username: cleanUsername
             })
             .eq("id", profile?.id)
 
@@ -417,6 +447,7 @@ function ProfileTab({ profile, email }: any) {
 
         if (!error) {
             setSuccess(true)
+            setEditingUsername(false)
 
             setTimeout(() => {
                 setSuccess(false)
