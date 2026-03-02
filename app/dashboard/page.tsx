@@ -552,7 +552,14 @@ function ProfileTab({ profile, email }: any) {
                 <button
                     type="submit"
                     disabled={saving}
-                    className="px-6 py-2.5 text-sm font-semibold rounded-xl bg-black text-white hover:opacity-90 transition disabled:opacity-50"
+                    className="px-6 py-3
+  rounded-xl
+  font-semibold
+  text-white
+  bg-brand
+  hover:bg-brand-dark
+  transition-all duration-200
+  shadow-sm hover:shadow-md"
                 >
                     {saving ? "Saving..." : "Save Changes"}
                 </button>
