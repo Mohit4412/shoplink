@@ -197,7 +197,10 @@ export default function Dashboard() {
 
                             {profile?.first_name && (
                                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
-                                    Hi {profile.first_name}, {getMotivation()}
+                                    <span className="font-semibold text-black dark:text-white">
+                                        Hi {profile.first_name},
+                                    </span>{" "}
+                                    {getMotivation()}
                                 </p>
                             )}
                         </div>
