@@ -192,11 +192,16 @@ export default function Dashboard() {
                             </h1>
 
                             {profile?.first_name && (
-                                <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
-                                    <span className="font-semibold text-black dark:text-white">
-                                        Hi {profile.first_name},
-                                    </span>{" "}
-                                    {getMotivation()}
+                                <p className="text-sm mt-2">
+                                    <span className="font-bold text-black dark:text-white">
+                                        Hi{" "}
+                                    </span>
+                                    <span className="font-bold text-indigo-600 dark:text-indigo-400">
+                                        {profile.first_name}
+                                    </span>
+                                    <span className="text-gray-500 dark:text-gray-400">
+                                        , {getMotivation()}
+                                    </span>
                                 </p>
                             )}
                         </div>
