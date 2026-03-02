@@ -383,18 +383,24 @@ function ProfileTab({ profile, email }: any) {
         setSaving(true)
         setSuccess(false)
 
-        await supabase
-            .from('users')
+        const { error } = await supabase
+            .from("users")
             .update({
                 bio,
                 whatsapp_number: whatsapp,
                 username
             })
-            .eq('id', profile?.id)
+            .eq("id", profile?.id)
 
         setSaving(false)
-        setEditingUsername(false)
-        setTimeout(() => setSuccess(false), 3000)
+
+        if (!error) {
+            setSuccess(true)
+
+            setTimeout(() => {
+                setSuccess(false)
+            }, 2500)
+        }
     }
 
     return (
