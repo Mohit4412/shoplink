@@ -1,0 +1,10 @@
+import type { Metadata } from 'next';
+import { Settings } from '@/src/screens/Settings';
+
+export const metadata: Metadata = {
+  title: 'Settings',
+};
+
+export default function SettingsPage() {
+  return <Settings />;
+}
