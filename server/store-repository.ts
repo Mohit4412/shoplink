@@ -1,4 +1,4 @@
-import { db } from '@/server/db';
+import { db, requireDb } from '@/server/db';
 import { deleteUploadedAssets } from '@/server/upload-storage';
 import { isSupabaseEnabled, supabaseDelete, supabaseInsert, supabasePatch, supabaseSelect } from '@/server/supabase';
 import { getDefaultAppState, normalizeProduct } from '@/src/lib/default-state';
@@ -61,6 +61,10 @@ function parseJson<T>(value: string | null, fallback: T): T {
 }
 
 export function ensureStoreSchema() {
+  if (!db) {
+    return;
+  }
+
   db.exec(`
     CREATE TABLE IF NOT EXISTS stores (
       username TEXT PRIMARY KEY,
@@ -201,9 +205,20 @@ function hydrateProduct(row: ProductRow): Product {
   });
 }
 
-ensureStoreSchema();
+let upsertStoreStmt: any;
+let replaceProductStmt: any;
+let deleteStoreProductsStmt: any;
+let deleteProductStmt: any;
+let selectStoreStmt: any;
+let selectStoreProductsStmt: any;
+let selectStoreProductStmt: any;
+let countStoresStmt: any;
+let replaceBundleTxn: any;
 
-const upsertStoreStmt = db.prepare(`
+if (db) {
+  ensureStoreSchema();
+
+  upsertStoreStmt = db.prepare(`
   INSERT INTO stores (
     user_id, username, email, first_name, last_name, user_bio, whatsapp_number, avatar_url, plan,
     subscription_renewal_date, logo_url, store_name, tagline, store_bio, currency, theme,
@@ -236,7 +251,7 @@ const upsertStoreStmt = db.prepare(`
     custom_domain_status = excluded.custom_domain_status
 `);
 
-const replaceProductStmt = db.prepare(`
+  replaceProductStmt = db.prepare(`
   INSERT INTO products (
     store_username, product_id, image_url, images_json, name, price, description, status, created_at,
     category, stock, collection_name, highlights_json, reviews_json
@@ -259,28 +274,29 @@ const replaceProductStmt = db.prepare(`
     reviews_json = excluded.reviews_json
 `);
 
-const deleteStoreProductsStmt = db.prepare('DELETE FROM products WHERE store_username = ?');
-const deleteProductStmt = db.prepare('DELETE FROM products WHERE store_username = ? AND product_id = ?');
-const selectStoreStmt = db.prepare('SELECT * FROM stores WHERE username = ?');
-const selectStoreProductsStmt = db.prepare('SELECT * FROM products WHERE store_username = ? ORDER BY datetime(created_at) DESC, product_id ASC');
-const selectStoreProductStmt = db.prepare('SELECT * FROM products WHERE store_username = ? AND product_id = ?');
-const countStoresStmt = db.prepare('SELECT COUNT(*) as count FROM stores');
+  deleteStoreProductsStmt = db.prepare('DELETE FROM products WHERE store_username = ?');
+  deleteProductStmt = db.prepare('DELETE FROM products WHERE store_username = ? AND product_id = ?');
+  selectStoreStmt = db.prepare('SELECT * FROM stores WHERE username = ?');
+  selectStoreProductsStmt = db.prepare('SELECT * FROM products WHERE store_username = ? ORDER BY datetime(created_at) DESC, product_id ASC');
+  selectStoreProductStmt = db.prepare('SELECT * FROM products WHERE store_username = ? AND product_id = ?');
+  countStoresStmt = db.prepare('SELECT COUNT(*) as count FROM stores');
 
-const replaceBundleTxn = db.transaction((bundle: MerchantStorefrontBundle) => {
-  upsertStoreStmt.run(serializeStore(bundle));
-  deleteStoreProductsStmt.run(bundle.user.username);
-  for (const product of bundle.products) {
-    replaceProductStmt.run(serializeProduct(bundle.user.username, normalizeProduct(product)));
-  }
-});
-
-if ((countStoresStmt.get() as { count: number }).count === 0) {
-  const initialState = getDefaultAppState();
-  replaceBundleTxn({
-    user: initialState.user!,
-    store: initialState.store,
-    products: initialState.products,
+  replaceBundleTxn = db.transaction((bundle: MerchantStorefrontBundle) => {
+    upsertStoreStmt.run(serializeStore(bundle));
+    deleteStoreProductsStmt.run(bundle.user.username);
+    for (const product of bundle.products) {
+      replaceProductStmt.run(serializeProduct(bundle.user.username, normalizeProduct(product)));
+    }
   });
+
+  if ((countStoresStmt.get() as { count: number }).count === 0) {
+    const initialState = getDefaultAppState();
+    replaceBundleTxn({
+      user: initialState.user!,
+      store: initialState.store,
+      products: initialState.products,
+    });
+  }
 }
 
 async function getMerchantBundleByUsernameSupabase(username: string): Promise<MerchantStorefrontBundle | null> {
@@ -312,6 +328,7 @@ export async function getMerchantBundleByUsername(username: string): Promise<Mer
     return getMerchantBundleByUsernameSupabase(username);
   }
 
+  requireDb();
   const storeRow = selectStoreStmt.get(username) as StoreRow | undefined;
   if (!storeRow) {
     return null;
@@ -374,6 +391,7 @@ export async function replaceMerchantBundle(bundle: MerchantStorefrontBundle) {
     return getMerchantBundleByUsername(bundle.user.username);
   }
 
+  requireDb();
   replaceBundleTxn({
     ...bundle,
     products: bundle.products.map(normalizeProduct),
@@ -407,6 +425,7 @@ export async function createProduct(username: string, product: Product) {
     return getMerchantBundleByUsername(username);
   }
 
+  requireDb();
   replaceProductStmt.run(serializeProduct(username, normalizeProduct(product)));
   return getMerchantBundleByUsername(username);
 }
@@ -445,7 +464,8 @@ export async function updateProductById(username: string, productId: string, upd
       }
     );
   } else {
-  replaceProductStmt.run(serializeProduct(username, nextProduct));
+    requireDb();
+    replaceProductStmt.run(serializeProduct(username, nextProduct));
   }
   const previousImages = new Set(parseJson(existingRow.images_json, [existingRow.image_url]));
   const nextImages = new Set(nextProduct.images ?? [nextProduct.imageUrl]);
@@ -477,6 +497,7 @@ export async function deleteProductById(username: string, productId: string) {
       product_id: `eq.${productId}`,
     });
   } else {
+    requireDb();
     deleteProductStmt.run(username, productId);
   }
   if (existingRow) {

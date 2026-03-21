@@ -3,7 +3,7 @@ import { cp, rm, stat } from 'fs/promises';
 import { cookies } from 'next/headers';
 import path from 'path';
 import type { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/server/db';
+import { db, requireDb } from '@/server/db';
 import { ensureDashboardSchema } from '@/server/dashboard-repository';
 import { ensureStoreSchema } from '@/server/store-repository';
 import { isSupabaseEnabled, supabaseDelete, supabaseInsert, supabasePatch, supabaseSelect } from '@/server/supabase';
@@ -36,6 +36,10 @@ interface StoreAssetRow {
 }
 
 function ensureAuthSchema() {
+  if (!db) {
+    return;
+  }
+
   db.exec(`
     CREATE TABLE IF NOT EXISTS users (
       id TEXT PRIMARY KEY,
@@ -99,11 +103,31 @@ function toUserProfile(row: UserRow): UserProfile {
   };
 }
 
-ensureAuthSchema();
-ensureStoreSchema();
-ensureDashboardSchema();
+let insertUserStmt: any;
+let updateUserStmt: any;
+let findUserByEmailStmt: any;
+let findUserByUsernameStmt: any;
+let findUserByIdStmt: any;
+let countUsersStmt: any;
+let insertSessionStmt: any;
+let findSessionStmt: any;
+let deleteSessionStmt: any;
+let deleteExpiredSessionsStmt: any;
+let renameUserStmt: any;
+let selectStoreAssetsStmt: any;
+let insertRenamedStoreStmt: any;
+let deleteStoreStmt: any;
+let renameProductsOwnerStmt: any;
+let renameOrdersOwnerStmt: any;
+let renameAnalyticsOwnerStmt: any;
+let rewriteProductImageUrlsStmt: any;
 
-const insertUserStmt = db.prepare(`
+if (db) {
+  ensureAuthSchema();
+  ensureStoreSchema();
+  ensureDashboardSchema();
+
+  insertUserStmt = db.prepare(`
   INSERT INTO users (
     id, email, username, password_hash, first_name, last_name, bio, whatsapp_number,
     avatar_url, plan, subscription_renewal_date, created_at
@@ -113,7 +137,7 @@ const insertUserStmt = db.prepare(`
   )
 `);
 
-const updateUserStmt = db.prepare(`
+  updateUserStmt = db.prepare(`
   UPDATE users
   SET
     first_name = @first_name,
@@ -126,22 +150,22 @@ const updateUserStmt = db.prepare(`
   WHERE id = @id
 `);
 
-const findUserByEmailStmt = db.prepare('SELECT * FROM users WHERE email = ?');
-const findUserByUsernameStmt = db.prepare('SELECT * FROM users WHERE username = ?');
-const findUserByIdStmt = db.prepare('SELECT * FROM users WHERE id = ?');
-const countUsersStmt = db.prepare('SELECT COUNT(*) as count FROM users');
-const insertSessionStmt = db.prepare('INSERT INTO sessions (token, user_id, expires_at, created_at) VALUES (?, ?, ?, ?)');
-const findSessionStmt = db.prepare(`
+  findUserByEmailStmt = db.prepare('SELECT * FROM users WHERE email = ?');
+  findUserByUsernameStmt = db.prepare('SELECT * FROM users WHERE username = ?');
+  findUserByIdStmt = db.prepare('SELECT * FROM users WHERE id = ?');
+  countUsersStmt = db.prepare('SELECT COUNT(*) as count FROM users');
+  insertSessionStmt = db.prepare('INSERT INTO sessions (token, user_id, expires_at, created_at) VALUES (?, ?, ?, ?)');
+  findSessionStmt = db.prepare(`
   SELECT users.*
   FROM sessions
   INNER JOIN users ON users.id = sessions.user_id
   WHERE sessions.token = ? AND datetime(sessions.expires_at) > datetime('now')
 `);
-const deleteSessionStmt = db.prepare('DELETE FROM sessions WHERE token = ?');
-const deleteExpiredSessionsStmt = db.prepare(`DELETE FROM sessions WHERE datetime(expires_at) <= datetime('now')`);
-const renameUserStmt = db.prepare(`UPDATE users SET username = @next_username WHERE id = @id`);
-const selectStoreAssetsStmt = db.prepare(`SELECT logo_url, banners_json FROM stores WHERE username = ?`);
-const insertRenamedStoreStmt = db.prepare(`
+  deleteSessionStmt = db.prepare('DELETE FROM sessions WHERE token = ?');
+  deleteExpiredSessionsStmt = db.prepare(`DELETE FROM sessions WHERE datetime(expires_at) <= datetime('now')`);
+  renameUserStmt = db.prepare(`UPDATE users SET username = @next_username WHERE id = @id`);
+  selectStoreAssetsStmt = db.prepare(`SELECT logo_url, banners_json FROM stores WHERE username = ?`);
+  insertRenamedStoreStmt = db.prepare(`
   INSERT INTO stores (
     user_id, username, email, first_name, last_name, user_bio, whatsapp_number, avatar_url, plan,
     subscription_renewal_date, logo_url, store_name, tagline, store_bio, currency, theme,
@@ -154,11 +178,11 @@ const insertRenamedStoreStmt = db.prepare(`
   FROM stores
   WHERE username = @previous_username
 `);
-const deleteStoreStmt = db.prepare(`DELETE FROM stores WHERE username = ?`);
-const renameProductsOwnerStmt = db.prepare(`UPDATE products SET store_username = ? WHERE store_username = ?`);
-const renameOrdersOwnerStmt = db.prepare(`UPDATE orders SET store_username = ? WHERE store_username = ?`);
-const renameAnalyticsOwnerStmt = db.prepare(`UPDATE analytics_daily SET store_username = ? WHERE store_username = ?`);
-const rewriteProductImageUrlsStmt = db.prepare(`
+  deleteStoreStmt = db.prepare(`DELETE FROM stores WHERE username = ?`);
+  renameProductsOwnerStmt = db.prepare(`UPDATE products SET store_username = ? WHERE store_username = ?`);
+  renameOrdersOwnerStmt = db.prepare(`UPDATE orders SET store_username = ? WHERE store_username = ?`);
+  renameAnalyticsOwnerStmt = db.prepare(`UPDATE analytics_daily SET store_username = ? WHERE store_username = ?`);
+  rewriteProductImageUrlsStmt = db.prepare(`
   UPDATE products
   SET
     image_url = @image_url,
@@ -166,24 +190,25 @@ const rewriteProductImageUrlsStmt = db.prepare(`
   WHERE store_username = @store_username AND product_id = @product_id
 `);
 
-deleteExpiredSessionsStmt.run();
+  deleteExpiredSessionsStmt.run();
 
-if ((countUsersStmt.get() as { count: number }).count === 0) {
-  const defaultUser = getDefaultAppState().user!;
-  insertUserStmt.run({
-    id: defaultUser.id,
-    email: defaultUser.email,
-    username: defaultUser.username,
-    password_hash: hashPassword('password123'),
-    first_name: defaultUser.firstName ?? null,
-    last_name: defaultUser.lastName ?? null,
-    bio: defaultUser.bio ?? null,
-    whatsapp_number: defaultUser.whatsappNumber,
-    avatar_url: defaultUser.avatarUrl ?? null,
-    plan: defaultUser.plan,
-    subscription_renewal_date: defaultUser.subscriptionRenewalDate,
-    created_at: new Date().toISOString(),
-  });
+  if ((countUsersStmt.get() as { count: number }).count === 0) {
+    const defaultUser = getDefaultAppState().user!;
+    insertUserStmt.run({
+      id: defaultUser.id,
+      email: defaultUser.email,
+      username: defaultUser.username,
+      password_hash: hashPassword('password123'),
+      first_name: defaultUser.firstName ?? null,
+      last_name: defaultUser.lastName ?? null,
+      bio: defaultUser.bio ?? null,
+      whatsapp_number: defaultUser.whatsappNumber,
+      avatar_url: defaultUser.avatarUrl ?? null,
+      plan: defaultUser.plan,
+      subscription_renewal_date: defaultUser.subscriptionRenewalDate,
+      created_at: new Date().toISOString(),
+    });
+  }
 }
 
 export function getSessionCookieName() {
@@ -227,6 +252,7 @@ export async function createUser(input: {
   }
 
   if (findUserByEmailStmt.get(input.email) || findUserByUsernameStmt.get(input.username)) {
+    requireDb();
     return null;
   }
 
@@ -376,6 +402,7 @@ export async function updateAuthUserProfile(userId: string, updates: Partial<Use
   }
 
   const renameTxn = db.transaction(() => {
+    requireDb();
     updateUserStmt.run(nextRow);
     const storeAssets = selectStoreAssetsStmt.get(row.username) as StoreAssetRow | undefined;
     const nextLogoUrl = rewriteUploadPath(storeAssets?.logo_url ?? null, row.username, requestedUsername);

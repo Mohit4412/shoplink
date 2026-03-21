@@ -1,5 +1,5 @@
 import { randomUUID } from 'crypto';
-import { db } from '@/server/db';
+import { db, requireDb } from '@/server/db';
 import { format, parseISO, subDays } from 'date-fns';
 import { getDefaultAppState } from '@/src/lib/default-state';
 import { ensureStoreSchema } from '@/server/store-repository';
@@ -32,6 +32,10 @@ interface AnalyticsEventRow {
 }
 
 export function ensureDashboardSchema() {
+  if (!db) {
+    return;
+  }
+
   db.exec(`
     CREATE TABLE IF NOT EXISTS orders (
       id TEXT PRIMARY KEY,
@@ -74,26 +78,42 @@ export function ensureDashboardSchema() {
   }
 }
 
-ensureStoreSchema();
-ensureDashboardSchema();
+let selectOrdersStmt: any;
+let selectOrderStmt: any;
+let insertOrderStmt: any;
+let updateOrderStmt: any;
+let deleteOrderStmt: any;
+let selectAnalyticsRowsStmt: any;
+let selectAnalyticsEventsStmt: any;
+let upsertAnalyticsDayStmt: any;
+let incrementViewsStmt: any;
+let incrementClicksStmt: any;
+let insertAnalyticsEventStmt: any;
+let countOrdersStmt: any;
+let countAnalyticsStmt: any;
+let countAnalyticsEventsStmt: any;
 
-const selectOrdersStmt = db.prepare(`
+if (db) {
+  ensureStoreSchema();
+  ensureDashboardSchema();
+
+  selectOrdersStmt = db.prepare(`
   SELECT * FROM orders
   WHERE store_username = ?
   ORDER BY datetime(date) DESC, id DESC
 `);
 
-const selectOrderStmt = db.prepare(`
+  selectOrderStmt = db.prepare(`
   SELECT * FROM orders
   WHERE store_username = ? AND id = ?
 `);
 
-const insertOrderStmt = db.prepare(`
+  insertOrderStmt = db.prepare(`
   INSERT INTO orders (id, store_username, product_id, quantity, revenue, date, notes, status)
   VALUES (@id, @store_username, @product_id, @quantity, @revenue, @date, @notes, @status)
 `);
 
-const updateOrderStmt = db.prepare(`
+  updateOrderStmt = db.prepare(`
   UPDATE orders
   SET product_id = @product_id,
       quantity = @quantity,
@@ -104,24 +124,24 @@ const updateOrderStmt = db.prepare(`
   WHERE store_username = @store_username AND id = @id
 `);
 
-const deleteOrderStmt = db.prepare(`
+  deleteOrderStmt = db.prepare(`
   DELETE FROM orders WHERE store_username = ? AND id = ?
 `);
 
-const selectAnalyticsRowsStmt = db.prepare(`
+  selectAnalyticsRowsStmt = db.prepare(`
   SELECT * FROM analytics_daily
   WHERE store_username = ?
   ORDER BY metric_date ASC
 `);
 
-const selectAnalyticsEventsStmt = db.prepare(`
+  selectAnalyticsEventsStmt = db.prepare(`
   SELECT source, referrer_host, country_code, event_type
   FROM analytics_events
   WHERE store_username = ?
     AND datetime(created_at) >= datetime('now', '-30 days')
 `);
 
-const upsertAnalyticsDayStmt = db.prepare(`
+  upsertAnalyticsDayStmt = db.prepare(`
   INSERT INTO analytics_daily (store_username, metric_date, views, clicks)
   VALUES (?, ?, ?, ?)
   ON CONFLICT(store_username, metric_date) DO UPDATE SET
@@ -129,37 +149,38 @@ const upsertAnalyticsDayStmt = db.prepare(`
     clicks = excluded.clicks
 `);
 
-const incrementViewsStmt = db.prepare(`
+  incrementViewsStmt = db.prepare(`
   INSERT INTO analytics_daily (store_username, metric_date, views, clicks)
   VALUES (?, ?, 1, 0)
   ON CONFLICT(store_username, metric_date) DO UPDATE SET
     views = analytics_daily.views + 1
 `);
 
-const incrementClicksStmt = db.prepare(`
+  incrementClicksStmt = db.prepare(`
   INSERT INTO analytics_daily (store_username, metric_date, views, clicks)
   VALUES (?, ?, 0, 1)
   ON CONFLICT(store_username, metric_date) DO UPDATE SET
     clicks = analytics_daily.clicks + 1
 `);
 
-const insertAnalyticsEventStmt = db.prepare(`
+  insertAnalyticsEventStmt = db.prepare(`
   INSERT INTO analytics_events (
     id, store_username, event_type, metric_date, source, referrer_host, country_code, page_path, created_at
   ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
 `);
 
-const countOrdersStmt = db.prepare(`
+  countOrdersStmt = db.prepare(`
   SELECT COUNT(*) as count FROM orders WHERE store_username = ?
 `);
 
-const countAnalyticsStmt = db.prepare(`
+  countAnalyticsStmt = db.prepare(`
   SELECT COUNT(*) as count FROM analytics_daily WHERE store_username = ?
 `);
 
-const countAnalyticsEventsStmt = db.prepare(`
+  countAnalyticsEventsStmt = db.prepare(`
   SELECT COUNT(*) as count FROM analytics_events WHERE store_username = ?
 `);
+}
 
 function normalizeSource(value?: string | null) {
   const normalized = String(value ?? '').trim().toLowerCase().replace(/[^a-z0-9._-]/g, '');
@@ -252,6 +273,7 @@ export async function getOrdersByStore(username: string) {
     return getOrdersByStoreSupabase(username);
   }
 
+  requireDb();
   return (selectOrdersStmt.all(username) as OrderRow[]).map(toOrder);
 }
 
@@ -383,8 +405,10 @@ async function trackEvent(
       });
     }
   } else if (type === 'view') {
+    requireDb();
     incrementViewsStmt.run(username, metricDate);
   } else {
+    requireDb();
     incrementClicksStmt.run(username, metricDate);
   }
   const eventPayload = {
@@ -438,6 +462,7 @@ export async function seedDashboardDataIfEmpty(username: string) {
         supabaseCount('analytics_events', { store_username: `eq.${username}` }),
       ])
     : [
+        requireDb(),
         (countOrdersStmt.get(username) as { count: number }).count,
         (countAnalyticsStmt.get(username) as { count: number }).count,
         (countAnalyticsEventsStmt.get(username) as { count: number }).count,
@@ -461,6 +486,7 @@ export async function seedDashboardDataIfEmpty(username: string) {
     if (isSupabaseEnabled()) {
       await supabaseInsert('orders', payload);
     } else {
+      requireDb();
       insertOrderStmt.run(payload);
     }
   }
@@ -474,6 +500,7 @@ export async function seedDashboardDataIfEmpty(username: string) {
         clicks: stat.clicks,
       }, { on_conflict: 'store_username,metric_date' }, { upsert: true });
     } else {
+      requireDb();
       upsertAnalyticsDayStmt.run(username, stat.fullDate, stat.views, stat.clicks);
     }
   }
@@ -494,6 +521,7 @@ export async function seedDashboardDataIfEmpty(username: string) {
       if (isSupabaseEnabled()) {
         await supabaseInsert('analytics_events', payload);
       } else {
+        requireDb();
         insertAnalyticsEventStmt.run(
           payload.id,
           payload.store_username,
@@ -522,6 +550,7 @@ export async function seedDashboardDataIfEmpty(username: string) {
       if (isSupabaseEnabled()) {
         await supabaseInsert('analytics_events', payload);
       } else {
+        requireDb();
         insertAnalyticsEventStmt.run(
           payload.id,
           payload.store_username,
