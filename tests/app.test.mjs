@@ -58,7 +58,7 @@ function jsonRequest(method, body, cookie, headers = {}) {
   };
 }
 
-const dbDir = mkdtempSync(path.join(tmpdir(), 'micro-store-tests-'));
+const dbDir = mkdtempSync(path.join(tmpdir(), 'shoplink-tests-'));
 const dbPath = path.join(dbDir, 'app.sqlite');
 
 let server;

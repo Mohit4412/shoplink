@@ -122,6 +122,62 @@ export function getDefaultAppState(): AppState {
         { id: 'r4', author: 'Alex', rating: 4, quote: 'Very thick and structured. Runs slightly large.', location: 'Toronto' },
       ],
     },
+    {
+      id: 'p7',
+      name: 'Premium Wireless Headphones',
+      price: 299.0,
+      description: 'Active noise cancellation with 30-hour battery life. Experience crystal clear sound with deep, immersive bass.',
+      imageUrl: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=2000&auto=format&fit=crop',
+      images: ['https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=2000&auto=format&fit=crop'],
+      status: 'Active',
+      createdAt: subDays(today, 26).toISOString(),
+      category: 'Electronics',
+      stock: 50,
+      highlights: ['Noise Cancellation', '30hr Battery', 'Bluetooth 5.2'],
+      reviews: [],
+    },
+    {
+      id: 'p8',
+      name: 'Ceramic Pour-Over Coffee Maker',
+      price: 45.0,
+      description: 'Handcrafted ceramic pour-over dripper. Designed for optimal heat retention and a perfect, clean cup of coffee every morning.',
+      imageUrl: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?q=80&w=2000&auto=format&fit=crop',
+      images: ['https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?q=80&w=2000&auto=format&fit=crop'],
+      status: 'Active',
+      createdAt: subDays(today, 27).toISOString(),
+      category: 'Home & Kitchen',
+      stock: 15,
+      highlights: ['Handcrafted Ceramic', 'Heat Retention', 'Dishwasher Safe'],
+      reviews: [],
+    },
+    {
+      id: 'p9',
+      name: 'Linen Blend Summer Shirt',
+      price: 75.0,
+      description: 'Lightweight and breathable. This linen-cotton blend shirt is perfect for warm summer evenings and casual outings.',
+      imageUrl: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?q=80&w=2000&auto=format&fit=crop',
+      images: ['https://images.unsplash.com/photo-1596755094514-f87e34085b2c?q=80&w=2000&auto=format&fit=crop'],
+      status: 'Active',
+      createdAt: subDays(today, 28).toISOString(),
+      category: 'Apparel',
+      stock: 80,
+      highlights: ['Breathable Linen', 'Relaxed Fit', 'Pre-washed'],
+      reviews: [],
+    },
+    {
+      id: 'p10',
+      name: 'Everyday Carry Backpack',
+      price: 135.0,
+      description: 'Water-resistant, durable, and thoughtfully designed with hidden compartments for tech and daily essentials.',
+      imageUrl: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?q=80&w=2000&auto=format&fit=crop',
+      images: ['https://images.unsplash.com/photo-1553062407-98eeb64c6a62?q=80&w=2000&auto=format&fit=crop'],
+      status: 'Active',
+      createdAt: subDays(today, 29).toISOString(),
+      category: 'Bags',
+      stock: 45,
+      highlights: ['Water-Resistant', '15-inch Laptop Sleeve', 'Hidden Pockets'],
+      reviews: [],
+    }
   ];
 
   const initialOrders = [
@@ -287,6 +343,9 @@ export function getStarterMerchantBundle(user: UserProfile): { user: UserProfile
       currency: 'USD',
       theme: 'classic',
     },
-    products: [],
+    products: getDefaultAppState().products.map(p => ({
+      ...p,
+      id: `demo-${p.id}-${Date.now()}`
+    })),
   };
 }

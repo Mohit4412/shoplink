@@ -22,8 +22,8 @@ Prerequisites: Node.js 20+
 ## Deploy on Supabase + Vercel
 
 1. Create a Supabase project.
-2. Run [supabase/schema.sql](/Users/mohit/SAAS_Project/micro-store-builder-nextjs/supabase/schema.sql) in the Supabase SQL editor.
-3. Create the env vars from [.env.example](/Users/mohit/SAAS_Project/micro-store-builder-nextjs/.env.example) in Vercel:
+2. Run [supabase/schema.sql](/Users/mohit/SAAS_Project/shoplink/supabase/schema.sql) in the Supabase SQL editor.
+3. Create the env vars from [.env.example](/Users/mohit/SAAS_Project/shoplink/.env.example) in Vercel:
    - `SUPABASE_URL`
    - `NEXT_PUBLIC_SUPABASE_URL`
    - `SUPABASE_ANON_KEY`
