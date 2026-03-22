@@ -12,6 +12,12 @@ export const metadata: Metadata = {
   description: 'Build a WhatsApp-first storefront with a modern dashboard.',
 };
 
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+};
+
 export default async function RootLayout({ children }: { children: ReactNode }) {
   const user = await getCurrentSessionUser();
 

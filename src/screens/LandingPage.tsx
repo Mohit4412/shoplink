@@ -11,7 +11,7 @@ export function LandingPage() {
   const handleCTA = () => router.push('/signup');
 
   return (
-    <div className="min-h-screen bg-[#F8F9FA] text-gray-900 font-sans">
+    <div className="min-h-screen bg-[#F8F9FA] text-gray-900 font-sans overflow-x-hidden w-full">
       {/* Background accents matching Dashboard */}
       <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-50 via-white to-[#F8F9FA]" />
 
@@ -25,6 +25,13 @@ export function LandingPage() {
             <span className="font-bold text-xl tracking-tight text-gray-900">
               ShopLink
             </span>
+          </div>
+          <div className="hidden md:flex items-center gap-8">
+            <a href="#" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">Tools</a>
+            <a href="#" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">About</a>
+            <a href="#" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">Contact</a>
+            <a href="#" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">Pricing</a>
+            <a href="#" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">Blog</a>
           </div>
           <div className="flex items-center gap-4">
             <button onClick={handleCTA} className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
