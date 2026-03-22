@@ -9,6 +9,7 @@ export function LandingPage() {
   const router = useRouter();
 
   const handleCTA = () => router.push('/signup');
+  const handleLogin = () => router.push('/signup?mode=login');
 
   return (
     <div className="min-h-screen bg-[#F8F9FA] text-gray-900 font-sans overflow-x-hidden w-full">
@@ -34,7 +35,7 @@ export function LandingPage() {
             <a href="#" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">Blog</a>
           </div>
           <div className="flex items-center gap-2 md:gap-4">
-            <button onClick={handleCTA} className="text-xs md:text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
+            <button onClick={handleLogin} className="text-xs md:text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
               Log in
             </button>
             <button onClick={handleCTA} className="px-3 md:px-5 py-1.5 md:py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md md:rounded-lg text-xs md:text-sm font-medium transition-colors shadow-sm">

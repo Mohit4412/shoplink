@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Store, ChevronDown } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
 import { Button } from '../components/ui/Button';
@@ -11,8 +11,9 @@ import { countryCodes } from '../utils/countryCodes';
 
 export function Signup() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { hydrated, login, user } = useStore();
-  const [isLoginMode, setIsLoginMode] = useState(false);
+  const [isLoginMode, setIsLoginMode] = useState(searchParams?.get('mode') === 'login');
   const [email, setEmail] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
