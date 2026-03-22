@@ -210,7 +210,7 @@ export function LandingPage() {
              <div className="relative z-10">
                <h2 className="text-3xl md:text-5xl font-bold tracking-tight mb-6 text-white leading-tight">Stop leaking potential revenue.</h2>
                <p className="text-lg text-blue-100 mb-10 max-w-2xl mx-auto">Set up your store in 30 seconds. Put the link in your bio. Watch the WhatsApp inquiries flow in.</p>
-               <button onClick={handleCTA} className="px-8 py-4 rounded-xl bg-white text-blue-600 font-bold text-lg hover:bg-gray-50 transition-colors shadow-lg">
+               <button onClick={handleCTA} className="w-full sm:w-auto px-6 md:px-8 py-3 md:py-4 rounded-xl bg-white text-blue-600 font-bold text-base md:text-lg hover:bg-gray-50 transition-colors shadow-lg">
                  Create Your Free Store
                </button>
              </div>

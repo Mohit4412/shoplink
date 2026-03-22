@@ -157,7 +157,7 @@ function SectionRenderer({
                       <button
                         type="button"
                         onClick={() => onContactClick(product)}
-                        className="px-4 py-2 sm:py-1.5 rounded-full text-xs font-semibold transition-opacity hover:opacity-90 min-h-[44px] sm:min-h-0 flex items-center"
+                        className="px-5 py-2 sm:py-2.5 rounded-full text-sm font-bold transition-opacity hover:opacity-90 min-h-[44px] flex items-center shadow-sm"
                         style={{ background: t.waBg, color: t.waText }}
                       >
                         Order on WhatsApp
@@ -189,7 +189,7 @@ function SectionRenderer({
                   <button
                     type="button"
                     onClick={() => onContactClick(product)}
-                    className="mt-3 inline-flex min-h-[44px] items-center justify-center rounded-full px-4 py-2 text-xs font-semibold transition-opacity hover:opacity-90"
+                    className="mt-3 w-full inline-flex min-h-[44px] items-center justify-center rounded-full px-5 py-2.5 text-sm font-bold transition-opacity hover:opacity-90 shadow-sm"
                     style={{ background: t.waBg, color: t.waText }}
                   >
                     Order on WhatsApp
@@ -228,7 +228,7 @@ function SectionRenderer({
                       <button
                         type="button"
                         onClick={() => onContactClick(product)}
-                        className="px-4 py-2 rounded-full text-sm font-semibold transition-opacity hover:opacity-90"
+                        className="w-full min-h-[44px] px-5 py-2.5 rounded-full text-sm font-bold transition-opacity hover:opacity-90 shadow-sm"
                         style={{ background: t.waBg, color: t.waText }}
                       >
                         Order on WhatsApp
@@ -302,7 +302,7 @@ function SectionRenderer({
                       <button
                         type="button"
                         onClick={() => onContactClick(product)}
-                        className="min-h-[44px] px-4 py-2 text-xs font-semibold rounded-full"
+                        className="min-h-[44px] px-5 py-2 sm:py-2.5 text-sm font-bold rounded-full shadow-sm"
                         style={{ background: t.waBg, color: t.waText }}
                       >
                         Order on WhatsApp
@@ -341,7 +341,7 @@ function SectionRenderer({
                   <button
                     type="button"
                     onClick={() => onContactClick(product)}
-                    className="mt-3 inline-flex min-h-[44px] items-center justify-center rounded-full px-4 py-2 text-xs font-semibold transition-opacity hover:opacity-90"
+                    className="mt-3 w-full inline-flex min-h-[44px] items-center justify-center rounded-full px-5 py-2.5 text-sm font-bold transition-opacity hover:opacity-90 shadow-sm"
                     style={{ background: t.waBg, color: t.waText }}
                   >
                     Order on WhatsApp
@@ -383,7 +383,7 @@ function SectionRenderer({
                     <button
                       type="button"
                       onClick={() => onContactClick(product)}
-                      className="mt-3 inline-flex min-h-[44px] items-center justify-center rounded-full px-4 py-2 text-xs font-semibold transition-opacity hover:opacity-90"
+                      className="mt-3 w-full inline-flex min-h-[44px] items-center justify-center rounded-full px-5 py-2.5 text-sm font-bold transition-opacity hover:opacity-90 shadow-sm"
                       style={{ background: t.waBg, color: t.waText }}
                     >
                       Order on WhatsApp
