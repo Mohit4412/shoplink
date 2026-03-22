@@ -343,9 +343,6 @@ export function getStarterMerchantBundle(user: UserProfile): { user: UserProfile
       currency: 'USD',
       theme: 'classic',
     },
-    products: getDefaultAppState().products.map(p => ({
-      ...p,
-      id: `demo-${p.id}-${Date.now()}`
-    })),
+    products: getDefaultAppState().products,
   };
 }

@@ -27,7 +27,17 @@ export function ProductDetail({ storefront }: { storefront?: PublicStorefrontDat
   const publicUser = storefront?.user;
   const store = storefront?.store ?? localStore;
   const products = storefront?.products ?? localProducts;
-  const resolvedStoreId = publicUser?.username || storeId || localUser?.username || 'store';
+
+  function getSubdomain(): string | null {
+    if (typeof window === 'undefined') return null;
+    const host = window.location.hostname;
+    const parts = host.split('.');
+    if (parts.length >= 3) return parts[0];
+    if (host === 'localhost') return null;
+    return null;
+  }
+
+  const resolvedStoreId = storeId || getSubdomain() || publicUser?.username || localUser?.username || 'store';
   const activeUser = publicUser ?? (
     localUser
       ? {

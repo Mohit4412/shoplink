@@ -66,7 +66,7 @@ export function Dashboard() {
     setOrigin(window.location.origin);
   }, []);
 
-  const storeUrl = user?.username && origin ? `${origin}/${user.username}` : '';
+  const storeUrl = user?.username ? `https://${user.username}.myshoplink.site` : '';
 
   const handleSaveOrder = (newOrder: { productId: string; quantity: number; revenue: number; notes: string; date: string }) => {
     if (selectedOrder) {
@@ -304,7 +304,7 @@ export function Dashboard() {
       <ShareModal 
         isOpen={isShareModalOpen}
         onClose={() => setIsShareModalOpen(false)}
-        storeUrl={storeUrl}
+        username={user?.username || ''}
       />
 
 

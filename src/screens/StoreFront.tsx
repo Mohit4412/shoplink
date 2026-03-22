@@ -10,6 +10,7 @@ import { getTheme, Theme } from '../utils/themes';
 import { SectionConfig, StoreSettings, Product, PublicStorefrontData } from '../types';
 import { HeroSection } from '../components/storefront/sections/HeroSection';
 import { ThemeLayout } from '../utils/themes';
+import { getProductUrl } from '../utils/storeUrl';
 
 // ─── Grid layout helper ───────────────────────────────────────────────────────
 
@@ -470,7 +471,17 @@ export function StoreFront({ storefront }: { storefront?: PublicStorefrontData }
   const publicUser = storefront?.user;
   const store = storefront?.store ?? localStore;
   const products = storefront?.products ?? localProducts;
-  const resolvedStoreId = publicUser?.username || storeId || localUser?.username || 'store';
+
+  function getSubdomain(): string | null {
+    if (typeof window === 'undefined') return null;
+    const host = window.location.hostname;
+    const parts = host.split('.');
+    if (parts.length >= 3) return parts[0];
+    if (host === 'localhost') return null;
+    return null;
+  }
+
+  const resolvedStoreId = storeId || getSubdomain() || publicUser?.username || localUser?.username || 'store';
   const activeUser = publicUser ?? (
     localUser
       ? {
@@ -507,8 +518,9 @@ export function StoreFront({ storefront }: { storefront?: PublicStorefrontData }
 
   const buildWhatsAppUrl = (product?: Product) => {
     const phone = activeUser?.whatsappNumber.replace(/\D/g, '') || '';
+    const productLink = product ? getProductUrl(resolvedStoreId, product.id) : '';
     const message = product
-      ? `Hi! I want to order: *${product.name}* — ${currencySymbol}${product.price.toFixed(2)}. Please confirm availability. 🙏`
+      ? `Hi! I want to order: *${product.name}* — ${currencySymbol}${product.price.toFixed(2)}.\n\n${productLink}\n\nPlease confirm availability. 🙏`
       : `Hi ${store.name}, I'm interested in exploring your store.`;
     return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
   };

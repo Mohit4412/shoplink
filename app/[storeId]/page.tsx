@@ -9,26 +9,13 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const resolvedParams = await params;
-  const storefront = await getPublicStorefrontByUsername(resolvedParams.storeId);
-  if (!storefront) {
-    return {
-      title: 'Store not found',
-    };
-  }
-  const store = storefront.store;
-  const title = `${store.name} — Shop on WhatsApp`;
-  
   return {
-    title,
-    description: store.tagline,
+    title: `${resolvedParams.storeId} — MyShopLink`,
+    description: 'Shop and order via WhatsApp',
     openGraph: {
-      title,
-      description: store.tagline,
-      images: store.logoUrl ? [store.logoUrl] : ['https://images.unsplash.com/photo-1472851294608-062f824d29cc?q=80&w=1200&auto=format&fit=crop'],
+      title: `${resolvedParams.storeId} — MyShopLink`,
+      description: 'Shop and order via WhatsApp',
     },
-    twitter: {
-      card: 'summary_large_image',
-    }
   };
 }
 

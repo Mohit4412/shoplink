@@ -7,15 +7,23 @@ import { Copy, Check } from 'lucide-react';
 interface ShareModalProps {
   isOpen: boolean;
   onClose: () => void;
-  storeUrl: string;
+  username: string;
 }
 
-export function ShareModal({ isOpen, onClose, storeUrl }: ShareModalProps) {
+export function ShareModal({ isOpen, onClose, username }: ShareModalProps) {
   const [copied, setCopied] = useState(false);
 
+  const primaryUrl = process.env.NODE_ENV === 'development' 
+    ? `http://localhost:3000/${username}`
+    : `https://${username}.myshoplink.site`;
+    
+  const secondaryUrl = process.env.NODE_ENV === 'development' 
+    ? `http://localhost:3000/${username}`
+    : `https://myshoplink.site/${username}`;
+
   const handleCopyLink = () => {
-    if (!storeUrl) return;
-    navigator.clipboard.writeText(storeUrl);
+    if (!username) return;
+    navigator.clipboard.writeText(primaryUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -32,21 +40,35 @@ export function ShareModal({ isOpen, onClose, storeUrl }: ShareModalProps) {
         </p>
         
         <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm inline-block">
-          <QRCodeSVG value={storeUrl} size={200} />
+          <QRCodeSVG value={primaryUrl} size={200} />
         </div>
 
-        <div className="w-full">
-          <label className="block text-sm font-medium text-gray-700 mb-1 text-left">Store Link</label>
-          <div className="flex gap-2">
+        <div className="w-full text-left space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Primary Store Link</label>
+            <div className="flex gap-2">
+              <input 
+                type="text" 
+                readOnly 
+                value={primaryUrl} 
+                className="flex-1 rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 font-bold text-gray-900 focus:outline-none"
+              />
+              <Button onClick={handleCopyLink} variant="secondary" className="px-3 shrink-0">
+                {copied ? <Check className="w-4 h-4 text-green-600" /> : <Copy className="w-4 h-4" />}
+              </Button>
+            </div>
+            <p className="text-xs text-gray-500 mt-1">Share the top link — it looks more professional.</p>
+          </div>
+          
+          <div>
+            <label className="block text-xs font-medium text-gray-500 mb-1">Secondary Link (also works)</label>
             <input 
               type="text" 
               readOnly 
-              value={storeUrl} 
-              className="flex-1 rounded-lg border border-gray-300 bg-gray-50 px-3 py-2 text-sm text-gray-600 focus:outline-none"
+              value={secondaryUrl} 
+              className="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-1.5 text-xs text-gray-400 focus:outline-none line-through"
+              style={{ textDecoration: 'none' }}
             />
-            <Button onClick={handleCopyLink} variant="secondary" className="px-3">
-              {copied ? <Check className="w-4 h-4 text-green-600" /> : <Copy className="w-4 h-4" />}
-            </Button>
           </div>
         </div>
       </div>
