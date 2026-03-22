@@ -286,7 +286,7 @@ export function ProductDetail({ storefront }: { storefront?: PublicStorefrontDat
           <span className="font-semibold" style={{ color: t.pageText }}>{store.name}</span>
         </p>
         {activeUser?.plan === 'Free' ? (
-          <p className="mt-2 text-xs opacity-60 italic">Powered by ShopLink</p>
+          <p className="mt-2 text-xs opacity-60 italic">Powered by MyShopLink</p>
         ) : null}
       </footer>
     </div>

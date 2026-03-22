@@ -58,7 +58,7 @@ function jsonRequest(method, body, cookie, headers = {}) {
   };
 }
 
-const dbDir = mkdtempSync(path.join(tmpdir(), 'shoplink-tests-'));
+const dbDir = mkdtempSync(path.join(tmpdir(), 'myshoplink-tests-'));
 const dbPath = path.join(dbDir, 'app.sqlite');
 
 let server;
@@ -68,7 +68,7 @@ test.before(async () => {
     cwd: projectRoot,
     env: {
       ...process.env,
-      SHOPLINK_DB_PATH: dbPath,
+      MYSHOPLINK_DB_PATH: dbPath,
     },
     stdio: 'ignore',
   });

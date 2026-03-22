@@ -6,8 +6,8 @@ import { getCurrentSessionUser } from '@/server/auth';
 
 export const metadata: Metadata = {
   title: {
-    default: 'ShopLink',
-    template: '%s | ShopLink',
+    default: 'MyShopLink',
+    template: '%s | MyShopLink',
   },
   description: 'Build a WhatsApp-first storefront with a modern dashboard.',
 };

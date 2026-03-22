@@ -85,10 +85,10 @@ const RELATED_PRODUCTS = [
 export async function generateMetadata({ params }: { params: { slug: string } }) {
   const product = await getProductBySlug(params.slug);
   if (!product) {
-    return { title: 'Product Not Found | ShopLink.site' };
+    return { title: 'Product Not Found | MyShopLink.site' };
   }
   return {
-    title: `${product.name} | ShopLink.site`,
+    title: `${product.name} | MyShopLink.site`,
     description: product.description.substring(0, 160),
   };
 }

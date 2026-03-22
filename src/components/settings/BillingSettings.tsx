@@ -69,7 +69,7 @@ export function BillingSettings() {
                     {[
                       'Unlimited products',
                       'All storefront themes',
-                      'No ShopLink branding',
+                      'No MyShopLink branding',
                       'Priority support',
                     ].map((feature) => (
                       <div key={feature} className="flex items-center text-sm text-gray-600">
@@ -87,7 +87,7 @@ export function BillingSettings() {
                     </div>
                     <div>
                       <p className="text-sm font-semibold text-amber-900">Free plan active</p>
-                      <p className="mt-1 text-sm text-amber-800">Upgrade to Pro for unlimited products, all themes, no ShopLink branding, and custom domains.</p>
+                      <p className="mt-1 text-sm text-amber-800">Upgrade to Pro for unlimited products, all themes, no MyShopLink branding, and custom domains.</p>
                     </div>
                   </div>
                 </div>

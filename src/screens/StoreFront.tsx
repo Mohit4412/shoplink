@@ -616,8 +616,8 @@ export function StoreFront({ storefront }: { storefront?: PublicStorefrontData }
         {activeUser?.plan === 'Free' ? (
           <p className="mt-2 text-xs opacity-70">
             Powered by{' '}
-            <a href="https://shoplink.site" target="_blank" rel="noreferrer" className="font-medium underline underline-offset-2">
-              ShopLink
+            <a href="https://myshoplink.site" target="_blank" rel="noreferrer" className="font-medium underline underline-offset-2">
+              MyShopLink
             </a>
           </p>
         ) : null}

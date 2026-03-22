@@ -449,7 +449,7 @@ export function trackClick(username: string, metadata?: { source?: string; refer
 }
 
 export async function seedDashboardDataIfEmpty(username: string) {
-  if (isSupabaseEnabled() && process.env.SHOPLINK_ENABLE_DEMO_SEED !== 'true') {
+  if (isSupabaseEnabled() && process.env.MYSHOPLINK_ENABLE_DEMO_SEED !== 'true') {
     return;
   }
   if (username !== getDefaultAppState().user?.username) {

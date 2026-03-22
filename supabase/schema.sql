@@ -105,5 +105,5 @@ create table if not exists public.analytics_events (
 create index if not exists analytics_events_store_username_created_at_idx on public.analytics_events (store_username, created_at desc);
 
 insert into storage.buckets (id, name, public)
-values ('shoplink-assets', 'shoplink-assets', true)
+values ('myshoplink-assets', 'myshoplink-assets', true)
 on conflict (id) do nothing;

@@ -51,12 +51,12 @@ function getAnalyticsMetadata() {
 const loadStoredState = (initialUser: UserProfile | null): AppState => {
   const initialState = getInitialState();
   try {
-    const saved = window.localStorage.getItem('shoplink-state-v2');
+    const saved = window.localStorage.getItem('myshoplink-state-v2');
     if (saved) {
       const parsed = JSON.parse(saved);
       // Schema version check — clear stale/corrupt data from old versions
       if (parsed.version !== VERSION) {
-        window.localStorage.removeItem('shoplink-state-v2');
+        window.localStorage.removeItem('myshoplink-state-v2');
         return {
           ...initialState,
           user: initialUser,
@@ -192,7 +192,7 @@ export const StoreProvider: React.FC<{ children: ReactNode; initialUser: UserPro
     setHydrated(true);
 
     const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'shoplink-state-v2' && e.newValue) {
+      if (e.key === 'myshoplink-state-v2' && e.newValue) {
         try {
           const parsed = JSON.parse(e.newValue);
           setState(prev => {
@@ -224,8 +224,8 @@ export const StoreProvider: React.FC<{ children: ReactNode; initialUser: UserPro
 
     const stateWithVersion = { ...state, version: VERSION };
     const currentState = JSON.stringify(stateWithVersion);
-    if (window.localStorage.getItem('shoplink-state-v2') !== currentState) {
-      window.localStorage.setItem('shoplink-state-v2', currentState);
+    if (window.localStorage.getItem('myshoplink-state-v2') !== currentState) {
+      window.localStorage.setItem('myshoplink-state-v2', currentState);
     }
   }, [hydrated, state]);
 

@@ -17,13 +17,13 @@ export function LandingPage() {
 
       {/* Navbar */}
       <nav className="fixed top-0 w-full z-50 bg-white/90 backdrop-blur-md border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gray-900 flex items-center justify-center shadow-sm">
-              <Store className="w-5 h-5 text-white" />
+        <div className="max-w-7xl mx-auto px-4 md:px-6 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-1.5 md:gap-2">
+            <div className="w-7 h-7 md:w-8 md:h-8 rounded-lg bg-gray-900 flex items-center justify-center shadow-sm">
+              <Store className="w-4 h-4 md:w-5 md:h-5 text-white" />
             </div>
-            <span className="font-bold text-xl tracking-tight text-gray-900">
-              ShopLink
+            <span className="font-bold text-lg md:text-xl tracking-tight text-gray-900">
+              MyShopLink
             </span>
           </div>
           <div className="hidden md:flex items-center gap-8">
@@ -33,11 +33,11 @@ export function LandingPage() {
             <a href="#" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">Pricing</a>
             <a href="#" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">Blog</a>
           </div>
-          <div className="flex items-center gap-4">
-            <button onClick={handleCTA} className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
+          <div className="flex items-center gap-2 md:gap-4">
+            <button onClick={handleCTA} className="text-xs md:text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
               Log in
             </button>
-            <button onClick={handleCTA} className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors shadow-sm">
+            <button onClick={handleCTA} className="px-3 md:px-5 py-1.5 md:py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md md:rounded-lg text-xs md:text-sm font-medium transition-colors shadow-sm">
               Start for free
             </button>
           </div>
@@ -61,7 +61,7 @@ export function LandingPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1, ease: "easeOut" }}
-            className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tight leading-[1.1] mb-8 text-gray-900"
+            className="text-4xl md:text-7xl lg:text-8xl font-black tracking-tight leading-[1.1] mb-6 md:mb-8 text-gray-900"
           >
             Never lose a sale <br />
             <span className="text-blue-600">
@@ -73,7 +73,7 @@ export function LandingPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2, ease: "easeOut" }}
-            className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto mb-10 leading-relaxed"
+            className="text-base md:text-xl text-gray-600 max-w-2xl mx-auto mb-8 md:mb-10 leading-relaxed"
           >
             Turn Instagram traffic into instant WhatsApp orders. Automatically capture phone numbers and close more sales with a beautiful link-in-bio store.
           </motion.p>
@@ -84,8 +84,8 @@ export function LandingPage() {
             transition={{ duration: 0.5, delay: 0.3, ease: "easeOut" }}
             className="flex flex-col sm:flex-row gap-4 justify-center items-center"
           >
-            <button onClick={handleCTA} className="w-full sm:w-auto px-8 py-4 rounded-xl bg-blue-600 text-white font-semibold text-lg hover:bg-blue-700 shadow-md transition-all duration-200 flex items-center justify-center gap-2">
-              Claim Your Link Now <ArrowRight className="w-5 h-5" />
+            <button onClick={handleCTA} className="w-full sm:w-auto px-6 md:px-8 py-3 md:py-4 rounded-xl bg-blue-600 text-white font-semibold text-base md:text-lg hover:bg-blue-700 shadow-md transition-all duration-200 flex items-center justify-center gap-2">
+              Claim Your Link Now <ArrowRight className="w-4 h-4 md:w-5 md:h-5" />
             </button>
           </motion.div>
         </section>
@@ -136,7 +136,7 @@ export function LandingPage() {
               className="p-8 md:p-10 rounded-3xl bg-gradient-to-br from-blue-50 to-indigo-50/50 border border-blue-100 shadow-sm relative overflow-hidden"
             >
               <h3 className="text-2xl font-bold text-gray-900 mb-8 flex items-center gap-2">
-                The ShopLink Way 🚀
+                The MyShopLink Way 🚀
               </h3>
               <ul className="space-y-8 relative z-10">
                 <li className="flex gap-4">
@@ -219,7 +219,7 @@ export function LandingPage() {
 
       <footer className="border-t border-gray-200 bg-white py-10 mt-10">
         <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between text-gray-500 text-sm">
-          <p>© 2026 ShopLink. All rights reserved.</p>
+          <p>© 2026 MyShopLink. All rights reserved.</p>
           <div className="flex gap-6 mt-4 md:mt-0">
             <a href="#" className="hover:text-gray-900 transition-colors">Privacy</a>
             <a href="#" className="hover:text-gray-900 transition-colors">Terms</a>

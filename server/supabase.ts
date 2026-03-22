@@ -18,7 +18,7 @@ export function getSupabaseServiceRoleKey() {
 }
 
 export function getSupabaseStorageBucket() {
-  return getEnv('SUPABASE_STORAGE_BUCKET') || 'shoplink-assets';
+  return getEnv('SUPABASE_STORAGE_BUCKET') || 'myshoplink-assets';
 }
 
 export function isSupabaseEnabled() {

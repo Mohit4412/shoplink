@@ -28,7 +28,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
                 <div className="w-8 h-8 bg-gray-900 rounded-md flex items-center justify-center">
                   <Store className="w-5 h-5 text-white" />
                 </div>
-                <span className="font-semibold text-gray-900 hidden sm:block">ShopLink</span>
+                <span className="font-semibold text-gray-900 hidden sm:block">MyShopLink</span>
               </Link>
             </div>
 

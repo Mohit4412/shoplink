@@ -3,9 +3,9 @@ import { mkdirSync } from 'fs';
 import path from 'path';
 import { isSupabaseEnabled } from '@/server/supabase';
 
-const dbPath = process.env.SHOPLINK_DB_PATH
-  ? path.resolve(process.env.SHOPLINK_DB_PATH)
-  : path.join(process.cwd(), 'server', 'shoplink.db');
+const dbPath = process.env.MYSHOPLINK_DB_PATH
+  ? path.resolve(process.env.MYSHOPLINK_DB_PATH)
+  : path.join(process.cwd(), 'server', 'myshoplink.db');
 
 export const db = isSupabaseEnabled()
   ? null

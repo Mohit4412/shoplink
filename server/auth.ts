@@ -10,7 +10,7 @@ import { isSupabaseEnabled, supabaseDelete, supabaseInsert, supabasePatch, supab
 import { getDefaultAppState } from '@/src/lib/default-state';
 import { UserProfile } from '@/src/types';
 
-const SESSION_COOKIE = 'shoplink_session';
+const SESSION_COOKIE = 'myshoplink_session';
 const SESSION_TTL_DAYS = 30;
 const HASH_ITERATIONS = 120000;
 const HASH_KEYLEN = 64;

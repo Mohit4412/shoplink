@@ -1,7 +1,7 @@
 import Database from 'better-sqlite3';
 
 function run() {
-  const db = new Database('./server/shoplink.db');
+  const db = new Database('./server/myshoplink.db');
   
   const storesWithoutProducts = db.prepare(`SELECT username FROM stores WHERE username NOT IN (SELECT store_username FROM products)`).all();
   

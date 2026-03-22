@@ -25,7 +25,7 @@ interface UpgradeModalProps {
 const PRO_FEATURES = [
   'Unlimited products',
   'All themes',
-  'No ShopLink branding',
+  'No MyShopLink branding',
   'Custom domain',
   'Priority support',
 ];
@@ -44,7 +44,7 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Unlock ShopLink Pro" className="max-w-3xl">
+    <Modal isOpen={isOpen} onClose={onClose} title="Unlock MyShopLink Pro" className="max-w-3xl">
       <div className="space-y-6">
         <div className="space-y-2">
           <div className="inline-flex items-center gap-2 rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-700">
@@ -52,7 +52,7 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
             Monetization ready
           </div>
           <div>
-            <h3 className="text-2xl font-semibold text-gray-900">Unlock ShopLink Pro</h3>
+            <h3 className="text-2xl font-semibold text-gray-900">Unlock MyShopLink Pro</h3>
             <p className="mt-1 text-sm text-gray-500">Remove limits now. Razorpay checkout can replace this action later.</p>
           </div>
         </div>
@@ -71,7 +71,7 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
             <ul className="mt-4 space-y-2 text-sm text-gray-600">
               <li>Up to 5 products</li>
               <li>Classic theme only</li>
-              <li>ShopLink branding</li>
+              <li>MyShopLink branding</li>
               <li>No custom domain</li>
             </ul>
           </div>
