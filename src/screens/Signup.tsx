@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Store, Eye, EyeOff, Loader2 } from 'lucide-react';
+import { Store, Eye, EyeOff, Loader2, CheckCircle2, XCircle } from 'lucide-react';
 import Link from 'next/link';
 import { useStore } from '../context/StoreContext';
 import { countryCodes } from '../utils/countryCodes';
@@ -30,6 +30,12 @@ export function Signup() {
   const [authError, setAuthError] = useState('');
   const [isSignupSuccess, setIsSignupSuccess] = useState(false);
 
+  // Username availability check
+  const [usernameAvailable, setUsernameAvailable] = useState<boolean | null>(null);
+  const [usernameCheckMsg, setUsernameCheckMsg] = useState('');
+  const [checkingUsername, setCheckingUsername] = useState(false);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   React.useEffect(() => {
     if (hydrated && user && !isSignupSuccess) {
       router.replace('/dashboard');
@@ -39,6 +45,27 @@ export function Signup() {
   const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '');
     setUsername(val);
+    setUsernameAvailable(null);
+    setUsernameCheckMsg('');
+
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+
+    if (val.length < 3) return;
+
+    setCheckingUsername(true);
+    debounceRef.current = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/auth/check-username?username=${encodeURIComponent(val)}`);
+        const data = await res.json();
+        setUsernameAvailable(data.available);
+        setUsernameCheckMsg(data.available ? `${val}.myshoplink.site is available` : (data.reason || 'Username not available'));
+      } catch {
+        setUsernameAvailable(null);
+        setUsernameCheckMsg('');
+      } finally {
+        setCheckingUsername(false);
+      }
+    }, 500);
   };
 
   const getErrors = () => {
@@ -250,16 +277,30 @@ export function Signup() {
 
               <div className="space-y-1.5">
                 <label className="block text-sm font-medium text-gray-700">Your store URL</label>
-                <input
-                  type="text"
-                  value={username}
-                  onChange={handleUsernameChange}
-                  placeholder="e.g. priyasarees"
-                  className={`w-full h-11 px-3 rounded-lg border ${errors.username ? 'border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-[#25D366]'} focus:outline-none focus:ring-2 focus:border-transparent transition-all placeholder:text-gray-400`}
-                />
-                <p className="text-xs font-semibold text-gray-500 mt-1 truncate">
-                  <span className="text-gray-400 font-medium">Your store:</span> {username ? `myshoplink.site/${username}` : 'myshoplink.site/[username]'}
-                </p>
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={username}
+                    onChange={handleUsernameChange}
+                    placeholder="e.g. priyasarees"
+                    className={`w-full h-11 px-3 pr-9 rounded-lg border ${errors.username ? 'border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-[#25D366]'} focus:outline-none focus:ring-2 focus:border-transparent transition-all placeholder:text-gray-400`}
+                  />
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                    {checkingUsername && <Loader2 className="w-4 h-4 animate-spin text-gray-400" />}
+                    {!checkingUsername && usernameAvailable === true && <CheckCircle2 className="w-4 h-4 text-green-500" />}
+                    {!checkingUsername && usernameAvailable === false && <XCircle className="w-4 h-4 text-red-400" />}
+                  </div>
+                </div>
+                {usernameCheckMsg && (
+                  <p className={`text-xs font-medium mt-1 ${usernameAvailable ? 'text-green-600' : 'text-red-500'}`}>
+                    {usernameCheckMsg}
+                  </p>
+                )}
+                {!usernameCheckMsg && (
+                  <p className="text-xs text-gray-400 mt-1">
+                    Your store: {username ? `${username}.myshoplink.site` : 'username.myshoplink.site'}
+                  </p>
+                )}
                 {errors.username && <p className="text-xs text-red-500">{errors.username}</p>}
               </div>
 

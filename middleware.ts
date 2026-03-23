@@ -1,28 +1,60 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-const APP_HOSTNAMES = [
+const ROOT_HOSTNAME = 'myshoplink.site';
+
+// Routes that belong to the app shell — never served from a store subdomain
+const APP_ONLY_PREFIXES = ['/dashboard', '/analytics', '/products', '/settings', '/signup', '/support'];
+
+const APP_HOSTNAMES = new Set([
   'localhost',
   '127.0.0.1',
-  'vercel.app',
-  'myshoplink.site',
-];
+  ROOT_HOSTNAME,
+]);
 
-function isAppHostname(host: string) {
-  return APP_HOSTNAMES.some(h => host === h || host.endsWith(`.${h}`));
+function isVercelPreview(host: string) {
+  return host.endsWith('.vercel.app');
 }
 
 export async function middleware(req: NextRequest) {
-  const host = (req.headers.get('host') || '').split(':')[0]; // strip port
+  const host = (req.headers.get('host') || '').split(':')[0];
   const url = req.nextUrl.clone();
+  const pathname = url.pathname;
 
-  // Let all app-owned hostnames pass through normally
-  if (isAppHostname(host)) {
+  // Vercel preview deployments — pass through
+  if (isVercelPreview(host)) {
     return NextResponse.next();
   }
 
-  // Custom domain — look up which store owns it via the internal API
-  // We rewrite to the store's slug route so the user sees their domain
+  // Root domain and localhost — always serve the app as-is
+  // myshoplink.site/  → marketing homepage
+  // myshoplink.site/dashboard → dashboard
+  if (APP_HOSTNAMES.has(host)) {
+    return NextResponse.next();
+  }
+
+  // Store subdomain: username.myshoplink.site
+  if (host.endsWith(`.${ROOT_HOSTNAME}`)) {
+    const subdomain = host.slice(0, -(ROOT_HOSTNAME.length + 1));
+
+    if (subdomain && !subdomain.includes('.')) {
+      // If someone tries to access an app-only route from a subdomain,
+      // redirect them to the root domain instead
+      if (APP_ONLY_PREFIXES.some(p => pathname.startsWith(p))) {
+        url.host = ROOT_HOSTNAME;
+        url.pathname = pathname;
+        return NextResponse.redirect(url);
+      }
+
+      // Rewrite / and all store paths to /{subdomain}/...
+      url.pathname = `/${subdomain}${pathname === '/' ? '' : pathname}`;
+      return NextResponse.rewrite(url);
+    }
+
+    return NextResponse.next();
+  }
+
+  // Custom domain — look up which store owns it
   try {
     const lookupUrl = new URL(
       `/api/domains/lookup?domain=${encodeURIComponent(host)}`,
@@ -33,12 +65,17 @@ export async function middleware(req: NextRequest) {
     if (res.ok) {
       const { username } = await res.json();
       if (username) {
-        url.pathname = `/${username}${url.pathname === '/' ? '' : url.pathname}`;
+        // Same protection for custom domains
+        if (APP_ONLY_PREFIXES.some(p => pathname.startsWith(p))) {
+          url.host = ROOT_HOSTNAME;
+          return NextResponse.redirect(url);
+        }
+        url.pathname = `/${username}${pathname === '/' ? '' : pathname}`;
         return NextResponse.rewrite(url);
       }
     }
   } catch {
-    // If lookup fails, fall through to normal routing
+    // fall through
   }
 
   return NextResponse.next();
