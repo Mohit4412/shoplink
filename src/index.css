@@ -5,6 +5,19 @@
   --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
   --font-heading: "Sora", ui-sans-serif, system-ui, sans-serif;
   --font-serif: "Instrument Serif", ui-serif, Georgia, serif;
+  
+  /* Custom Brand WhatsApp Green Scale */
+  --color-brand-50: #f0fdf4;
+  --color-brand-100: #dcfce7;
+  --color-brand-200: #bbf7d0;
+  --color-brand-300: #86efac;
+  --color-brand-400: #4ade80;
+  --color-brand-500: #25D366; 
+  --color-brand-600: #128C7E; 
+  --color-brand-700: #075E54;
+  --color-brand-800: #064039;
+  --color-brand-900: #042622;
+  --color-brand-950: #021a17;
 }
 
 @layer utilities {

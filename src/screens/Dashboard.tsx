@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Plus, Share2, Calendar, Sparkles, Package, CheckCircle2, ChevronRight, Store, Upload } from 'lucide-react';
+import { Plus, Share2, Calendar, Sparkles, Package, CheckCircle2, ChevronRight, Store, Upload, Eye, MessageCircle } from 'lucide-react';
 import Link from 'next/link';
 import { format, subDays, isWithinInterval, parseISO, startOfDay, endOfDay } from 'date-fns';
 import { useStore } from '../context/StoreContext';
@@ -95,50 +95,120 @@ export function Dashboard() {
   };
 
 
-  return (
-    <div className="space-y-8">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-          <p className="text-sm text-gray-500 mt-1">Hi <span className="font-bold text-blue-600">{user?.firstName || 'there'}</span>, Manage your store and track performance.</p>
-        </div>
-        <div className="flex gap-3 w-full sm:w-auto">
+  const todayOrdersCount = orders.filter(o => o.date.startsWith(todayStr)).length;
+  const todayStats = analytics.dailyStats.find(s => s.fullDate === todayStr) || { views: 0, clicks: 0 };
+  const todayViews = todayStats.views;
+  const todayClicks = todayStats.clicks;
+  const activeProductsCount = products.length;
 
-          <Button 
-            variant="outline" 
-            onClick={() => setIsShareModalOpen(true)}
-            className="flex-1 sm:flex-none"
-          >
-            <Share2 className="w-4 h-4 mr-2" />
-            Share Link
-          </Button>
-          <Button 
-            variant="outline" 
-            className="border-green-600 text-green-700 hover:bg-green-50 flex-1 sm:flex-none"
-            onClick={openNewOrderModal}
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Add Manual Order
-          </Button>
+  return (
+    <div className="space-y-6 max-w-[500px] mx-auto pb-4">
+      
+      {/* Greeting Card */}
+      <div className="bg-[#FFFBEB] border border-[#FDE68A] rounded-2xl p-4 sm:px-5">
+        <h1 className="text-[18px] font-bold text-gray-900 leading-tight">
+          Hello {user?.firstName || 'there'} <span className="inline-block animate-wave">👋</span>
+        </h1>
+        <p className="text-[13px] text-gray-500 font-medium mt-1">Here's your store activity today.</p>
+      </div>
+
+      {/* 2x2 Metrics Grid */}
+      <div className="grid grid-cols-2 gap-3">
+        <div className="bg-white border border-gray-100 rounded-xl p-4 shadow-sm flex flex-col justify-between aspect-[4/3]">
+          <div className="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center mb-2">
+            <Package className="w-4 h-4 text-amber-500" />
+          </div>
+          <div>
+            <p className="text-[22px] font-black text-gray-900 leading-none">{todayOrdersCount}</p>
+            <p className="text-[12px] font-semibold text-gray-500 mt-1">Orders (today)</p>
+          </div>
+        </div>
+        
+        <div className="bg-white border border-gray-100 rounded-xl p-4 shadow-sm flex flex-col justify-between aspect-[4/3]">
+          <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center mb-2">
+            <Eye className="w-4 h-4 text-blue-500" />
+          </div>
+          <div>
+            <p className="text-[22px] font-black text-gray-900 leading-none">{todayViews}</p>
+            <p className="text-[12px] font-semibold text-gray-500 mt-1">Store views (today)</p>
+          </div>
+        </div>
+
+        <div className="bg-white border border-gray-100 rounded-xl p-4 shadow-sm flex flex-col justify-between aspect-[4/3]">
+          <div className="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center mb-2">
+            <Store className="w-4 h-4 text-[#25D366]" />
+          </div>
+          <div>
+            <p className="text-[22px] font-black text-gray-900 leading-none">{activeProductsCount}</p>
+            <p className="text-[12px] font-semibold text-gray-500 mt-1">Active products</p>
+          </div>
+        </div>
+
+        <div className="bg-white border border-gray-100 rounded-xl p-4 shadow-sm flex flex-col justify-between aspect-[4/3]">
+          <div className="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center mb-2">
+            <MessageCircle className="w-4 h-4 text-[#25D366]" />
+          </div>
+          <div>
+            <p className="text-[22px] font-black text-gray-900 leading-none">{todayClicks}</p>
+            <p className="text-[12px] font-semibold text-gray-500 mt-1">WhatsApp clicks</p>
+          </div>
         </div>
       </div>
 
-
-      {/* Date Range Selector */}
-      <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="flex items-center gap-2 text-gray-700">
-          <Calendar className="w-5 h-5 text-blue-600" />
-          <span className="font-medium">Performance Period:</span>
-          <span className="bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-sm font-semibold">
-            {rangeLabel}
-          </span>
+      {/* Plan Status Banner */}
+      {(!user?.plan || user.plan === 'Free') ? (
+        <div className="bg-[#FFFBEB] border border-amber-200 rounded-xl p-4 flex items-center justify-between shadow-sm">
+          <div>
+            <h3 className="text-sm font-bold text-amber-900">Free plan</h3>
+            <p className="text-[11px] font-semibold text-amber-700 mt-0.5">
+              {activeProductsCount} products &middot; {Math.max(0, 10 - activeProductsCount)} remaining
+            </p>
+          </div>
+          <Link href="/settings?view=billing" className="text-xs font-bold bg-amber-100 text-amber-800 px-3 py-1.5 rounded-lg hover:bg-amber-200 transition-colors shrink-0">
+            Upgrade to Pro &rarr;
+          </Link>
         </div>
-        <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-3 w-full md:w-auto">
-          <div className="flex items-center gap-2 justify-between sm:justify-start">
-            <span className="text-xs text-gray-500 uppercase font-bold w-10 sm:w-auto">From</span>
-            <Input 
+      ) : (
+        <div className="bg-[#F0FDF4] border border-[#25D366]/30 rounded-xl p-4 flex items-center shadow-sm">
+          <div>
+            <h3 className="text-sm font-bold text-green-900">Pro plan</h3>
+            <p className="text-[11px] font-semibold text-green-700 mt-0.5">
+              Active until {user?.subscriptionRenewalDate || 'lifetime'}
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Quick Actions (Replacing old header buttons) */}
+      <div className="flex gap-3">
+        <button 
+          onClick={openNewOrderModal}
+          className="flex-1 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 h-11 rounded-xl flex items-center justify-center gap-2 text-sm font-semibold transition-colors shadow-sm"
+        >
+          <Plus className="w-4 h-4 text-gray-500" /> Log Order
+        </button>
+        <button 
+          onClick={() => setIsShareModalOpen(true)}
+          className="flex-1 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 h-11 rounded-xl flex items-center justify-center gap-2 text-sm font-semibold transition-colors shadow-sm"
+        >
+          <Share2 className="w-4 h-4 text-gray-500" /> Share Store
+        </button>
+      </div>
+
+      {/* Historical Analytics Section */}
+      <div className="pt-4 border-t border-gray-100" id="analytics">
+        <div className="mb-4">
+          <h2 className="text-lg font-bold text-gray-900">Historical performance</h2>
+          <p className="text-xs text-gray-500 font-medium">Analyze your custom date range</p>
+        </div>
+        
+        {/* Date Range Selector */}
+        <div className="bg-white p-3 rounded-xl shadow-sm border border-gray-100 flex flex-col gap-3 mb-4">
+          <div className="flex items-center gap-2 justify-between">
+            <span className="text-xs font-bold text-gray-500 uppercase">From</span>
+            <input 
               type="date" 
-              className="h-9 py-1 text-xs flex-1 sm:w-36" 
+              className="h-8 px-2 text-xs border border-gray-200 rounded-lg flex-1 ml-2 text-gray-700 outline-none focus:border-[#25D366]" 
               value={dateRange.start}
               max={dateRange.end}
               onChange={(e) => {
@@ -149,11 +219,11 @@ export function Dashboard() {
               }}
             />
           </div>
-          <div className="flex items-center gap-2 justify-between sm:justify-start">
-            <span className="text-xs text-gray-500 uppercase font-bold w-10 sm:w-auto">To</span>
-            <Input 
+          <div className="flex items-center gap-2 justify-between">
+            <span className="text-xs font-bold text-gray-500 uppercase">To</span>
+            <input 
               type="date" 
-              className="h-9 py-1 text-xs flex-1 sm:w-36" 
+              className="h-8 px-2 text-xs border border-gray-200 rounded-lg flex-1 ml-6 text-gray-700 outline-none focus:border-[#25D366]" 
               value={dateRange.end}
               min={dateRange.start}
               max={todayStr}
@@ -165,100 +235,7 @@ export function Dashboard() {
               }}
             />
           </div>
-          <div className="flex gap-2 sm:ml-2 mt-2 sm:mt-0">
-            <Button 
-              variant="outline" 
-              className={`h-9 px-3 text-xs flex-1 sm:flex-none justify-center ${isTodayRange ? 'bg-blue-50 border-blue-200 text-blue-700' : ''}`}
-              onClick={() => setDateRange({
-                start: todayStr,
-                end: todayStr,
-              })}
-            >
-              Today
-            </Button>
-            <Button 
-              variant="outline" 
-              className={`h-9 px-3 text-xs flex-1 sm:flex-none justify-center ${isLast7Days ? 'bg-blue-50 border-blue-200 text-blue-700' : ''}`}
-              onClick={() => setDateRange({
-                start: last7DaysStart,
-                end: todayStr,
-              })}
-            >
-              Last 7d
-            </Button>
-            <Button 
-              variant="outline" 
-              className={`h-9 px-3 text-xs flex-1 sm:flex-none justify-center ${isLast30Days ? 'bg-blue-50 border-blue-200 text-blue-700' : ''}`}
-              onClick={() => setDateRange({
-                start: last30DaysStart,
-                end: todayStr,
-              })}
-            >
-              Last 30d
-            </Button>
-          </div>
         </div>
-      </div>
-
-      {(!store.logoUrl || products.length === 0) && (
-        <div className="bg-gradient-to-br from-indigo-50 to-white border border-indigo-100 rounded-2xl p-6 shadow-sm overflow-hidden relative">
-          <div className="absolute -top-10 -right-10 text-indigo-100 opacity-50">
-            <Store className="w-40 h-40" />
-          </div>
-          <div className="relative z-10">
-            <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-indigo-500" />
-              Store Setup Guide
-            </h2>
-            <p className="text-sm text-gray-500 mt-1 mb-6">Complete these steps to launch your store beautifully.</p>
-            
-            <div className="space-y-3">
-              <Link href="/settings" className="flex items-center gap-4 bg-white border border-gray-100 p-4 rounded-xl hover:shadow-md transition-shadow group">
-                <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${store.logoUrl ? 'bg-green-100 text-green-600' : 'bg-gray-100 border border-gray-300'}`}>
-                  {store.logoUrl && <CheckCircle2 className="w-4 h-4" />}
-                </div>
-                <div className="flex-1">
-                  <h3 className={`font-semibold text-sm ${store.logoUrl ? 'text-gray-500 line-through' : 'text-gray-900'}`}>Upload store logo</h3>
-                  {!store.logoUrl && <p className="text-xs text-gray-500">Make your store look professional</p>}
-                </div>
-                <Upload className="w-4 h-4 text-gray-300 group-hover:text-indigo-500 transition-colors" />
-              </Link>
-
-              <Link href="/products" className="flex items-center gap-4 bg-white border border-gray-100 p-4 rounded-xl hover:shadow-md transition-shadow group">
-                <div className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 ${products.length > 0 ? 'bg-green-100 text-green-600' : 'bg-gray-100 border border-gray-300'}`}>
-                  {products.length > 0 && <CheckCircle2 className="w-4 h-4" />}
-                </div>
-                <div className="flex-1">
-                  <h3 className={`font-semibold text-sm ${products.length > 0 ? 'text-gray-500 line-through' : 'text-gray-900'}`}>Add your first product</h3>
-                  {products.length === 0 && <p className="text-xs text-gray-500">You need products to sell</p>}
-                </div>
-                <Package className="w-4 h-4 text-gray-300 group-hover:text-indigo-500 transition-colors" />
-              </Link>
-
-              <button onClick={() => setIsShareModalOpen(true)} className="w-full flex items-center gap-4 bg-white border border-gray-100 p-4 rounded-xl hover:shadow-md transition-shadow group text-left">
-                <div className="w-6 h-6 rounded-full bg-gray-100 border border-gray-300 flex items-center justify-center shrink-0" />
-                <div className="flex-1">
-                  <h3 className="font-semibold text-sm text-gray-900">Share your store link</h3>
-                  <p className="text-xs text-gray-500">Put it your Instagram bio & WhatsApp</p>
-                </div>
-                <Share2 className="w-4 h-4 text-gray-300 group-hover:text-indigo-500 transition-colors" />
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <MetricsGrid 
-        productsCount={products.length}
-        rangeViews={rangeViews}
-        rangeClicks={rangeClicks}
-        rangeOrdersCount={rangeOrdersCount}
-        rangeRevenue={rangeRevenue}
-        conversionRate={rangeConversionRate}
-        avgOrderValue={avgOrderValue}
-        currencySymbol={currencySymbol}
-        periodLabel={rangeLabel}
-      />
 
       <div className="w-full max-w-full overflow-hidden">
         <AnalyticsChart 
@@ -271,11 +248,12 @@ export function Dashboard() {
         sourceSummary={analytics.sourceSummary}
         countrySummary={analytics.countrySummary}
       />
+      </div>
 
       {orders.length === 0 && (
         <div className="bg-white border border-dashed border-gray-200 rounded-2xl p-10 flex flex-col items-center text-center gap-4">
-          <div className="w-14 h-14 rounded-full bg-blue-50 flex items-center justify-center">
-            <Package className="w-7 h-7 text-blue-500" />
+          <div className="w-14 h-14 rounded-full bg-brand- flex items-center justify-center">
+            <Package className="w-7 h-7 text-brand-" />
           </div>
           <div>
             <h3 className="font-semibold text-gray-900 text-base">No orders yet</h3>

@@ -142,9 +142,9 @@ export function PluginsSettings() {
       </div>
 
       {/* Live-update notice */}
-      <div className="flex items-center gap-2 bg-blue-50 border border-blue-100 rounded-xl px-4 py-3">
-        <Info className="w-4 h-4 text-blue-400 shrink-0" />
-        <p className="text-xs text-blue-700 font-medium">
+      <div className="flex items-center gap-2 bg-brand- border border-brand- rounded-xl px-4 py-3">
+        <Info className="w-4 h-4 text-brand- shrink-0" />
+        <p className="text-xs text-brand- font-medium">
           Changes reflect instantly on your public store.
         </p>
       </div>

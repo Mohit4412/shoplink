@@ -11,7 +11,6 @@ export function middleware(req: NextRequest) {
     host.includes('127.0.0.1') ||
     host.includes('vercel.app') ||
     subdomain === 'www' ||
-    subdomain === 'shoplink' ||
     subdomain === 'myshoplink' ||
     host === 'myshoplink.site'
   ) {

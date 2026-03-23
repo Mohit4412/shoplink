@@ -468,7 +468,7 @@ export async function seedDashboardDataIfEmpty(username: string) {
   const initial = getDefaultAppState();
   for (const order of initial.orders) {
     const payload = {
-      id: order.id,
+      id: `${username}-${order.id}`,
       store_username: username,
       product_id: order.productId,
       quantity: order.quantity,
@@ -502,7 +502,7 @@ export async function seedDashboardDataIfEmpty(username: string) {
   for (const source of initial.analytics.sourceSummary) {
     for (let index = 0; index < source.views; index += 1) {
       const payload = {
-        id: `ae_seed_view_${source.source}_${index}`,
+        id: `ae_v_${username}_${source.source}_${index}`,
         store_username: username,
         event_type: 'view',
         metric_date: format(new Date(), 'yyyy-MM-dd'),
@@ -531,7 +531,7 @@ export async function seedDashboardDataIfEmpty(username: string) {
     }
     for (let index = 0; index < source.clicks; index += 1) {
       const payload = {
-        id: `ae_seed_click_${source.source}_${index}`,
+        id: `ae_c_${username}_${source.source}_${index}`,
         store_username: username,
         event_type: 'click',
         metric_date: format(new Date(), 'yyyy-MM-dd'),

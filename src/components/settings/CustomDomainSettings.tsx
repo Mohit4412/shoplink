@@ -129,15 +129,15 @@ export function CustomDomainSettings() {
               </div>
               
               {isPro && (
-                <div className="bg-blue-50 rounded-lg p-4 border border-blue-100 text-sm">
-                  <h4 className="font-medium text-blue-900 mb-2 flex items-center gap-2">
+                <div className="bg-brand- rounded-lg p-4 border border-brand- text-sm">
+                  <h4 className="font-medium text-brand- mb-2 flex items-center gap-2">
                     <AlertCircle className="w-4 h-4" />
                     DNS Configuration Required
                   </h4>
-                  <p className="text-blue-800 mb-3">
+                  <p className="text-brand- mb-3">
                     To connect your domain, you need to add a <strong>CNAME</strong> record in your DNS provider's settings.
                   </p>
-                  <div className="bg-white rounded border border-blue-200 overflow-hidden">
+                  <div className="bg-white rounded border border-brand- overflow-hidden">
                     <table className="w-full text-left text-xs">
                       <thead className="bg-gray-50 border-b border-gray-200">
                         <tr>
@@ -157,7 +157,7 @@ export function CustomDomainSettings() {
                       </tbody>
                     </table>
                   </div>
-                  <p className="text-blue-700 text-xs mt-3">
+                  <p className="text-brand- text-xs mt-3">
                     Note: DNS changes can take up to 48 hours to propagate globally.
                     <br />
                     <span className="opacity-70 italic">(Demo: Use <strong>demo-verified.com</strong> to test success state)</span>

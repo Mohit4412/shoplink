@@ -47,25 +47,25 @@ export function MetricsGrid({
         subtitle="Active & Drafts"
       />
       <MetricCard 
-        icon={<Eye className="w-5 h-5 text-blue-600" />}
+        icon={<Eye className="w-5 h-5 text-brand-" />}
         title="Views"
         value={rangeViews.toLocaleString()}
         subtitle={periodLabel}
-        valueColor="text-blue-600"
+        valueColor="text-brand-"
       />
       <MetricCard 
-        icon={<MessageCircle className="w-5 h-5 text-blue-600" />}
+        icon={<MessageCircle className="w-5 h-5 text-brand-" />}
         title="Clicks"
         value={rangeClicks.toLocaleString()}
         subtitle={periodLabel}
-        valueColor="text-blue-600"
+        valueColor="text-brand-"
       />
       <MetricCard 
-        icon={<Percent className="w-5 h-5 text-blue-600" />}
+        icon={<Percent className="w-5 h-5 text-brand-" />}
         title="CTR"
         value={`${((rangeClicks / Math.max(rangeViews, 1)) * 100).toFixed(1)}%`}
         subtitle={periodLabel}
-        valueColor="text-blue-600"
+        valueColor="text-brand-"
       />
       
       <MetricCard 

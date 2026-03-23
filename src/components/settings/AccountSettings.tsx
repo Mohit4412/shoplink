@@ -189,10 +189,10 @@ export function AccountSettings({ onTabChange }: AccountSettingsProps) {
               <button
                 type="button"
                 onClick={upgradeModal.open}
-                className="w-full flex items-center gap-2 rounded-lg border border-blue-100 bg-blue-50 px-3 py-2 text-left"
+                className="w-full flex items-center gap-2 rounded-lg border border-brand- bg-brand- px-3 py-2 text-left"
               >
-                <Sparkles className="h-4 w-4 shrink-0 text-blue-600" />
-                <span className="text-xs font-medium text-blue-700">Upgrade to Pro to unlock premium features</span>
+                <Sparkles className="h-4 w-4 shrink-0 text-brand-" />
+                <span className="text-xs font-medium text-brand-">Upgrade to Pro to unlock premium features</span>
               </button>
             ) : null}
 
@@ -278,7 +278,7 @@ export function AccountSettings({ onTabChange }: AccountSettingsProps) {
                       const country = countryCodes.find(c => c.code === e.target.value);
                       if (country) setSelectedCountry(country);
                     }}
-                    className="w-full h-11 rounded-lg border border-gray-300 bg-white pl-3 pr-8 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none cursor-pointer"
+                    className="w-full h-11 rounded-lg border border-gray-300 bg-white pl-3 pr-8 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand- appearance-none cursor-pointer"
                   >
                     {countryCodes.map((country) => (
                       <option key={country.code} value={country.code}>

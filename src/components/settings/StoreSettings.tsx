@@ -212,7 +212,7 @@ export function StoreSettings() {
           <div>
             <label className="mb-1 block text-sm font-medium text-gray-700">Currency</label>
             <select
-              className="flex h-11 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="flex h-11 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-"
               value={storeForm.currency}
               onChange={(e) => setStoreForm(p => ({ ...p, currency: e.target.value }))}
             >

@@ -137,7 +137,7 @@ export function RecentOrdersTable({ orders, products, currencySymbol, onEditOrde
                       <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                         <button
                           onClick={() => onEditOrder(order)}
-                          className="p-1.5 text-gray-400 hover:text-blue-600 rounded-md hover:bg-blue-50 transition-colors"
+                          className="p-1.5 text-gray-400 hover:text-brand- rounded-md hover:bg-brand- transition-colors"
                           title="Edit"
                         >
                           <Edit2 className="w-3.5 h-3.5" />

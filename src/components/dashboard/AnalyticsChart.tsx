@@ -40,9 +40,9 @@ export function AnalyticsChart({ data, subtitle = "Last 7 days performance" }: A
               <Line 
                 type="monotone" 
                 dataKey="views" 
-                stroke="#3B82F6" 
+                stroke="#25D366" 
                 strokeWidth={2} 
-                dot={{ r: 4, fill: '#3B82F6', strokeWidth: 0 }} 
+                dot={{ r: 4, fill: '#25D366', strokeWidth: 0 }} 
                 activeDot={{ r: 6 }} 
                 name="Views"
               />

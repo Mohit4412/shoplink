@@ -66,7 +66,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
               <div className="md:hidden">
                 <button
                   onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                  className="p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500 pointer-events-auto"
+                  className="p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-brand- pointer-events-auto"
                 >
                   {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
                 </button>
@@ -103,7 +103,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
               <Link
                 href={`/${user?.username}`}
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="block px-3 py-2 rounded-md text-base font-medium text-blue-600 hover:bg-blue-50"
+                className="block px-3 py-2 rounded-md text-base font-medium text-brand- hover:bg-brand-"
               >
                 <div className="flex items-center">
                   <ExternalLink className="w-5 h-5 mr-3" />

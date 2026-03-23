@@ -183,7 +183,7 @@ export function ProductModal({ isOpen, isEditMode, onClose, formData, setFormDat
           <div>
             <label className="mb-1 block text-sm font-medium text-gray-700">Status</label>
             <select
-              className="flex h-11 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="flex h-11 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-"
               value={formData.status}
               onChange={(e) => setFormData({ ...formData, status: e.target.value as ProductStatus })}
             >

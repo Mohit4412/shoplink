@@ -596,7 +596,7 @@ export function StoreFront({ storefront }: { storefront?: PublicStorefrontData }
       </div>
 
       {/* Main content – rendered sections */}
-      <main className="flex-1 mx-auto w-full max-w-7xl pt-10 pb-32 px-2 sm:px-0">
+      <main className="flex-1 mx-auto w-full max-w-[568px] pt-10 pb-32 px-4 sm:px-0">
         {activeProducts.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-32 px-6 text-center">
             <div className="w-20 h-20 rounded-full flex items-center justify-center mb-6" style={{ backgroundColor: t.accentLight }}>

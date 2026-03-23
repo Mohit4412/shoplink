@@ -56,7 +56,7 @@ export function ProductTable({ products, filteredProducts, currencySymbol, onEdi
                   </span>
                 </td>
                 <td className="px-6 py-4 text-right">
-                  <button onClick={() => onEdit(product)} className="text-blue-600 hover:text-blue-800 font-medium mr-4">Edit</button>
+                  <button onClick={() => onEdit(product)} className="text-brand- hover:text-brand- font-medium mr-4">Edit</button>
                   <button onClick={() => onDelete(product)} className="text-red-600 hover:text-red-800 font-medium">Delete</button>
                 </td>
               </tr>

@@ -276,59 +276,17 @@ export function Products() {
               placeholder="Search products..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 bg-white border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full pl-9 pr-4 py-2 bg-white border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-"
             />
           </div>
           <select
             value={sortOption}
             onChange={(e) => setSortOption(e.target.value as 'name' | 'price')}
-            className="px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-"
           >
             <option value="name">Sort by Name</option>
             <option value="price">Sort by Price</option>
           </select>
-          <div className="relative hidden sm:block" ref={notificationRef}>
-            <button 
-              className="p-2 text-gray-400 hover:text-gray-600 relative"
-              onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
-            >
-              <Bell className="w-5 h-5" />
-              {unreadCount > 0 && (
-                <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-orange-500 rounded-full border-2 border-[#F8F9FA]"></span>
-              )}
-            </button>
-            
-            {isNotificationsOpen && (
-              <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-100 z-50">
-                <div className="p-3 border-b border-gray-100">
-                  <h3 className="text-sm font-semibold text-gray-900">Notifications</h3>
-                </div>
-                <div className="p-2 max-h-64 overflow-y-auto">
-                  {(notifications || []).length === 0 ? (
-                    <div className="p-4 text-center text-sm text-gray-500">
-                      No notifications
-                    </div>
-                  ) : (
-                    (notifications || []).map(notification => (
-                      <div 
-                        key={notification.id}
-                        className={`p-2 hover:bg-gray-50 rounded-md cursor-pointer ${!notification.read ? 'bg-blue-50/50' : ''}`}
-                        onClick={() => handleNotificationClick(notification.id)}
-                      >
-                        <div className="flex justify-between items-start">
-                          <p className={`text-sm ${!notification.read ? 'font-semibold text-gray-900' : 'font-medium text-gray-600'}`}>
-                            {notification.title}
-                          </p>
-                          {!notification.read && <span className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-1.5"></span>}
-                        </div>
-                        <p className="text-xs text-gray-500 mt-0.5">{notification.message}</p>
-                      </div>
-                    ))
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
           <Button onClick={() => { resetForm(); setIsAddModalOpen(true); }} className="whitespace-nowrap">
             <Plus className="w-4 h-4 mr-2" />
             Add Product
@@ -454,15 +412,15 @@ export function Products() {
                       onClick={() => setSelectedCol(col.name)}
                       className={`flex items-center justify-between p-4 rounded-xl text-left border transition-all duration-200 ${
                         isActive 
-                          ? 'bg-blue-50 border-blue-200 shadow-sm ring-1 ring-blue-500/10' 
+                          ? 'bg-brand- border-brand- shadow-sm ring-1 ring-brand-/10' 
                           : 'bg-white border-gray-100 hover:border-gray-300 hover:shadow-sm'
                       }`}
                     >
                       <div className="min-w-0 pr-4">
-                        <h3 className={`font-semibold truncate ${isActive ? 'text-blue-900' : 'text-gray-900'}`}>{col.name}</h3>
-                        <p className={`text-xs mt-1 ${isActive ? 'text-blue-600' : 'text-gray-500'}`}>{col.count} {col.count === 1 ? 'Product' : 'Products'}</p>
+                        <h3 className={`font-semibold truncate ${isActive ? 'text-brand-' : 'text-gray-900'}`}>{col.name}</h3>
+                        <p className={`text-xs mt-1 ${isActive ? 'text-brand-' : 'text-gray-500'}`}>{col.count} {col.count === 1 ? 'Product' : 'Products'}</p>
                       </div>
-                      <ChevronRight className={`w-4 h-4 shrink-0 transition-transform ${isActive ? 'text-blue-500 translate-x-1' : 'text-gray-400'}`} />
+                      <ChevronRight className={`w-4 h-4 shrink-0 transition-transform ${isActive ? 'text-brand- translate-x-1' : 'text-gray-400'}`} />
                     </button>
                   );
                 })}
@@ -492,7 +450,7 @@ export function Products() {
                     <div className="p-6">
                       <div className="flex justify-between items-center mb-6">
                         <h3 className="font-semibold text-gray-900">Products ({products.filter(p => p.collection === selectedCol).length})</h3>
-                        <Button size="sm" variant="ghost" className="text-blue-600 bg-blue-50 hover:bg-blue-100" onClick={() => {
+                        <Button size="sm" variant="ghost" className="text-brand- bg-brand- hover:bg-brand-" onClick={() => {
                             resetForm();
                             setFormData(prev => ({ ...prev, collection: selectedCol }));
                             setIsAddModalOpen(true);
@@ -503,7 +461,7 @@ export function Products() {
                       
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         {products.filter(p => p.collection === selectedCol).map(p => (
-                          <div key={p.id} className="group relative flex items-center gap-4 p-3 bg-white border border-gray-100 rounded-xl hover:border-blue-100 hover:shadow-md transition-all">
+                          <div key={p.id} className="group relative flex items-center gap-4 p-3 bg-white border border-gray-100 rounded-xl hover:border-brand- hover:shadow-md transition-all">
                             <img src={p.imageUrl} alt={p.name} className="w-16 h-16 rounded-lg object-cover bg-gray-50 flex-shrink-0 border border-gray-100" />
                             <div className="flex-1 min-w-0 pr-8">
                               <p className="font-medium text-sm text-gray-900 truncate">{p.name}</p>

@@ -1,80 +1,135 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useStore } from '../context/StoreContext';
+import { Store, Settings2, Globe, CreditCard, User, LogOut, ChevronRight, ExternalLink } from 'lucide-react';
+import Link from 'next/link';
+
 import { AccountSettings } from '../components/settings/AccountSettings';
 import { StoreSettings } from '../components/settings/StoreSettings';
 import { PluginsSettings } from '../components/settings/PluginsSettings';
 import { CustomDomainSettings } from '../components/settings/CustomDomainSettings';
 import { BillingSettings } from '../components/settings/BillingSettings';
 
-type Tab = 'account' | 'store' | 'plugins' | 'domain' | 'billing';
-
-const TABS: { id: Tab; label: string }[] = [
-  { id: 'account', label: 'Profile' },
-  { id: 'store',   label: 'Store'   },
-  { id: 'plugins', label: 'Plugins' },
-  { id: 'domain',  label: 'Domain'  },
-  { id: 'billing', label: 'Billing' },
-];
-
-const TAB_TITLES: Record<Tab, string> = {
-  account: 'Settings',
-  store:   'Store Settings',
-  plugins: 'Storefront Plugins',
-  domain:  'Domain Settings',
-  billing: 'Billing & Subscription',
-};
-
-const TAB_DESCRIPTIONS: Record<Tab, string> = {
-  account: 'Manage your personal account preferences.',
-  store:   "Configure your store's identity and visual appearance.",
-  plugins: 'Toggle which sections appear on your public storefront.',
-  domain:  'Manage your custom domain and DNS settings.',
-  billing: 'Manage your subscription, billing history, and payment methods.',
-};
-
 export function Settings() {
-  const [activeTab, setActiveTab] = useState<Tab>(() => {
-    if (typeof window === 'undefined') return 'account';
-    return (window.localStorage.getItem('settingsTab') as Tab) || 'account';
-  });
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const { user, logout } = useStore();
+  
+  const view = searchParams?.get('view');
 
-  useEffect(() => {
-    window.localStorage.setItem('settingsTab', activeTab);
-  }, [activeTab]);
+  if (view === 'store') return <StoreSettings />;
+  if (view === 'plugins') return <div className="mt-4"><PluginsSettings /></div>;
+  if (view === 'domain') return <div className="mt-4"><CustomDomainSettings /></div>;
+  if (view === 'billing') return <BillingSettings />;
+  if (view === 'account') return <div className="mt-4"><AccountSettings onTabChange={() => {}} /></div>;
+
+  const handleLogout = () => {
+    if (window.confirm('Are you sure you want to log out?')) {
+      logout();
+    }
+  };
+
+  const menuItems = [
+    {
+      id: 'store',
+      title: 'Store settings',
+      subtitle: 'Appearance, logo, theme',
+      icon: <Store className="w-5 h-5 text-blue-600" />,
+      bg: 'bg-blue-50',
+    },
+    {
+      id: 'plugins',
+      title: 'Store sections',
+      subtitle: 'Show/hide storefront blocks',
+      icon: <Settings2 className="w-5 h-5 text-purple-600" />,
+      bg: 'bg-purple-50',
+    },
+    {
+      id: 'domain',
+      title: 'Custom domain',
+      subtitle: 'Connect your own domain',
+      icon: <Globe className="w-5 h-5 text-indigo-600" />,
+      bg: 'bg-indigo-50',
+    },
+    {
+      id: 'billing',
+      title: 'Plans & pricing',
+      subtitle: `Current plan: ${user?.plan || 'Free'}`,
+      icon: <CreditCard className="w-5 h-5 text-amber-600" />,
+      bg: 'bg-amber-50',
+    },
+    {
+      id: 'account',
+      title: 'Edit profile',
+      subtitle: 'Name, email, WhatsApp number',
+      icon: <User className="w-5 h-5 text-gray-600" />,
+      bg: 'bg-gray-100',
+    },
+  ];
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">{TAB_TITLES[activeTab]}</h1>
-        <p className="text-sm text-gray-500 mt-1">{TAB_DESCRIPTIONS[activeTab]}</p>
+    <div className="space-y-6 max-w-[500px] mx-auto pb-4">
+      {/* Profile Card */}
+      <div className="flex flex-col items-center pt-2 pb-6">
+        <div className="w-16 h-16 rounded-full bg-[#25D366] text-white flex items-center justify-center text-2xl font-bold shadow-sm mb-3">
+          {user?.firstName ? user.firstName.charAt(0).toUpperCase() : user?.username?.charAt(0).toUpperCase() || 'U'}
+        </div>
+        <h2 className="text-xl font-bold text-gray-900 leading-tight">
+          {user?.firstName} {user?.lastName}
+        </h2>
+        <p className="text-sm text-gray-500 font-medium">{user?.email}</p>
+        
+        <div className="flex items-center gap-2 mt-4">
+          <span className="px-2.5 py-1 bg-gray-100 text-gray-700 text-[11px] font-bold uppercase tracking-wider rounded-md">
+            {user?.plan || 'FREE'}
+          </span>
+          <a 
+            href={`https://${user?.username}.myshoplink.site`} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="flex items-center gap-1.5 px-3 py-1 bg-[#f0fdf4] text-[#15803d] text-xs font-semibold rounded-md hover:bg-[#dcfce7] transition-colors"
+          >
+            View store <ExternalLink className="w-3.5 h-3.5" />
+          </a>
+        </div>
       </div>
 
-      {/* Full-width tabs — equal columns */}
-      <div className="border-b border-gray-200">
-        <nav className="-mb-px grid grid-cols-5">
-          {TABS.map(tab => (
+      {/* Menu List */}
+      <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
+        <div className="divide-y divide-gray-100 border-b border-gray-100">
+          {menuItems.map((item) => (
             <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`pb-4 px-1 border-b-2 font-medium text-sm transition-colors text-center ${
-                activeTab === tab.id
-                  ? 'border-gray-900 text-gray-900'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              }`}
+              key={item.id}
+              onClick={() => router.push(`/settings?view=${item.id}`)}
+              className="w-full flex items-center p-4 hover:bg-gray-50 active:bg-gray-100 transition-colors text-left"
             >
-              {tab.label}
+              <div className={`w-10 h-10 rounded-xl ${item.bg} flex items-center justify-center shrink-0 mr-4`}>
+                {item.icon}
+              </div>
+              <div className="flex-1">
+                <h3 className="text-[15px] font-bold text-gray-900 leading-snug">{item.title}</h3>
+                <p className="text-[13px] text-gray-500 font-medium leading-snug mt-0.5">{item.subtitle}</p>
+              </div>
+              <ChevronRight className="w-5 h-5 text-gray-400 shrink-0 ml-2" />
             </button>
           ))}
-        </nav>
+        </div>
+        
+        {/* Logout Item */}
+        <button
+          onClick={handleLogout}
+          className="w-full flex items-center p-4 hover:bg-red-50 active:bg-red-100 transition-colors text-left"
+        >
+          <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center shrink-0 mr-4">
+            <LogOut className="w-5 h-5 text-red-600" />
+          </div>
+          <div className="flex-1">
+            <h3 className="text-[15px] font-bold text-red-600 leading-snug">Log out</h3>
+          </div>
+        </button>
       </div>
-
-      {/* Tab content */}
-      {activeTab === 'account'  && <AccountSettings onTabChange={setActiveTab} />}
-      {activeTab === 'store'    && <StoreSettings />}
-      {activeTab === 'plugins'  && <PluginsSettings />}
-      {activeTab === 'domain'   && <CustomDomainSettings />}
-      {activeTab === 'billing'  && <BillingSettings />}
     </div>
   );
 }

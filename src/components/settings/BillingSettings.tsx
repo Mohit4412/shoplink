@@ -40,7 +40,7 @@ export function BillingSettings() {
               <h3 className="flex items-center gap-2 text-lg font-semibold text-gray-900">
                 Current Plan
                 <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider ${
-                  isPro ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-700'
+                  isPro ? 'bg-brand- text-brand-' : 'bg-gray-100 text-gray-700'
                 }`}>
                   {user?.plan || 'Free'} Plan
                 </span>
@@ -193,7 +193,7 @@ export function BillingSettings() {
                           <button
                             onClick={() => handleDownload(invoice.id)}
                             disabled={downloading === invoice.id}
-                            className="inline-flex items-center font-medium text-blue-600 hover:text-blue-800 disabled:opacity-50"
+                            className="inline-flex items-center font-medium text-brand- hover:text-brand- disabled:opacity-50"
                           >
                             {downloading === invoice.id ? 'Downloading...' : 'Download'}
                             <Download className="ml-1 h-3 w-3" />
@@ -207,7 +207,7 @@ export function BillingSettings() {
 
               <div className="mt-6 border-t border-gray-100 pt-6">
                 <p className="text-center text-xs text-gray-500">
-                  Razorpay billing history will appear here once checkout is connected. For questions, contact <a href="mailto:support@example.com" className="text-blue-600 hover:underline">support@example.com</a>
+                  Razorpay billing history will appear here once checkout is connected. For questions, contact <a href="mailto:support@example.com" className="text-brand- hover:underline">support@example.com</a>
                 </p>
               </div>
             </CardContent>

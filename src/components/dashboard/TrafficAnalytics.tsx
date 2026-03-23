@@ -19,7 +19,7 @@ export function TrafficAnalytics({ sourceSummary, countrySummary }: TrafficAnaly
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
       <div className="rounded-xl border border-gray-100 bg-white p-6 shadow-sm">
         <div className="mb-5 flex items-center gap-3">
-          <div className="rounded-xl bg-blue-50 p-2 text-blue-600">
+          <div className="rounded-xl bg-brand- p-2 text-brand-">
             <LinkIcon className="h-5 w-5" />
           </div>
           <div>
@@ -48,7 +48,7 @@ export function TrafficAnalytics({ sourceSummary, countrySummary }: TrafficAnaly
               </div>
               <div className="h-2 overflow-hidden rounded-full bg-white ring-1 ring-gray-100">
                 <div
-                  className="h-2 rounded-full bg-blue-600"
+                  className="h-2 rounded-full bg-brand-"
                   style={{ width: getShareLabel(source.views, totalSourceTraffic) }}
                 />
               </div>

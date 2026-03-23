@@ -89,7 +89,7 @@ export function LogOrderModal({ isOpen, onClose, products, currencySymbol, today
             required
             value={newOrder.productId}
             onChange={handleProductSelect}
-            className="flex h-11 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="flex h-11 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-"
           >
             <option value="" disabled>Select a product...</option>
             {products.map(p => (
