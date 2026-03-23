@@ -130,6 +130,25 @@ export function Dashboard() {
         </div>
       )}
 
+      {/* Product limit warning — Free plan, 8+ products */}
+      {(!user?.plan || user.plan === 'Free') && activeProductsCount >= 8 && (
+        <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-center justify-between">
+          <div>
+            <p className="text-sm font-bold text-red-800">
+              {activeProductsCount >= 10 ? 'Product limit reached' : `Almost at your limit`}
+            </p>
+            <p className="text-[11px] text-red-600 mt-0.5">
+              {activeProductsCount >= 10
+                ? 'You\'ve used all 10 free product slots. Upgrade to add more.'
+                : `${activeProductsCount}/10 products used — only ${10 - activeProductsCount} slot${10 - activeProductsCount === 1 ? '' : 's'} left.`}
+            </p>
+          </div>
+          <Link href="/settings?view=billing" className="text-xs font-bold bg-red-100 text-red-700 px-3 py-1.5 rounded-lg hover:bg-red-200 transition-colors shrink-0 ml-3">
+            Upgrade &rarr;
+          </Link>
+        </div>
+      )}
+
       {/* Quick Actions */}
       <div className="flex gap-3">
         <button
@@ -144,6 +163,14 @@ export function Dashboard() {
         >
           <Share2 className="w-4 h-4 text-gray-500" /> Share Store
         </button>
+        <Link
+          href={`/${user?.username}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex-1 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 h-11 rounded-xl flex items-center justify-center gap-2 text-sm font-semibold transition-colors shadow-sm"
+        >
+          <Eye className="w-4 h-4 text-gray-500" /> View Store
+        </Link>
       </div>
 
       {/* Recent Orders */}

@@ -211,6 +211,97 @@ if (db) {
   }
 }
 
+// ─── Password reset tokens ────────────────────────────────────────────────────
+
+const RESET_TOKEN_TTL_MINUTES = 60;
+
+let insertResetTokenStmt: any;
+let findResetTokenStmt: any;
+let deleteResetTokenStmt: any;
+let deleteExpiredResetTokensStmt: any;
+let updatePasswordStmt: any;
+
+if (db) {
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS password_reset_tokens (
+      token TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      expires_at TEXT NOT NULL,
+      created_at TEXT NOT NULL,
+      FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+    );
+  `);
+
+  insertResetTokenStmt = db.prepare(
+    'INSERT INTO password_reset_tokens (token, user_id, expires_at, created_at) VALUES (?, ?, ?, ?)'
+  );
+  findResetTokenStmt = db.prepare(`
+    SELECT password_reset_tokens.*, users.email, users.id as uid
+    FROM password_reset_tokens
+    INNER JOIN users ON users.id = password_reset_tokens.user_id
+    WHERE password_reset_tokens.token = ?
+      AND datetime(password_reset_tokens.expires_at) > datetime('now')
+  `);
+  deleteResetTokenStmt = db.prepare('DELETE FROM password_reset_tokens WHERE token = ?');
+  deleteExpiredResetTokensStmt = db.prepare(
+    `DELETE FROM password_reset_tokens WHERE datetime(expires_at) <= datetime('now')`
+  );
+  updatePasswordStmt = db.prepare('UPDATE users SET password_hash = ? WHERE id = ?');
+
+  deleteExpiredResetTokensStmt.run();
+}
+
+export async function createPasswordResetToken(email: string): Promise<string | null> {
+  const row = isSupabaseEnabled()
+    ? (await supabaseSelect<UserRow>('users', { email: `eq.${email}`, select: 'id,email', limit: 1 }))[0]
+    : (findUserByEmailStmt?.get(email) as UserRow | undefined);
+
+  if (!row) return null;
+
+  const token = randomBytes(32).toString('hex');
+  const now = new Date();
+  const expiresAt = new Date(now.getTime() + RESET_TOKEN_TTL_MINUTES * 60 * 1000);
+
+  if (isSupabaseEnabled()) {
+    // Delete any existing tokens for this user first
+    await supabaseDelete('password_reset_tokens', { user_id: `eq.${row.id}` });
+    await supabaseInsert('password_reset_tokens', {
+      token,
+      user_id: row.id,
+      expires_at: expiresAt.toISOString(),
+      created_at: now.toISOString(),
+    });
+  } else {
+    db!.prepare('DELETE FROM password_reset_tokens WHERE user_id = ?').run(row.id);
+    insertResetTokenStmt.run(token, row.id, expiresAt.toISOString(), now.toISOString());
+  }
+
+  return token;
+}
+
+export async function resetPasswordWithToken(token: string, newPassword: string): Promise<boolean> {
+  if (isSupabaseEnabled()) {
+    const rows = await supabaseSelect<{ token: string; user_id: string; expires_at: string }>(
+      'password_reset_tokens',
+      { token: `eq.${token}`, select: 'token,user_id,expires_at', limit: 1 }
+    );
+    const row = rows[0];
+    if (!row) return false;
+    if (new Date(row.expires_at) < new Date()) return false;
+
+    await supabasePatch<UserRow>('users', { password_hash: hashPassword(newPassword) }, { id: `eq.${row.user_id}` });
+    await supabaseDelete('password_reset_tokens', { token: `eq.${token}` });
+    return true;
+  }
+
+  const row = findResetTokenStmt?.get(token) as { user_id: string } | undefined;
+  if (!row) return false;
+
+  updatePasswordStmt.run(hashPassword(newPassword), row.user_id);
+  deleteResetTokenStmt.run(token);
+  return true;
+}
+
 export function getSessionCookieName() {
   return SESSION_COOKIE;
 }

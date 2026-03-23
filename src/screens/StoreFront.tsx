@@ -143,6 +143,11 @@ function SectionRenderer({
                       className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                       loading="lazy"
                     />
+                    {product.stock === 0 && (
+                      <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                        <span className="text-white text-xs font-bold px-2 py-1 bg-black/60 rounded">Out of Stock</span>
+                      </div>
+                    )}
                   </Link>
                   <div className="flex flex-col justify-between flex-1 p-4">
                     <div>
@@ -155,14 +160,18 @@ function SectionRenderer({
                       <span className="text-base font-bold" style={{ color: t.productPrice }}>
                         {currencySymbol}{product.price.toFixed(2)}
                       </span>
-                      <button
-                        type="button"
-                        onClick={() => onContactClick(product)}
-                        className="px-5 py-2 sm:py-2.5 rounded-full text-sm font-bold transition-opacity hover:opacity-90 min-h-[44px] flex items-center shadow-sm"
-                        style={{ background: t.waBg, color: t.waText }}
-                      >
-                        Order on WhatsApp
-                      </button>
+                      {product.stock === 0 ? (
+                        <span className="px-4 py-2 rounded-full text-xs font-semibold bg-gray-100 text-gray-400">Out of Stock</span>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => onContactClick(product)}
+                          className="px-5 py-2 sm:py-2.5 rounded-full text-sm font-bold transition-opacity hover:opacity-90 min-h-[44px] flex items-center shadow-sm"
+                          style={{ background: t.waBg, color: t.waText }}
+                        >
+                          Order on WhatsApp
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -180,6 +189,11 @@ function SectionRenderer({
                       className="h-full w-full object-cover transition-opacity duration-300 group-hover:opacity-85"
                       loading="lazy"
                     />
+                    {product.stock === 0 && (
+                      <div className="absolute inset-0 bg-black/40 flex items-end p-3">
+                        <span className="text-white text-xs font-bold px-2 py-1 bg-black/60 rounded w-full text-center">Out of Stock</span>
+                      </div>
+                    )}
                   </Link>
                   <h3 className="text-sm font-semibold line-clamp-1 mt-1" style={{ color: t.productName }}>
                     <Link href={getProductHref(product)}>{product.name}</Link>
@@ -187,14 +201,18 @@ function SectionRenderer({
                   <span className="text-sm font-bold mt-0.5" style={{ color: t.productPrice }}>
                     {currencySymbol}{product.price.toFixed(2)}
                   </span>
-                  <button
-                    type="button"
-                    onClick={() => onContactClick(product)}
-                    className="mt-3 w-full inline-flex min-h-[44px] items-center justify-center rounded-full px-5 py-2.5 text-sm font-bold transition-opacity hover:opacity-90 shadow-sm"
-                    style={{ background: t.waBg, color: t.waText }}
-                  >
-                    Order on WhatsApp
-                  </button>
+                  {product.stock === 0 ? (
+                    <span className="mt-3 w-full text-center py-2.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-400">Out of Stock</span>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => onContactClick(product)}
+                      className="mt-3 w-full inline-flex min-h-[44px] items-center justify-center rounded-full px-5 py-2.5 text-sm font-bold transition-opacity hover:opacity-90 shadow-sm"
+                      style={{ background: t.waBg, color: t.waText }}
+                    >
+                      Order on WhatsApp
+                    </button>
+                  )}
                 </div>
               ) : (
                 /* ── Boxed / Floating card ─────────────────────────── */
@@ -214,6 +232,11 @@ function SectionRenderer({
                       className="h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
                       loading="lazy"
                     />
+                    {product.stock === 0 && (
+                      <div className="absolute inset-0 bg-black/40 flex items-end p-3">
+                        <span className="text-white text-xs font-bold px-2 py-1 bg-black/60 rounded w-full text-center">Out of Stock</span>
+                      </div>
+                    )}
                   </Link>
                   <div className="p-5 flex flex-col flex-1">
                     <h3 className="text-base font-semibold mb-1 line-clamp-1" style={{ color: t.productName }}>
@@ -226,14 +249,18 @@ function SectionRenderer({
                       <span className="text-lg font-bold" style={{ color: t.productPrice }}>
                         {currencySymbol}{product.price.toFixed(2)}
                       </span>
-                      <button
-                        type="button"
-                        onClick={() => onContactClick(product)}
-                        className="w-full min-h-[44px] px-5 py-2.5 rounded-full text-sm font-bold transition-opacity hover:opacity-90 shadow-sm"
-                        style={{ background: t.waBg, color: t.waText }}
-                      >
-                        Order on WhatsApp
-                      </button>
+                      {product.stock === 0 ? (
+                        <span className="px-4 py-2 rounded-full text-xs font-semibold bg-gray-100 text-gray-400">Out of Stock</span>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => onContactClick(product)}
+                          className="w-full min-h-[44px] px-5 py-2.5 rounded-full text-sm font-bold transition-opacity hover:opacity-90 shadow-sm"
+                          style={{ background: t.waBg, color: t.waText }}
+                        >
+                          Order on WhatsApp
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -282,6 +309,11 @@ function SectionRenderer({
                       className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                       loading="lazy"
                     />
+                    {product.stock === 0 && (
+                      <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                        <span className="text-white text-[10px] font-bold px-1.5 py-0.5 bg-black/60 rounded">Out of Stock</span>
+                      </div>
+                    )}
                   </Link>
                   <div className="flex flex-col justify-between flex-1 px-5 py-4">
                     <div>
@@ -300,14 +332,18 @@ function SectionRenderer({
                       <span className="text-base font-bold" style={{ color: t.productPrice }}>
                         {currencySymbol}{product.price.toFixed(2)}
                       </span>
-                      <button
-                        type="button"
-                        onClick={() => onContactClick(product)}
-                        className="min-h-[44px] px-5 py-2 sm:py-2.5 text-sm font-bold rounded-full shadow-sm"
-                        style={{ background: t.waBg, color: t.waText }}
-                      >
-                        Order on WhatsApp
-                      </button>
+                      {product.stock === 0 ? (
+                        <span className="px-4 py-2 rounded-full text-xs font-semibold bg-gray-100 text-gray-400">Out of Stock</span>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => onContactClick(product)}
+                          className="min-h-[44px] px-5 py-2 sm:py-2.5 text-sm font-bold rounded-full shadow-sm"
+                          style={{ background: t.waBg, color: t.waText }}
+                        >
+                          Order on WhatsApp
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -326,6 +362,11 @@ function SectionRenderer({
                       loading="lazy"
                     />
                     <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-5 transition-opacity duration-300" />
+                    {product.stock === 0 && (
+                      <div className="absolute inset-0 bg-black/40 flex items-end p-3">
+                        <span className="text-white text-xs font-bold px-2 py-1 bg-black/60 rounded w-full text-center">Out of Stock</span>
+                      </div>
+                    )}
                   </Link>
                   <div className="flex items-start justify-between gap-2">
                     <h3 className="text-sm font-medium line-clamp-1" style={{ color: t.productName }}>
@@ -339,14 +380,18 @@ function SectionRenderer({
                     </span>
                   </div>
                   <p className="text-xs mt-0.5" style={{ color: t.productMeta }}>{product.category}</p>
-                  <button
-                    type="button"
-                    onClick={() => onContactClick(product)}
-                    className="mt-3 w-full inline-flex min-h-[44px] items-center justify-center rounded-full px-5 py-2.5 text-sm font-bold transition-opacity hover:opacity-90 shadow-sm"
-                    style={{ background: t.waBg, color: t.waText }}
-                  >
-                    Order on WhatsApp
-                  </button>
+                  {product.stock === 0 ? (
+                    <span className="mt-3 w-full text-center py-2.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-400">Out of Stock</span>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => onContactClick(product)}
+                      className="mt-3 w-full inline-flex min-h-[44px] items-center justify-center rounded-full px-5 py-2.5 text-sm font-bold transition-opacity hover:opacity-90 shadow-sm"
+                      style={{ background: t.waBg, color: t.waText }}
+                    >
+                      Order on WhatsApp
+                    </button>
+                  )}
                 </div>
               ) : (
                 /* ── Boxed / Floating card ─────────────────────────── */
@@ -367,6 +412,11 @@ function SectionRenderer({
                       loading="lazy"
                     />
                     <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-5 transition-opacity duration-300" />
+                    {product.stock === 0 && (
+                      <div className="absolute inset-0 bg-black/40 flex items-end p-3">
+                        <span className="text-white text-xs font-bold px-2 py-1 bg-black/60 rounded w-full text-center">Out of Stock</span>
+                      </div>
+                    )}
                   </Link>
                   <div className="p-4">
                     <div className="flex items-start justify-between gap-2">
@@ -381,14 +431,18 @@ function SectionRenderer({
                       </span>
                     </div>
                     <p className="text-xs mt-0.5" style={{ color: t.productMeta }}>{product.category}</p>
-                    <button
-                      type="button"
-                      onClick={() => onContactClick(product)}
-                      className="mt-3 w-full inline-flex min-h-[44px] items-center justify-center rounded-full px-5 py-2.5 text-sm font-bold transition-opacity hover:opacity-90 shadow-sm"
-                      style={{ background: t.waBg, color: t.waText }}
-                    >
-                      Order on WhatsApp
-                    </button>
+                    {product.stock === 0 ? (
+                      <span className="mt-3 w-full inline-flex items-center justify-center py-2.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-400">Out of Stock</span>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => onContactClick(product)}
+                        className="mt-3 w-full inline-flex min-h-[44px] items-center justify-center rounded-full px-5 py-2.5 text-sm font-bold transition-opacity hover:opacity-90 shadow-sm"
+                        style={{ background: t.waBg, color: t.waText }}
+                      >
+                        Order on WhatsApp
+                      </button>
+                    )}
                   </div>
                 </div>
               )

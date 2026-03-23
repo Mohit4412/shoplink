@@ -4,7 +4,7 @@ import type { NextRequest } from 'next/server';
 const ROOT_HOSTNAME = 'myshoplink.site';
 
 // App-shell routes — never accessible from a store subdomain or custom domain
-const APP_ONLY_PREFIXES = ['/dashboard', '/analytics', '/products', '/settings', '/signup', '/support'];
+const APP_ONLY_PREFIXES = ['/dashboard', '/analytics', '/products', '/settings', '/signup', '/support', '/forgot-password', '/reset-password'];
 
 // Subdomains reserved for the app itself
 const RESERVED_SUBDOMAINS = new Set(['www', 'app', 'api', 'mail', 'admin', 'status', 'help', 'docs']);
@@ -65,7 +65,8 @@ export async function middleware(req: NextRequest) {
       `/api/domains/lookup?domain=${encodeURIComponent(host)}`,
       req.url
     );
-    const res = await fetch(lookupUrl, { cache: 'no-store' });
+    // Cache for 60s to reduce DB hits on every request
+    const res = await fetch(lookupUrl, { next: { revalidate: 60 } } as RequestInit);
 
     if (res.ok) {
       const { username } = await res.json();

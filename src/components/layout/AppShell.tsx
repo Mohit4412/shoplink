@@ -3,7 +3,7 @@
 import React, { ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Bell, ChevronLeft, LayoutDashboard, Package, BarChart3, User, Store } from 'lucide-react';
+import { Bell, ChevronLeft, LayoutDashboard, Package, BarChart3, User, Store, ExternalLink } from 'lucide-react';
 import { useStore } from '../../context/StoreContext';
 
 interface AppShellProps {
@@ -25,7 +25,7 @@ export function AppShell({
 }: AppShellProps) {
   const pathname = usePathname();
   const router = useRouter();
-  const { notifications } = useStore();
+  const { notifications, user } = useStore();
   const hasUnread = (notifications || []).some(n => !n.read);
 
   const handleBack = () => {
@@ -55,6 +55,17 @@ export function AppShell({
 
               {/* MAIN HEADER RIGHT */}
               <div className="flex items-center gap-3">
+                {user?.username && (
+                  <Link
+                    href={`/${user.username}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-1 text-gray-500 hover:text-gray-900 transition-colors"
+                    title="View your store"
+                  >
+                    <ExternalLink className="w-5 h-5" />
+                  </Link>
+                )}
                 <button className="relative p-1 text-gray-500 hover:text-gray-900 transition-colors">
                   <Bell className="w-6 h-6" />
                   {hasUnread && (

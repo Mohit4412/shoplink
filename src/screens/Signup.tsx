@@ -236,7 +236,7 @@ export function Signup() {
             </form>
 
             <div className="mt-6 text-center">
-              <a href="#" className="text-sm font-semibold text-gray-500 hover:text-gray-900 transition-colors inline-block mb-6">Forgot your password?</a>
+              <a href="/forgot-password" className="text-sm font-semibold text-gray-500 hover:text-gray-900 transition-colors inline-block mb-6">Forgot your password?</a>
               <div className="border-t border-gray-100 pt-6">
                 <button 
                   onClick={() => { setIsLoginMode(false); setHasSubmitted(false); setAuthError(''); }}
