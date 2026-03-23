@@ -23,20 +23,20 @@ function getGridClasses(productGrid: ThemeLayout['productGrid']): {
     case 'grid-2col':
       return {
         wrapperClass: 'flex flex-wrap gap-x-4 gap-y-10',
-        itemClass:    'w-[calc(50%-0.5rem)]',
+        itemClass: 'w-[calc(50%-0.5rem)]',
         isList: false,
       };
     case 'grid-3col':
       return {
         wrapperClass: 'flex flex-wrap gap-x-4 gap-y-10 sm:gap-x-6 sm:gap-y-12',
-        itemClass:    'w-[calc(50%-0.5rem)] md:w-[calc(33.333%-1rem)]',
+        itemClass: 'w-[calc(50%-0.5rem)] md:w-[calc(33.333%-1rem)]',
         isList: false,
       };
     case 'list':
     default:
       return {
         wrapperClass: 'flex flex-col gap-4',
-        itemClass:    'w-full',
+        itemClass: 'w-full',
         isList: true,
       };
   }
@@ -51,21 +51,21 @@ function getCardStyle(
   switch (cardStyle) {
     case 'boxed':
       return {
-        style:       { background: tokens.cardBg, border: `1px solid ${tokens.cardBorder}`, boxShadow: tokens.cardShadow },
-        className:   'rounded-2xl overflow-hidden',
+        style: { background: tokens.cardBg, border: `1px solid ${tokens.cardBorder}`, boxShadow: tokens.cardShadow },
+        className: 'rounded-2xl overflow-hidden',
         isBorderless: false,
       };
     case 'floating':
       return {
-        style:       { background: tokens.cardBg },
-        className:   'rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:scale-[1.025]',
+        style: { background: tokens.cardBg },
+        className: 'rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:scale-[1.025]',
         isBorderless: false,
       };
     case 'borderless':
     default:
       return {
-        style:       { background: 'transparent' },
-        className:   '',
+        style: { background: 'transparent' },
+        className: '',
         isBorderless: true,
       };
   }
@@ -485,10 +485,10 @@ export function StoreFront({ storefront }: { storefront?: PublicStorefrontData }
   const activeUser = publicUser ?? (
     localUser
       ? {
-          username: localUser.username,
-          whatsappNumber: localUser.whatsappNumber,
-          plan: localUser.plan,
-        }
+        username: localUser.username,
+        whatsappNumber: localUser.whatsappNumber,
+        plan: localUser.plan,
+      }
       : null
   );
 
@@ -596,7 +596,7 @@ export function StoreFront({ storefront }: { storefront?: PublicStorefrontData }
       </div>
 
       {/* Main content – rendered sections */}
-      <main className="flex-1 mx-auto w-full max-w-[568px] pt-10 pb-32 px-4 sm:px-0">
+      <main className="flex-1 mx-auto w-full max-w-7xl pt-10 pb-32 px-2 sm:px-0">
         {activeProducts.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-32 px-6 text-center">
             <div className="w-20 h-20 rounded-full flex items-center justify-center mb-6" style={{ backgroundColor: t.accentLight }}>

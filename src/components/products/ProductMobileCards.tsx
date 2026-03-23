@@ -13,7 +13,7 @@ interface ProductMobileCardsProps {
 
 export function ProductMobileCards({ filteredProducts, currencySymbol, onEdit, onDelete }: ProductMobileCardsProps) {
   return (
-    <div className="md:hidden space-y-4">
+    <div className="sm:hidden space-y-3">
       {filteredProducts.length === 0 ? (
         <div className="text-center py-12 text-gray-500 bg-white rounded-xl border border-gray-200">
           No products found.

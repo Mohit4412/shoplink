@@ -41,10 +41,10 @@ export function ProductDetail({ storefront }: { storefront?: PublicStorefrontDat
   const activeUser = publicUser ?? (
     localUser
       ? {
-          username: localUser.username,
-          whatsappNumber: localUser.whatsappNumber,
-          plan: localUser.plan,
-        }
+        username: localUser.username,
+        whatsappNumber: localUser.whatsappNumber,
+        plan: localUser.plan,
+      }
       : null
   );
 
@@ -134,7 +134,7 @@ export function ProductDetail({ storefront }: { storefront?: PublicStorefrontDat
         </Link>
       </div>
 
-      <main className="mx-auto max-w-[568px] px-4 py-8 md:py-16 flex-1 pb-32">
+      <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 md:py-16 flex-1 pb-32">
         {/* Breadcrumb */}
         <nav className="mb-6 lg:mb-10 text-xs sm:text-sm font-medium tracking-wide" style={{ color: t.productMeta }}>
           <Link href={`/${resolvedStoreId}`} className="transition-opacity hover:opacity-80" style={{ color: t.accent }}>

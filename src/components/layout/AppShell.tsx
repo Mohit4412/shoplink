@@ -114,11 +114,10 @@ export function AppShell({
             isActive={pathname.startsWith('/products')}
           />
           <NavItem
-            // Analytics scrolls or routes. We'll link to dashboard with hash for now
             icon={<BarChart3 className="w-6 h-6" />}
             label="Analytics"
-            path="/dashboard#analytics"
-            isActive={false} // Adjust if separate analytics route exists
+            path="/analytics"
+            isActive={pathname.startsWith('/analytics')}
           />
           <NavItem
             icon={<User className="w-6 h-6" />}

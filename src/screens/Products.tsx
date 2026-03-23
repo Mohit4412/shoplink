@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Search, Bell, Plus, Calendar, ChevronDown, Edit2, Trash2, FolderPlus, ChevronRight } from 'lucide-react';
+import { Search, Bell, Plus, Edit2, Trash2, FolderPlus } from 'lucide-react';
 import { format } from 'date-fns';
 import { useStore } from '../context/StoreContext';
 import { Button } from '../components/ui/Button';
@@ -214,15 +214,21 @@ export function Products() {
     }
   }, [activeTab, collections, selectedCol]);
 
+  const [renameModal, setRenameModal] = useState<{ open: boolean; oldName: string; value: string }>({ open: false, oldName: '', value: '' });
+
   const handleRenameCollection = (oldName: string) => {
-    const newName = window.prompt(`Rename collection "${oldName}" to:`, oldName);
-    if (newName && newName.trim() !== oldName) {
+    setRenameModal({ open: true, oldName, value: oldName });
+  };
+
+  const commitRename = () => {
+    const { oldName, value } = renameModal;
+    if (value.trim() && value.trim() !== oldName) {
       products.forEach(p => {
-        if (p.collection === oldName) {
-          updateProduct(p.id, { collection: newName.trim() });
-        }
+        if (p.collection === oldName) updateProduct(p.id, { collection: value.trim() });
       });
+      if (selectedCol === oldName) setSelectedCol(value.trim());
     }
+    setRenameModal({ open: false, oldName: '', value: '' });
   };
 
   const handleDeleteCollection = (name: string) => {
@@ -258,85 +264,67 @@ export function Products() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <div className="space-y-4">
+      {/* Row 1: Title + conditional action button */}
+      <div className="flex items-start justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">
-            {activeTab === 'products' ? 'Products' : activeTab === 'collections' ? 'Collections' : activeTab === 'orders' ? 'Orders' : 'Sales History'}
-          </h1>
-          <p className="text-sm text-gray-500 mt-1">
-            {activeTab === 'products' ? 'Manage your catalog and store inventory' : activeTab === 'collections' ? 'Group your products logically' : activeTab === 'orders' ? 'Track order status' : 'View and manage your recent sales'}
-          </p>
+          <h1 className="text-2xl font-bold text-gray-900">Products</h1>
+          <p className="text-sm text-gray-400 mt-0.5">Manage your catalog</p>
         </div>
-        <div className="flex items-center gap-3 w-full sm:w-auto">
-          <div className="relative flex-1 sm:w-48">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search products..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 bg-white border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-"
-            />
-          </div>
-          <select
-            value={sortOption}
-            onChange={(e) => setSortOption(e.target.value as 'name' | 'price')}
-            className="px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-"
+        {activeTab === 'sales' && (
+          <button
+            onClick={() => { setSelectedOrder(null); setIsLogOrderModalOpen(true); }}
+            className="h-9 px-3 bg-gray-900 text-white text-xs font-medium rounded-xl flex items-center gap-1.5 hover:bg-gray-700 transition-colors shrink-0 mt-1"
           >
-            <option value="name">Sort by Name</option>
-            <option value="price">Sort by Price</option>
-          </select>
-          <Button onClick={() => { resetForm(); setIsAddModalOpen(true); }} className="whitespace-nowrap">
-            <Plus className="w-4 h-4 mr-2" />
-            Add Product
-          </Button>
+            <Plus className="w-3.5 h-3.5" /> Add Order
+          </button>
+        )}
+      </div>
+
+      {/* Row 2: Search + Sort + Add */}
+      <div className="flex items-center gap-2">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <input
+            type="text"
+            placeholder="Search products..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full h-9 pl-9 pr-3 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-gray-400"
+          />
         </div>
+        <select
+          value={sortOption}
+          onChange={(e) => setSortOption(e.target.value as 'name' | 'price')}
+          className="h-9 px-3 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-gray-400 shrink-0"
+        >
+          <option value="name">Name</option>
+          <option value="price">Price</option>
+        </select>
+        <button
+          onClick={() => { resetForm(); setIsAddModalOpen(true); }}
+          className="h-9 w-9 bg-gray-900 text-white rounded-xl flex items-center justify-center shrink-0 hover:bg-gray-700 transition-colors"
+        >
+          <Plus className="w-4 h-4" />
+        </button>
       </div>
 
       {/* Tabs */}
       <div className="border-b border-gray-200">
-        <nav className="-mb-px flex space-x-8 overflow-x-auto scrollbar-hide">
-          <button
-            onClick={() => setActiveTab('products')}
-            className={`whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm transition-colors ${
-              activeTab === 'products'
-                ? 'border-gray-900 text-gray-900'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-            }`}
-          >
-            Products
-          </button>
-          <button
-            onClick={() => setActiveTab('collections')}
-            className={`whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm transition-colors ${
-              activeTab === 'collections'
-                ? 'border-gray-900 text-gray-900'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-            }`}
-          >
-            Collections
-          </button>
-          <button
-            onClick={() => setActiveTab('orders')}
-            className={`whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm transition-colors ${
-              activeTab === 'orders'
-                ? 'border-gray-900 text-gray-900'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-            }`}
-          >
-            Orders
-          </button>
-          <button
-            onClick={() => setActiveTab('sales')}
-            className={`whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm transition-colors ${
-              activeTab === 'sales'
-                ? 'border-gray-900 text-gray-900'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-            }`}
-          >
-            Sales History
-          </button>
+        <nav className="-mb-px flex gap-6 overflow-x-auto">
+          {(['products', 'collections', 'orders', 'sales'] as const).map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={`whitespace-nowrap pb-3 text-sm font-medium border-b-2 transition-colors capitalize ${
+                activeTab === tab
+                  ? 'border-gray-900 text-gray-900'
+                  : 'border-transparent text-gray-400 hover:text-gray-600'
+              }`}
+            >
+              {tab === 'sales' ? 'Sales History' : tab.charAt(0).toUpperCase() + tab.slice(1)}
+            </button>
+          ))}
         </nav>
       </div>
 
@@ -356,133 +344,139 @@ export function Products() {
             </div>
           ) : (
             <>
-              <div className="hidden md:block">
-                <ProductTable
-                  products={products}
-                  filteredProducts={filteredProducts}
-                  currencySymbol={currencySymbol}
-                  onEdit={openEditModal}
-                  onDelete={openDeleteModal}
-                />
-              </div>
-              <div className="md:hidden">
-                <ProductMobileCards
-                  filteredProducts={filteredProducts}
-                  currencySymbol={currencySymbol}
-                  onEdit={openEditModal}
-                  onDelete={openDeleteModal}
-                />
-              </div>
+              <ProductTable
+                products={products}
+                filteredProducts={filteredProducts}
+                currencySymbol={currencySymbol}
+                onEdit={openEditModal}
+                onDelete={openDeleteModal}
+              />
+              <ProductMobileCards
+                filteredProducts={filteredProducts}
+                currencySymbol={currencySymbol}
+                onEdit={openEditModal}
+                onDelete={openDeleteModal}
+              />
             </>
           )}
         </>
       )}
 
       {activeTab === 'collections' && (
-        <div className="space-y-6 pt-2">
-          <div className="flex justify-between items-center bg-gray-50 border border-gray-100 p-4 rounded-xl">
+        <div className="space-y-4 pt-1">
+
+          {/* Collections header row */}
+          <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-lg font-bold text-gray-900">Manage Collections</h2>
-              <p className="text-sm text-gray-500">Organize your products into logical categories for your customers to browse.</p>
+              <h2 className="text-base font-semibold text-gray-900">Manage Collections</h2>
+              <p className="text-xs text-gray-400 mt-0.5">Organise your products into categories</p>
             </div>
-            <Button onClick={promptNewCollection}>
-              <FolderPlus className="w-4 h-4 mr-2" />
+            <button
+              onClick={promptNewCollection}
+              className="h-9 px-4 bg-gray-900 text-white text-sm rounded-xl flex items-center gap-1.5 hover:bg-gray-700 transition-colors shrink-0"
+            >
+              <FolderPlus className="w-4 h-4" />
               New Collection
-            </Button>
+            </button>
           </div>
 
           {collections.length === 0 ? (
-            <div className="text-center py-16 bg-white border border-gray-100 rounded-2xl shadow-sm">
-              <FolderPlus className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-lg font-bold text-gray-900 mb-2">No collections yet</h3>
-              <p className="text-gray-500 max-w-sm mx-auto mb-6">Create collections to group your products together and make browsing easier for your customers.</p>
-              <Button onClick={promptNewCollection}>
-                Create your first collection
-              </Button>
+            <div className="flex flex-col items-center justify-center py-16 text-center">
+              <FolderPlus className="w-10 h-10 text-gray-300" />
+              <p className="text-sm text-gray-400 mt-2">No collections yet</p>
+              <p className="text-xs text-gray-400 mt-1">Create your first collection to organise your products</p>
             </div>
           ) : (
-            <div className="flex flex-col md:flex-row gap-6 items-start mt-4">
-              {/* Sidebar: List of Collections */}
-              <div className="w-full md:w-1/3 shrink-0 flex flex-col gap-2">
+            <div className="flex flex-col sm:flex-row gap-4 items-start">
+
+              {/* Sidebar list */}
+              <div className="w-full sm:w-[160px] shrink-0 divide-y divide-gray-50">
                 {collections.map((col) => {
                   const isActive = selectedCol === col.name;
                   return (
                     <button
                       key={col.name}
                       onClick={() => setSelectedCol(col.name)}
-                      className={`flex items-center justify-between p-4 rounded-xl text-left border transition-all duration-200 ${
-                        isActive 
-                          ? 'bg-brand- border-brand- shadow-sm ring-1 ring-brand-/10' 
-                          : 'bg-white border-gray-100 hover:border-gray-300 hover:shadow-sm'
+                      className={`w-full text-left py-3 px-3 rounded-xl transition-colors ${
+                        isActive ? 'bg-gray-100' : 'hover:bg-gray-50'
                       }`}
                     >
-                      <div className="min-w-0 pr-4">
-                        <h3 className={`font-semibold truncate ${isActive ? 'text-brand-' : 'text-gray-900'}`}>{col.name}</h3>
-                        <p className={`text-xs mt-1 ${isActive ? 'text-brand-' : 'text-gray-500'}`}>{col.count} {col.count === 1 ? 'Product' : 'Products'}</p>
-                      </div>
-                      <ChevronRight className={`w-4 h-4 shrink-0 transition-transform ${isActive ? 'text-brand- translate-x-1' : 'text-gray-400'}`} />
+                      <p className={`text-sm truncate ${isActive ? 'font-semibold text-gray-900' : 'text-gray-600'}`}>
+                        {col.name.length > 18 ? col.name.slice(0, 18) + '…' : col.name}
+                      </p>
+                      <p className="text-xs text-gray-400 mt-0.5">{col.count} products</p>
                     </button>
                   );
                 })}
               </div>
 
-              {/* Detail View */}
-              <div className="w-full md:w-2/3 bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden flex-1 min-h-[400px]">
+              {/* Detail panel */}
+              <div className="flex-1 min-w-0">
                 {selectedCol ? (
-                  <>
-                    {/* Detail Header */}
-                    <div className="p-6 border-b border-gray-100 bg-gray-50/50 flex flex-wrap items-center justify-between gap-4">
-                      <div className="min-w-0">
-                        <h2 className="text-2xl font-black text-gray-900 tracking-tight truncate">{selectedCol}</h2>
-                        <p className="text-sm text-gray-500 mt-1">Manage products in this collection</p>
-                      </div>
-                      <div className="flex shrink-0 gap-2">
-                        <Button variant="outline" size="sm" onClick={() => handleRenameCollection(selectedCol)}>
-                          <Edit2 className="w-4 h-4 mr-2" /> Rename
-                        </Button>
-                        <Button variant="outline" size="sm" className="border-red-200 hover:bg-red-50 text-red-600" onClick={() => handleDeleteCollection(selectedCol)}>
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
+                  <div>
+                    {/* Detail header */}
+                    <h3 className="text-xl font-bold text-gray-900 truncate">{selectedCol}</h3>
+                    <p className="text-sm text-gray-400 mt-0.5">Manage products in this collection</p>
+
+                    {/* Action row */}
+                    <div className="flex gap-2 mt-3">
+                      <button
+                        onClick={() => handleRenameCollection(selectedCol)}
+                        className="h-8 px-3 text-xs rounded-lg border border-gray-200 bg-white text-gray-700 flex items-center gap-1.5 hover:bg-gray-50 transition-colors"
+                      >
+                        <Edit2 className="w-3.5 h-3.5" /> Rename
+                      </button>
+                      <button
+                        onClick={() => handleDeleteCollection(selectedCol)}
+                        className="h-8 px-3 text-xs rounded-lg border border-red-100 bg-white text-red-500 flex items-center hover:bg-red-50 transition-colors"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
                     </div>
 
-                    {/* Products Grid */}
-                    <div className="p-6">
-                      <div className="flex justify-between items-center mb-6">
-                        <h3 className="font-semibold text-gray-900">Products ({products.filter(p => p.collection === selectedCol).length})</h3>
-                        <Button size="sm" variant="ghost" className="text-brand- bg-brand- hover:bg-brand-" onClick={() => {
+                    {/* Products section */}
+                    <div className="mt-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <p className="text-sm font-semibold text-gray-900">
+                          Products ({products.filter(p => p.collection === selectedCol).length})
+                        </p>
+                        <button
+                          onClick={() => {
                             resetForm();
                             setFormData(prev => ({ ...prev, collection: selectedCol }));
                             setIsAddModalOpen(true);
-                        }}>
-                          <Plus className="w-4 h-4 mr-1" /> Add Items
-                        </Button>
+                          }}
+                          className="text-xs text-gray-600 hover:text-gray-900 flex items-center gap-1 transition-colors"
+                        >
+                          <Plus className="w-3.5 h-3.5" /> Add Items
+                        </button>
                       </div>
-                      
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+                      <div className="overflow-x-auto flex gap-3 pb-2">
                         {products.filter(p => p.collection === selectedCol).map(p => (
-                          <div key={p.id} className="group relative flex items-center gap-4 p-3 bg-white border border-gray-100 rounded-xl hover:border-brand- hover:shadow-md transition-all">
-                            <img src={p.imageUrl} alt={p.name} className="w-16 h-16 rounded-lg object-cover bg-gray-50 flex-shrink-0 border border-gray-100" />
-                            <div className="flex-1 min-w-0 pr-8">
-                              <p className="font-medium text-sm text-gray-900 truncate">{p.name}</p>
-                              <p className="text-sm font-semibold text-gray-600 mt-0.5">{currencySymbol}{p.price.toFixed(2)}</p>
+                          <div key={p.id} className="shrink-0 flex flex-col items-center gap-1.5 group relative">
+                            <div className="relative">
+                              <img
+                                src={p.imageUrl}
+                                alt={p.name}
+                                className="w-[72px] h-[72px] rounded-xl object-cover border border-gray-100"
+                              />
+                              <button
+                                onClick={() => handleRemoveFromCollection(p.id)}
+                                className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-white border border-gray-200 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-50 hover:border-red-200"
+                                title="Remove"
+                              >
+                                <Trash2 className="w-3 h-3 text-red-400" />
+                              </button>
                             </div>
-                            <button 
-                              className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-gray-400 opacity-0 group-hover:opacity-100 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all"
-                              onClick={() => handleRemoveFromCollection(p.id)}
-                              title="Remove from collection"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
+                            <p className="text-xs font-medium text-gray-700 w-[72px] truncate text-center">{currencySymbol}{p.price.toFixed(2)}</p>
                           </div>
                         ))}
                       </div>
                     </div>
-                  </>
-                ) : (
-                  <div className="flex flex-col items-center justify-center h-full min-h-[400px] text-gray-400">
-                     <p>Select a collection to view its details</p>
                   </div>
+                ) : (
+                  <p className="text-sm text-gray-400 pt-4">Select a collection to view details</p>
                 )}
               </div>
             </div>
@@ -543,29 +537,23 @@ export function Products() {
       )}
 
       {activeTab === 'sales' && (
-        <div className="pt-2">
-          <div className="flex justify-between items-center mb-6">
-            <div>
-              <h2 className="text-xl font-bold text-gray-900">Sales History</h2>
-              <p className="text-sm text-gray-500">View your confirmed and completed sales records.</p>
+        <div className="pt-1">
+          {/* Summary strip */}
+          {orders.filter(o => o.status === 'confirmed').length > 0 && (
+            <div className="flex items-center justify-between bg-[#F0FDF4] border border-[#BBF7D0] rounded-xl px-4 py-3 mb-4">
+              <span className="text-sm text-gray-600">
+                {orders.filter(o => o.status === 'confirmed').length} confirmed {orders.filter(o => o.status === 'confirmed').length === 1 ? 'sale' : 'sales'}
+              </span>
+              <span className="text-base font-bold text-green-700">
+                {currencySymbol}{orders.filter(o => o.status === 'confirmed').reduce((s, o) => s + o.revenue, 0).toFixed(2)}
+              </span>
             </div>
-            <Button 
-              variant="outline" 
-              className="border-green-600 text-green-700 hover:bg-green-50"
-              onClick={() => {
-                setSelectedOrder(null);
-                setIsLogOrderModalOpen(true);
-              }}
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Add Manual Order
-            </Button>
-          </div>
+          )}
 
-          <RecentOrdersTable 
-            orders={orders.filter(o => o.status === 'confirmed')} 
-            products={products} 
-            currencySymbol={currencySymbol} 
+          <RecentOrdersTable
+            orders={orders.filter(o => o.status === 'confirmed')}
+            products={products}
+            currencySymbol={currencySymbol}
             onEditOrder={handleEditOrder}
             onDeleteOrder={handleDeleteOrder}
           />
@@ -604,6 +592,40 @@ export function Products() {
         onSave={handleSaveOrder}
         initialData={selectedOrder}
       />
+
+      {/* Rename Collection Modal */}
+      {renameModal.open && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+          <div className="absolute inset-0 bg-black/30" onClick={() => setRenameModal({ open: false, oldName: '', value: '' })} />
+          <div className="relative bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 flex flex-col gap-4">
+            <h3 className="text-base font-semibold text-gray-900">Rename Collection</h3>
+            <input
+              autoFocus
+              type="text"
+              value={renameModal.value}
+              onChange={e => setRenameModal(prev => ({ ...prev, value: e.target.value }))}
+              onKeyDown={e => { if (e.key === 'Enter') commitRename(); if (e.key === 'Escape') setRenameModal({ open: false, oldName: '', value: '' }); }}
+              className="h-10 px-3 w-full border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-gray-400"
+              placeholder="Collection name"
+            />
+            <div className="flex gap-2 justify-end">
+              <button
+                onClick={() => setRenameModal({ open: false, oldName: '', value: '' })}
+                className="h-9 px-4 text-sm rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={commitRename}
+                disabled={!renameModal.value.trim()}
+                className="h-9 px-4 text-sm rounded-xl bg-gray-900 text-white hover:bg-gray-700 transition-colors disabled:opacity-40"
+              >
+                Rename
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
