@@ -6,9 +6,13 @@ import { useStore } from '../context/StoreContext';
 import { getCurrencySymbol } from '../utils/currency';
 import { AnalyticsChart } from '../components/dashboard/AnalyticsChart';
 import { TrafficAnalytics } from '../components/dashboard/TrafficAnalytics';
+import { UpgradeModal, useUpgradeModal } from '../components/billing/UpgradeModal';
+import { Lock, BarChart3, Zap } from 'lucide-react';
 
 export function Analytics() {
-  const { analytics, orders, store } = useStore();
+  const { analytics, orders, store, user } = useStore();
+  const upgradeModal = useUpgradeModal();
+  const isPro = user?.plan === 'Pro';
 
   const today = new Date();
   const todayStr = format(today, 'yyyy-MM-dd');
@@ -18,6 +22,37 @@ export function Analytics() {
   const [dateRange, setDateRange] = useState({ start: last7DaysStart, end: todayStr });
 
   const currencySymbol = getCurrencySymbol(store.currency);
+
+  if (!isPro) {
+    return (
+      <div className="space-y-3 max-w-[500px] mx-auto pb-4">
+        <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
+          <div className="px-4 pt-3.5 pb-2 border-b border-gray-50">
+            <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Analytics</p>
+          </div>
+          <div className="flex flex-col items-center text-center px-6 py-14 gap-4">
+            <div className="w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center">
+              <BarChart3 className="w-7 h-7 text-gray-400" />
+            </div>
+            <div>
+              <p className="text-base font-black text-gray-900">Analytics is a Pro feature</p>
+              <p className="text-sm text-gray-400 font-medium mt-1 max-w-xs">
+                Track store views, WhatsApp clicks, revenue trends, traffic sources and more.
+              </p>
+            </div>
+            <button
+              onClick={upgradeModal.open}
+              className="h-10 px-6 rounded-xl bg-[#1a1a1a] text-white text-sm font-bold flex items-center gap-2 hover:bg-gray-800 transition-colors"
+            >
+              <Zap className="w-4 h-4" /> Upgrade to Pro
+            </button>
+            <p className="text-xs text-gray-400">₹349/month · Cancel anytime</p>
+          </div>
+        </div>
+        <UpgradeModal isOpen={upgradeModal.isOpen} onClose={upgradeModal.close} />
+      </div>
+    );
+  }
 
   const filteredDailyStats = analytics.dailyStats.filter(
     stat => stat.fullDate >= dateRange.start && stat.fullDate <= dateRange.end
