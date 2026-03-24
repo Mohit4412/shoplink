@@ -12,6 +12,7 @@ create table if not exists public.users (
   avatar_url text,
   plan text not null,
   subscription_renewal_date text not null default '',
+  razorpay_subscription_id text,
   created_at timestamptz not null default now()
 );
 

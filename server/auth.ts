@@ -388,22 +388,32 @@ export async function updateUserSubscription(userId: string, opts: {
   razorpaySubscriptionId?: string;
 }) {
   if (isSupabaseEnabled()) {
-    await supabasePatch<UserRow>(
-      'users',
-      {
-        plan: opts.plan,
-        subscription_renewal_date: opts.subscriptionRenewalDate,
-        razorpay_subscription_id: opts.razorpaySubscriptionId ?? null,
-      },
-      { id: `eq.${userId}` }
-    );
-    // Also sync plan to stores table
+    // Build patch — only include razorpay_subscription_id if provided
+    // (column may not exist in older Supabase schemas)
+    const userPatch: Record<string, unknown> = {
+      plan: opts.plan,
+      subscription_renewal_date: opts.subscriptionRenewalDate,
+    };
+    if (opts.razorpaySubscriptionId !== undefined) {
+      userPatch.razorpay_subscription_id = opts.razorpaySubscriptionId;
+    }
+
+    try {
+      await supabasePatch<UserRow>('users', userPatch, { id: `eq.${userId}` });
+    } catch (err) {
+      // Retry without razorpay_subscription_id in case column doesn't exist yet
+      console.warn('updateUserSubscription: retrying without razorpay_subscription_id', err);
+      await supabasePatch<UserRow>(
+        'users',
+        { plan: opts.plan, subscription_renewal_date: opts.subscriptionRenewalDate },
+        { id: `eq.${userId}` }
+      );
+    }
+
+    // Sync plan to stores table
     await supabasePatch(
       'stores',
-      {
-        plan: opts.plan,
-        subscription_renewal_date: opts.subscriptionRenewalDate,
-      },
+      { plan: opts.plan, subscription_renewal_date: opts.subscriptionRenewalDate },
       { user_id: `eq.${userId}` }
     );
     return getUserById(userId);
