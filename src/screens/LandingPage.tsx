@@ -4,28 +4,18 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'motion/react';
 import {
-  Store, Link as LinkIcon, MessageCircle, Palette, BarChart3,
+  Link as LinkIcon, MessageCircle, Palette, BarChart3,
   CheckCircle2, ChevronDown, ArrowRight,
   ShoppingBag, Star
 } from 'lucide-react';
-import Image from 'next/image';
 import Link from 'next/link';
+import Image from 'next/image';
+import { AppLogo } from '../components/ui/AppLogo';
 
 const EMERALD = '#059669';
 const EMERALD_HOVER = '#047857';
 const EMERALD_LIGHT = '#ecfdf5';
 const CHARCOAL = '#1a1a1a';
-
-function Logo() {
-  return (
-    <div className="flex items-center gap-2">
-      <div className="w-8 h-8 rounded-lg flex items-center justify-center shadow-sm" style={{ background: EMERALD }}>
-        <Store className="w-5 h-5 text-white" />
-      </div>
-      <span className="font-bold text-xl tracking-tight text-gray-900 font-heading">MyShopLink</span>
-    </div>
-  );
-}
 
 /* ── Hero phone image ── */
 function PhoneMockup() {
@@ -65,7 +55,7 @@ export function LandingPage() {
       {/* ── NAVBAR ── */}
       <nav className="fixed top-0 w-full z-50 bg-white/90 backdrop-blur-md border-b border-gray-100 h-16 flex items-center">
         <div className="max-w-6xl mx-auto px-5 w-full flex items-center justify-between">
-          <Link href="/"><Logo /></Link>
+          <AppLogo size="lg" />
           <div className="hidden sm:flex items-center gap-8 text-sm font-semibold text-gray-500">
             <a href="#features" className="hover:text-gray-900 transition-colors">Features</a>
             <a href="#pricing" className="hover:text-gray-900 transition-colors">Pricing</a>
@@ -343,7 +333,7 @@ export function LandingPage() {
         <div className="max-w-6xl mx-auto px-5">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-10 mb-10">
             <div>
-              <Logo />
+              <AppLogo size="lg" />
               <p className="text-sm font-medium text-gray-400 mt-2">The catalogue link for Indian sellers</p>
             </div>
             <div className="flex flex-wrap gap-x-7 gap-y-3 text-xs font-bold text-gray-400 uppercase tracking-widest">

@@ -24,9 +24,11 @@ interface UpgradeModalProps {
 
 const PRO_FEATURES = [
   'Unlimited products',
-  'All themes',
+  'All 6 storefront themes',
   'No MyShopLink branding',
-  'Custom domain',
+  'Full analytics dashboard',
+  'Order management',
+  'Custom domain support',
   'Priority support',
 ];
 
@@ -69,7 +71,7 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
               </span>
             </div>
             <ul className="mt-4 space-y-2 text-sm text-gray-600">
-              <li>Up to 5 products</li>
+              <li>Up to 10 products</li>
               <li>Classic theme only</li>
               <li>MyShopLink branding</li>
               <li>No custom domain</li>
@@ -80,7 +82,7 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
             <div className="flex items-center justify-between gap-3">
               <div>
                 <p className="text-sm font-semibold">Pro</p>
-                <p className="mt-1 text-3xl font-bold">₹299<span className="text-sm font-medium text-gray-300">/mo</span></p>
+                <p className="mt-1 text-3xl font-bold">₹349<span className="text-sm font-medium text-gray-300">/mo</span></p>
               </div>
               <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-white">
                 {isPro ? 'Current' : 'Recommended'}

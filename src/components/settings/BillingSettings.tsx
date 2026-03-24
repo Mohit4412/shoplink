@@ -7,8 +7,10 @@ import { UpgradeModal, useUpgradeModal } from '../billing/UpgradeModal';
 
 const PRO_FEATURES = [
   'Unlimited products',
-  'All storefront themes',
+  'All 6 storefront themes',
   'No MyShopLink branding',
+  'Full analytics dashboard',
+  'Order management',
   'Custom domain support',
   'Priority support',
 ];
@@ -36,9 +38,9 @@ export function BillingSettings() {
   };
 
   const invoices = [
-    { id: 'INV-001', date: '2026-03-01', amount: '₹299.00', status: 'Paid' },
-    { id: 'INV-002', date: '2026-02-01', amount: '₹299.00', status: 'Paid' },
-    { id: 'INV-003', date: '2026-01-01', amount: '₹299.00', status: 'Paid' },
+    { id: 'INV-001', date: '2026-03-01', amount: '₹349.00', status: 'Paid' },
+    { id: 'INV-002', date: '2026-02-01', amount: '₹349.00', status: 'Paid' },
+    { id: 'INV-003', date: '2026-01-01', amount: '₹349.00', status: 'Paid' },
   ];
 
   return (
@@ -97,7 +99,7 @@ export function BillingSettings() {
               className="w-full h-10 rounded-xl bg-gray-900 text-white text-sm font-semibold hover:bg-gray-800 transition-colors flex items-center justify-center gap-2"
             >
               <Zap className="w-4 h-4" />
-              {isExpiredPro ? 'Renew Pro' : 'Upgrade to Pro — ₹299/mo'}
+              {isExpiredPro ? 'Renew Pro' : 'Upgrade to Pro — ₹349/mo'}
             </button>
           )}
         </div>

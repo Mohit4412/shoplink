@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { useStore } from '../context/StoreContext';
 import { countryCodes } from '../utils/countryCodes';
 import { SignupSuccess } from '../components/auth/SignupSuccess';
+import { AppLogo } from '../components/ui/AppLogo';
 
 export function Signup() {
   const router = useRouter();
@@ -163,14 +164,7 @@ export function Signup() {
     <div className="min-h-screen bg-[#F8F9FA] flex flex-col items-center py-12 px-4 font-sans text-gray-900 selection:bg-[#059669]/30">
       
       {/* Top Logo */}
-      <Link href="/" className="flex items-center gap-2 mb-8 mt-4 hover:opacity-90 transition-opacity">
-        <div className="w-8 h-8 rounded-lg bg-[#059669] flex items-center justify-center shadow-sm">
-          <Store className="w-5 h-5 text-white" />
-        </div>
-        <span className="font-bold text-2xl tracking-tight text-gray-900">
-          MyShopLink
-        </span>
-      </Link>
+      <AppLogo size="md" className="mb-8 mt-4" />
 
       <div className="w-full max-w-[480px] bg-white rounded-2xl shadow-[0_2px_20px_rgb(0,0,0,0.04)] p-6 md:p-10">
         

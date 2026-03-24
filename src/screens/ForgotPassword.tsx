@@ -2,7 +2,8 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { Store, Loader2, CheckCircle2 } from 'lucide-react';
+import { Loader2, CheckCircle2 } from 'lucide-react';
+import { AppLogo } from '../components/ui/AppLogo';
 
 export function ForgotPassword() {
   const [email, setEmail] = useState('');
@@ -34,12 +35,7 @@ export function ForgotPassword() {
 
   return (
     <div className="min-h-screen bg-[#F8F9FA] flex flex-col items-center py-12 px-4 font-sans text-gray-900">
-      <Link href="/" className="flex items-center gap-2 mb-8 mt-4 hover:opacity-90 transition-opacity">
-        <div className="w-8 h-8 rounded-lg bg-[#059669] flex items-center justify-center shadow-sm">
-          <Store className="w-5 h-5 text-white" />
-        </div>
-        <span className="font-bold text-2xl tracking-tight text-gray-900">MyShopLink</span>
-      </Link>
+      <AppLogo size="md" className="mb-8 mt-4" />
 
       <div className="w-full max-w-[480px] bg-white rounded-2xl shadow-[0_2px_20px_rgb(0,0,0,0.04)] p-8">
         {submitted ? (

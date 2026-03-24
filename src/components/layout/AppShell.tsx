@@ -6,6 +6,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { Bell, ChevronLeft, LayoutDashboard, Package, BarChart3, User, Store, ExternalLink, CheckCheck, Trash2, X, LogOut, Settings } from 'lucide-react';
 import { useStore } from '../../context/StoreContext';
 import { formatDistanceToNow } from 'date-fns';
+import { AppLogo } from '../ui/AppLogo';
 
 interface AppShellProps {
   children: ReactNode;
@@ -78,10 +79,7 @@ export function AppShell({
           {headerVariant === 'main' ? (
             <>
               <div className="flex items-center gap-2">
-                <div className="w-[28px] h-[28px] bg-gray-900 rounded-md flex items-center justify-center">
-                  <Store className="w-4 h-4 text-white" />
-                </div>
-                <span className="font-bold text-[17px] text-gray-900 tracking-tight">MyShopLink</span>
+                <AppLogo size="sm" href="/dashboard" />
               </div>
 
               <div className="flex items-center gap-3">
