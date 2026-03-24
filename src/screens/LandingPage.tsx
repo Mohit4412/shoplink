@@ -30,7 +30,7 @@ function Logo() {
 /* ── Hero phone image ── */
 function PhoneMockup() {
   return (
-    <div className="relative mx-auto w-[240px] sm:w-[300px] lg:w-[340px] drop-shadow-2xl">
+    <div className="relative mx-auto w-[220px] sm:w-[260px] lg:w-[280px] drop-shadow-2xl">
       <Image
         src="/hero-phone.png"
         alt="MyShopLink store on mobile"
