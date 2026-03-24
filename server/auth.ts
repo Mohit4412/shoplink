@@ -366,6 +366,7 @@ export async function createUser(input: {
     avatar_url: '',
     plan: 'Free' as const,
     subscription_renewal_date: '',
+    razorpay_subscription_id: null,
     created_at: now,
   };
 

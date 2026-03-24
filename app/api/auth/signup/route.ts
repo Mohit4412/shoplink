@@ -4,13 +4,16 @@ import { replaceMerchantBundle } from '@/server/store-repository';
 import { getStarterMerchantBundle } from '@/src/lib/default-state';
 import { rateLimit, getClientIp, rateLimitedResponse } from '@/server/rate-limit';
 
+// Set EARLY_ACCESS_ENABLED=true in .env to activate free Pro trials on signup.
+// First 100 users get 3 months free, everyone after gets 14 days free.
 const EARLY_ACCESS_SLOTS = 100;
+const EARLY_ACCESS_ENABLED = process.env.EARLY_ACCESS_ENABLED === 'true';
 
 export async function POST(request: NextRequest) {
-  // 5 signups per IP per hour
   const ip = getClientIp(request);
   const rl = rateLimit(`signup:${ip}`, { limit: 5, windowSecs: 60 * 60 });
   if (!rl.allowed) return rateLimitedResponse(rl.resetAt);
+
   const body = await request.json();
   const email = String(body?.email ?? '').trim().toLowerCase();
   const password = String(body?.password ?? '');
@@ -23,36 +26,28 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
   }
 
-  // Check slot before creating — count is the number of existing users
-  const currentUserCount = await getUserCount();
-  const isEarlyAccess = currentUserCount < EARLY_ACCESS_SLOTS;
+  const currentUserCount = EARLY_ACCESS_ENABLED ? await getUserCount() : 0;
+  const isEarlyAccess = EARLY_ACCESS_ENABLED && currentUserCount < EARLY_ACCESS_SLOTS;
 
-  const user = await createUser({
-    email,
-    password,
-    username,
-    firstName,
-    lastName,
-    whatsappNumber,
-  });
-
+  const user = await createUser({ email, password, username, firstName, lastName, whatsappNumber });
   if (!user) {
     return NextResponse.json({ error: 'Email or username is already in use' }, { status: 409 });
   }
 
-  // First 100 users: 3 months Pro free. Everyone else: 14-day Pro trial.
-  const renewalDate = new Date();
-  if (isEarlyAccess) {
-    renewalDate.setMonth(renewalDate.getMonth() + 3);
-  } else {
-    renewalDate.setDate(renewalDate.getDate() + 14);
+  if (EARLY_ACCESS_ENABLED) {
+    const renewalDate = new Date();
+    if (isEarlyAccess) {
+      renewalDate.setMonth(renewalDate.getMonth() + 3); // 3 months for first 100
+    } else {
+      renewalDate.setDate(renewalDate.getDate() + 14);  // 14-day trial for everyone else
+    }
+    user.plan = 'Pro';
+    user.subscriptionRenewalDate = renewalDate.toISOString();
+    await updateAuthUserProfile(user.id, {
+      plan: 'Pro',
+      subscriptionRenewalDate: renewalDate.toISOString(),
+    });
   }
-  user.plan = 'Pro';
-  user.subscriptionRenewalDate = renewalDate.toISOString();
-  await updateAuthUserProfile(user.id, {
-    plan: 'Pro',
-    subscriptionRenewalDate: renewalDate.toISOString(),
-  });
 
   await replaceMerchantBundle(getStarterMerchantBundle(user));
 
