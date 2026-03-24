@@ -10,6 +10,7 @@ export const getInitialState = (): AppState => getDefaultAppState();
 
 interface StoreContextType extends AppState {
   hydrated: boolean;
+  refreshUser: () => Promise<void>;
   login: (user: UserProfile) => void;
   logout: () => void;
   addProduct: (product: Omit<Product, 'id' | 'createdAt'>) => 'LIMIT_REACHED' | void;
@@ -239,6 +240,16 @@ export const StoreProvider: React.FC<{ children: ReactNode; initialUser: UserPro
     void syncMerchantBundle(state);
     void syncDashboardData();
   }, [hydrated, state.user?.username, syncDashboardData, syncMerchantBundle]);
+
+  const refreshUser = useCallback(async () => {
+    try {
+      const res = await fetch('/api/auth/session', { cache: 'no-store' });
+      const data = await res.json();
+      if (data?.user) {
+        setState(prev => ({ ...prev, user: data.user }));
+      }
+    } catch { /* ignore */ }
+  }, []);
 
   const login = useCallback((user: UserProfile) => {
     setState(prev => ({
@@ -525,12 +536,12 @@ export const StoreProvider: React.FC<{ children: ReactNode; initialUser: UserPro
   const devForcePlan = process.env.NEXT_PUBLIC_DEV_FORCE_PLAN as 'Free' | 'Pro' | undefined;
 
   const contextValue = useMemo(() => {
-    const base = { hydrated, ...state, login, logout, addProduct, updateProduct, deleteProduct, addOrder, updateOrder, deleteOrder, updateStoreSettings, updateUserProfile, trackStoreView, trackWhatsAppClick, addNotification, markNotificationRead, markAllNotificationsRead, clearAllNotifications };
+    const base = { hydrated, ...state, refreshUser, login, logout, addProduct, updateProduct, deleteProduct, addOrder, updateOrder, deleteOrder, updateStoreSettings, updateUserProfile, trackStoreView, trackWhatsAppClick, addNotification, markNotificationRead, markAllNotificationsRead, clearAllNotifications };
     if (devForcePlan && base.user) {
       return { ...base, user: { ...base.user, plan: devForcePlan, subscriptionRenewalDate: devForcePlan === 'Free' ? '' : base.user.subscriptionRenewalDate } };
     }
     return base;
-  }, [hydrated, state, login, logout, addProduct, updateProduct, deleteProduct, addOrder, updateOrder, deleteOrder, updateStoreSettings, updateUserProfile, trackStoreView, trackWhatsAppClick, addNotification, markNotificationRead, markAllNotificationsRead, clearAllNotifications, devForcePlan]);
+  }, [hydrated, state, refreshUser, login, logout, addProduct, updateProduct, deleteProduct, addOrder, updateOrder, deleteOrder, updateStoreSettings, updateUserProfile, trackStoreView, trackWhatsAppClick, addNotification, markNotificationRead, markAllNotificationsRead, clearAllNotifications, devForcePlan]);
 
   return (
     <StoreContext.Provider value={contextValue}>

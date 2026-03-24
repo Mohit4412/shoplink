@@ -88,10 +88,19 @@ export function BillingSettings() {
         <div className="px-4 pb-4">
           {isActivePro ? (
             <button
-              onClick={() => alert('Subscription management will be connected once Razorpay is live.')}
+              onClick={async () => {
+                if (!user?.razorpaySubscriptionId) {
+                  alert('No active subscription found. Contact support@myshoplink.site');
+                  return;
+                }
+                if (!confirm('Cancel your Pro subscription? You will keep Pro access until the end of your billing period.')) return;
+                const res = await fetch('/api/billing/cancel', { method: 'POST' });
+                if (res.ok) alert('Subscription cancelled. You will keep Pro until your renewal date.');
+                else alert('Failed to cancel. Please contact support@myshoplink.site');
+              }}
               className="w-full h-10 rounded-xl border border-[#059669]/40 text-[#15803d] text-sm font-semibold hover:bg-[#dcfce7] transition-colors"
             >
-              Manage subscription
+              Cancel subscription
             </button>
           ) : (
             <button

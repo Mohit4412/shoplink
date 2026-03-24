@@ -1,15 +1,13 @@
 'use client';
 
 import React, { useState } from 'react';
-import { addMonths, format } from 'date-fns';
-import { Check, Sparkles } from 'lucide-react';
+import { Check, Loader2, Sparkles } from 'lucide-react';
 import { useStore } from '../../context/StoreContext';
 import { Modal } from '../ui/Modal';
 import { Button } from '../ui/Button';
 
 export function useUpgradeModal() {
   const [isOpen, setIsOpen] = useState(false);
-
   return {
     isOpen,
     open: () => setIsOpen(true),
@@ -32,17 +30,81 @@ const PRO_FEATURES = [
   'Priority support',
 ];
 
-export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
-  const { user, updateUserProfile } = useStore();
-  const isPro = user?.plan === 'Pro';
+declare global {
+  interface Window {
+    Razorpay: new (options: Record<string, unknown>) => { open(): void };
+  }
+}
 
-  const handleUpgrade = () => {
+function loadRazorpayScript(): Promise<boolean> {
+  return new Promise((resolve) => {
+    if (typeof window.Razorpay !== 'undefined') return resolve(true);
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+}
+
+export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
+  const { user, refreshUser } = useStore();
+  const isPro = user?.plan === 'Pro';
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleUpgrade = async () => {
     if (!user) return;
-    void updateUserProfile({
-      plan: 'Pro',
-      subscriptionRenewalDate: format(addMonths(new Date(), 1), 'MMMM d, yyyy'),
-    });
-    onClose();
+    setError(null);
+    setLoading(true);
+
+    try {
+      const loaded = await loadRazorpayScript();
+      if (!loaded) throw new Error('Failed to load payment gateway. Please try again.');
+
+      const res = await fetch('/api/billing/subscribe', { method: 'POST' });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? 'Failed to create subscription');
+
+      const keyId = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
+
+      const rzp = new window.Razorpay({
+        key: keyId,
+        subscription_id: data.subscriptionId,
+        name: 'MyShopLink',
+        description: 'Pro Plan — ₹349/month',
+        image: '/favicon.ico',
+        prefill: {
+          name: `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim() || user.username,
+          email: user.email,
+          contact: user.whatsappNumber,
+        },
+        theme: { color: '#059669' },
+        handler: async (response: { razorpay_subscription_id?: string }) => {
+          const subId = response?.razorpay_subscription_id ?? data.subscriptionId;
+          try {
+            const activateRes = await fetch('/api/billing/activate', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ subscriptionId: subId }),
+            });
+            if (activateRes.ok) {
+              await refreshUser();
+            }
+          } catch { /* ignore */ }
+          setLoading(false);
+          onClose();
+        },
+        modal: {
+          ondismiss: () => setLoading(false),
+        },
+      });
+
+      rzp.open();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Something went wrong');
+      setLoading(false);
+    }
   };
 
   return (
@@ -51,11 +113,11 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
         <div className="space-y-2">
           <div className="inline-flex items-center gap-2 rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-700">
             <Sparkles className="h-3.5 w-3.5" />
-            Monetization ready
+            Upgrade to Pro
           </div>
           <div>
             <h3 className="text-2xl font-semibold text-gray-900">Unlock MyShopLink Pro</h3>
-            <p className="mt-1 text-sm text-gray-500">Remove limits now. Razorpay checkout can replace this action later.</p>
+            <p className="mt-1 text-sm text-gray-500">Secure checkout via Razorpay — cancel anytime.</p>
           </div>
         </div>
 
@@ -99,14 +161,20 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
           </div>
         </div>
 
+        {error && (
+          <p className="text-sm text-red-600 bg-red-50 rounded-xl px-4 py-2">{error}</p>
+        )}
+
         <div className="flex flex-col gap-3 border-t border-gray-100 pt-5 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-xs text-gray-500">Razorpay secure checkout - cancel anytime</p>
+          <p className="text-xs text-gray-500">Secured by Razorpay · Cancel anytime</p>
           <div className="flex gap-3">
-            <Button type="button" variant="ghost" onClick={onClose}>
+            <Button type="button" variant="ghost" onClick={onClose} disabled={loading}>
               Maybe later
             </Button>
-            <Button type="button" onClick={handleUpgrade} disabled={isPro}>
-              {isPro ? 'You are on Pro' : 'Upgrade Now'}
+            <Button type="button" onClick={handleUpgrade} disabled={isPro || loading}>
+              {loading ? (
+                <span className="flex items-center gap-2"><Loader2 className="w-4 h-4 animate-spin" /> Opening checkout…</span>
+              ) : isPro ? 'You are on Pro' : 'Upgrade Now — ₹349/mo'}
             </Button>
           </div>
         </div>

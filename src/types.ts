@@ -84,6 +84,7 @@ export interface UserProfile {
   avatarUrl: string;
   plan: 'Free' | 'Pro';
   subscriptionRenewalDate: string;
+  razorpaySubscriptionId?: string;
 }
 
 export interface Analytics {

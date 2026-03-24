@@ -28,6 +28,7 @@ interface UserRow {
   avatar_url: string | null;
   plan: UserProfile['plan'];
   subscription_renewal_date: string;
+  razorpay_subscription_id: string | null;
 }
 
 interface StoreAssetRow {
@@ -53,6 +54,7 @@ function ensureAuthSchema() {
       avatar_url TEXT,
       plan TEXT NOT NULL,
       subscription_renewal_date TEXT NOT NULL,
+      razorpay_subscription_id TEXT,
       created_at TEXT NOT NULL
     );
 
@@ -64,6 +66,8 @@ function ensureAuthSchema() {
       FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
     );
   `);
+  // Migrate existing DBs that don't have the column yet
+  try { db.exec(`ALTER TABLE users ADD COLUMN razorpay_subscription_id TEXT`); } catch { /* already exists */ }
 }
 
 function hashPassword(password: string, salt = randomBytes(16).toString('hex')) {
@@ -100,6 +104,7 @@ function toUserProfile(row: UserRow): UserProfile {
     avatarUrl: row.avatar_url ?? '',
     plan: row.plan,
     subscriptionRenewalDate: row.subscription_renewal_date,
+    razorpaySubscriptionId: row.razorpay_subscription_id ?? undefined,
   };
 }
 
@@ -374,6 +379,43 @@ export async function getUserCount(): Promise<number> {
     return supabaseCount('users');
   }
   return (countUsersStmt.get() as { count: number }).count;
+}
+
+export async function updateUserSubscription(userId: string, opts: {
+  plan: UserProfile['plan'];
+  subscriptionRenewalDate: string;
+  razorpaySubscriptionId?: string;
+}) {
+  if (isSupabaseEnabled()) {
+    await supabasePatch<UserRow>(
+      'users',
+      {
+        plan: opts.plan,
+        subscription_renewal_date: opts.subscriptionRenewalDate,
+        razorpay_subscription_id: opts.razorpaySubscriptionId ?? null,
+      },
+      { id: `eq.${userId}` }
+    );
+    // Also sync plan to stores table
+    await supabasePatch(
+      'stores',
+      {
+        plan: opts.plan,
+        subscription_renewal_date: opts.subscriptionRenewalDate,
+      },
+      { user_id: `eq.${userId}` }
+    );
+    return getUserById(userId);
+  }
+
+  requireDb();
+  db!.prepare(`
+    UPDATE users SET plan = ?, subscription_renewal_date = ?, razorpay_subscription_id = ? WHERE id = ?
+  `).run(opts.plan, opts.subscriptionRenewalDate, opts.razorpaySubscriptionId ?? null, userId);
+  db!.prepare(`
+    UPDATE stores SET plan = ?, subscription_renewal_date = ? WHERE user_id = ?
+  `).run(opts.plan, opts.subscriptionRenewalDate, userId);
+  return getUserById(userId);
 }
 
 export async function authenticateUser(email: string, password: string) {
