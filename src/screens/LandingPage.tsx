@@ -30,7 +30,7 @@ function Logo() {
 /* ── Hero phone image ── */
 function PhoneMockup() {
   return (
-    <div className="relative mx-auto w-[220px] sm:w-[260px] lg:w-[280px] drop-shadow-2xl">
+    <div className="relative mx-auto w-[220px] sm:w-[300px] lg:w-[400px] drop-shadow-2xl">
       <Image
         src="/hero-phone.png"
         alt="MyShopLink store on mobile"
@@ -86,7 +86,7 @@ export function LandingPage() {
           <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
 
             {/* left copy */}
-            <div className="flex-1 text-center lg:text-left">
+            <div className="flex-1 min-w-0 lg:min-w-[480px] text-center lg:text-left">
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs font-bold mb-6" style={{ borderColor: `${EMERALD}40`, color: EMERALD, background: EMERALD_LIGHT }}>
                 <Star className="w-3 h-3 fill-current" /> Free to start · No credit card
               </div>
@@ -116,7 +116,7 @@ export function LandingPage() {
             </div>
 
             {/* right phone */}
-            <div className="shrink-0 lg:w-[300px]">
+            <div className="shrink-0 lg:w-[420px]">
               <PhoneMockup />
             </div>
           </div>
