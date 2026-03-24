@@ -448,6 +448,21 @@ export function trackClick(username: string, metadata?: { source?: string; refer
   return trackEvent(username, 'click', metadata);
 }
 
+export async function resetDashboardData(username: string) {
+  if (isSupabaseEnabled()) {
+    await Promise.all([
+      supabaseDelete('orders', { store_username: `eq.${username}` }),
+      supabaseDelete('analytics_daily', { store_username: `eq.${username}` }),
+      supabaseDelete('analytics_events', { store_username: `eq.${username}` }),
+    ]);
+  } else {
+    requireDb();
+    db!.prepare('DELETE FROM orders WHERE store_username = ?').run(username);
+    db!.prepare('DELETE FROM analytics_daily WHERE store_username = ?').run(username);
+    db!.prepare('DELETE FROM analytics_events WHERE store_username = ?').run(username);
+  }
+}
+
 export async function seedDashboardDataIfEmpty(username: string) {
   const [orderCount, analyticsCount, analyticsEventCount] = isSupabaseEnabled()
     ? await Promise.all([

@@ -8,6 +8,7 @@ import { useStore } from '../../context/StoreContext';
 import { formatDistanceToNow } from 'date-fns';
 import { AppLogo } from '../ui/AppLogo';
 import { RenewalBanner } from '../billing/RenewalBanner';
+import { DemoBanner } from '../dashboard/DemoBanner';
 
 interface AppShellProps {
   children: ReactNode;
@@ -282,6 +283,7 @@ export function AppShell({
         {/* MAIN CONTENT AREA */}
         <main className="flex-1 overflow-y-auto w-full pb-[80px]">
           <RenewalBanner />
+          <DemoBanner />
           <div className="px-4 pt-4">
             {children}
           </div>
