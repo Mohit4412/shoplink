@@ -1,8 +1,8 @@
 import { randomUUID } from 'crypto';
 import { db, requireDb } from '@/server/db';
 import { format, parseISO, subDays } from 'date-fns';
+import { deleteDemoProducts, ensureStoreSchema } from '@/server/store-repository';
 import { getDefaultAppState } from '@/src/lib/default-state';
-import { ensureStoreSchema } from '@/server/store-repository';
 import { isSupabaseEnabled, supabaseCount, supabaseDelete, supabaseInsert, supabasePatch, supabaseSelect } from '@/server/supabase';
 import { Analytics, Order } from '@/src/types';
 
@@ -454,12 +454,14 @@ export async function resetDashboardData(username: string) {
       supabaseDelete('orders', { store_username: `eq.${username}` }),
       supabaseDelete('analytics_daily', { store_username: `eq.${username}` }),
       supabaseDelete('analytics_events', { store_username: `eq.${username}` }),
+      deleteDemoProducts(username),
     ]);
   } else {
     requireDb();
     db!.prepare('DELETE FROM orders WHERE store_username = ?').run(username);
     db!.prepare('DELETE FROM analytics_daily WHERE store_username = ?').run(username);
     db!.prepare('DELETE FROM analytics_events WHERE store_username = ?').run(username);
+    await deleteDemoProducts(username);
   }
 }
 

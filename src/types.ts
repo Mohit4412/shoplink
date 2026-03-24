@@ -15,6 +15,7 @@ export interface Product {
   collection?: string;
   highlights?: string[];
   reviews?: ProductReview[];
+  isDemo?: boolean;
 }
 
 export interface ProductReview {

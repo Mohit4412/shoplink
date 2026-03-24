@@ -49,6 +49,7 @@ interface ProductRow {
   collection_name: string | null;
   highlights_json: string | null | unknown;
   reviews_json: string | null | unknown;
+  is_demo: number | boolean | null;
 }
 
 function parseJson<T>(value: string | null | unknown, fallback: T): T {
@@ -107,10 +108,13 @@ export function ensureStoreSchema() {
       collection_name TEXT,
       highlights_json TEXT,
       reviews_json TEXT,
+      is_demo INTEGER NOT NULL DEFAULT 0,
       PRIMARY KEY (store_username, product_id),
       FOREIGN KEY (store_username) REFERENCES stores (username) ON DELETE CASCADE
     );
   `);
+  // Migrate existing DBs
+  try { db.exec(`ALTER TABLE products ADD COLUMN is_demo INTEGER NOT NULL DEFAULT 0`); } catch { /* already exists */ }
 }
 
 function serializeStore(bundle: MerchantStorefrontBundle) {
@@ -156,6 +160,7 @@ function serializeProduct(username: string, product: Product) {
     collection_name: product.collection ?? null,
     highlights_json: JSON.stringify(product.highlights ?? []),
     reviews_json: JSON.stringify(product.reviews ?? []),
+    is_demo: product.isDemo ? 1 : 0,
   };
 }
 
@@ -204,6 +209,7 @@ function hydrateProduct(row: ProductRow): Product {
     collection: row.collection_name ?? undefined,
     highlights: parseJson(row.highlights_json, []),
     reviews: parseJson(row.reviews_json, []),
+    isDemo: row.is_demo === 1 || row.is_demo === true,
   });
 }
 
@@ -216,6 +222,8 @@ let selectStoreProductsStmt: any;
 let selectStoreProductStmt: any;
 let countStoresStmt: any;
 let replaceBundleTxn: any;
+
+let deleteDemoProductsStmt: any;
 
 if (db) {
   ensureStoreSchema();
@@ -256,10 +264,10 @@ if (db) {
   replaceProductStmt = db.prepare(`
   INSERT INTO products (
     store_username, product_id, image_url, images_json, name, price, description, status, created_at,
-    category, stock, collection_name, highlights_json, reviews_json
+    category, stock, collection_name, highlights_json, reviews_json, is_demo
   ) VALUES (
     @store_username, @product_id, @image_url, @images_json, @name, @price, @description, @status, @created_at,
-    @category, @stock, @collection_name, @highlights_json, @reviews_json
+    @category, @stock, @collection_name, @highlights_json, @reviews_json, @is_demo
   )
   ON CONFLICT(store_username, product_id) DO UPDATE SET
     image_url = excluded.image_url,
@@ -273,7 +281,8 @@ if (db) {
     stock = excluded.stock,
     collection_name = excluded.collection_name,
     highlights_json = excluded.highlights_json,
-    reviews_json = excluded.reviews_json
+    reviews_json = excluded.reviews_json,
+    is_demo = excluded.is_demo
 `);
 
   deleteStoreProductsStmt = db.prepare('DELETE FROM products WHERE store_username = ?');
@@ -282,6 +291,7 @@ if (db) {
   selectStoreProductsStmt = db.prepare('SELECT * FROM products WHERE store_username = ? ORDER BY datetime(created_at) DESC, product_id ASC');
   selectStoreProductStmt = db.prepare('SELECT * FROM products WHERE store_username = ? AND product_id = ?');
   countStoresStmt = db.prepare('SELECT COUNT(*) as count FROM stores');
+  deleteDemoProductsStmt = db.prepare('DELETE FROM products WHERE store_username = ? AND is_demo = 1');
 
   replaceBundleTxn = db.transaction((bundle: MerchantStorefrontBundle) => {
     upsertStoreStmt.run(serializeStore(bundle));
@@ -298,6 +308,18 @@ if (db) {
       store: initialState.store,
       products: initialState.products,
     });
+  }
+}
+
+export async function deleteDemoProducts(username: string) {
+  if (isSupabaseEnabled()) {
+    await supabaseDelete('products', {
+      store_username: `eq.${username}`,
+      is_demo: `eq.true`,
+    });
+  } else {
+    requireDb();
+    deleteDemoProductsStmt.run(username);
   }
 }
 

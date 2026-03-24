@@ -14,6 +14,7 @@ export function getDefaultAppState(): AppState {
   const initialProducts: Product[] = [
     {
       id: 'p1',
+      isDemo: true,
       name: 'Minimalist White Sneakers',
       price: 85.0,
       description: 'Clean, versatile, and crafted from premium vegan leather. The perfect everyday sneaker that pairs with almost anything in your wardrobe.',
@@ -34,6 +35,7 @@ export function getDefaultAppState(): AppState {
     },
     {
       id: 'p2',
+      isDemo: true,
       name: 'Textured Knit Sweater',
       price: 120.0,
       description: 'A cozy, heavy-gauge knit sweater made from a soft merino wool blend. Features a subtle waffle texture and a relaxed, drop-shoulder fit.',
@@ -51,6 +53,7 @@ export function getDefaultAppState(): AppState {
     },
     {
       id: 'p3',
+      isDemo: true,
       name: 'Matte Black Chronograph',
       price: 195.0,
       description: 'Sleek, stealthy, and functional. This chronograph features a matte black stainless steel case, a minimalist dial, and a durable mesh band.',
@@ -70,6 +73,7 @@ export function getDefaultAppState(): AppState {
     },
     {
       id: 'p4',
+      isDemo: true,
       name: 'Classic Aviator Sunglasses',
       price: 65.0,
       description: 'Timeless aviator design with gold-tone frames and polarized dark green lenses. Lightweight and designed for all-day comfort.',
@@ -86,6 +90,7 @@ export function getDefaultAppState(): AppState {
     },
     {
       id: 'p5',
+      isDemo: true,
       name: 'Leather Weekend Duffel',
       price: 250.0,
       description: 'The ultimate travel companion. Handcrafted from top-grain leather, featuring a spacious main compartment and solid brass hardware.',
@@ -105,6 +110,7 @@ export function getDefaultAppState(): AppState {
     },
     {
       id: 'p6',
+      isDemo: true,
       name: 'Essential White T-Shirt',
       price: 35.0,
       description: 'The perfect white tee does exist. Made from heavyweight pima cotton, pre-shrunk, and cut with a tailored but relaxed fit.',
@@ -124,6 +130,7 @@ export function getDefaultAppState(): AppState {
     },
     {
       id: 'p7',
+      isDemo: true,
       name: 'Premium Wireless Headphones',
       price: 299.0,
       description: 'Active noise cancellation with 30-hour battery life. Experience crystal clear sound with deep, immersive bass.',
@@ -138,6 +145,7 @@ export function getDefaultAppState(): AppState {
     },
     {
       id: 'p8',
+      isDemo: true,
       name: 'Ceramic Pour-Over Coffee Maker',
       price: 45.0,
       description: 'Handcrafted ceramic pour-over dripper. Designed for optimal heat retention and a perfect, clean cup of coffee every morning.',
@@ -152,6 +160,7 @@ export function getDefaultAppState(): AppState {
     },
     {
       id: 'p9',
+      isDemo: true,
       name: 'Linen Blend Summer Shirt',
       price: 75.0,
       description: 'Lightweight and breathable. This linen-cotton blend shirt is perfect for warm summer evenings and casual outings.',
@@ -166,6 +175,7 @@ export function getDefaultAppState(): AppState {
     },
     {
       id: 'p10',
+      isDemo: true,
       name: 'Everyday Carry Backpack',
       price: 135.0,
       description: 'Water-resistant, durable, and thoughtfully designed with hidden compartments for tech and daily essentials.',

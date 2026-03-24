@@ -536,9 +536,10 @@ export const StoreProvider: React.FC<{ children: ReactNode; initialUser: UserPro
 
   const resetDemoData = useCallback(async () => {
     await fetch('/api/dashboard', { method: 'DELETE' });
-    // Clear local state — empty orders/analytics, dismiss demo notifications
+    // Clear local state — remove demo products, orders, analytics
     setState(prev => ({
       ...prev,
+      products: prev.products.filter(p => !p.isDemo),
       orders: [],
       analytics: {
         totalViews: 0,
