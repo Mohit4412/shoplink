@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { applySessionCookie, authenticateUser, createSession } from '@/server/auth';
+import { getMerchantBundleByUsername, replaceMerchantBundle } from '@/server/store-repository';
+import { getStarterMerchantBundle } from '@/src/lib/default-state';
 import { rateLimit, getClientIp, rateLimitedResponse } from '@/server/rate-limit';
 
 export async function POST(request: NextRequest) {
@@ -19,6 +21,12 @@ export async function POST(request: NextRequest) {
   const user = await authenticateUser(email, password);
   if (!user) {
     return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
+  }
+
+  // Ensure store row exists — create it if missing (handles users whose signup store creation failed)
+  const existing = await getMerchantBundleByUsername(user.username);
+  if (!existing) {
+    await replaceMerchantBundle(getStarterMerchantBundle(user));
   }
 
   const session = await createSession(user.id);

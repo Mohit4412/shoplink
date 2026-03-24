@@ -27,9 +27,9 @@ interface StoreRow {
   store_bio: string | null;
   currency: string;
   theme: string | null;
-  sections_json: string | null;
-  trust_badges_json: string | null;
-  banners_json: string | null;
+  sections_json: string | null | unknown;
+  trust_badges_json: string | null | unknown;
+  banners_json: string | null | unknown;
   custom_domain: string | null;
   custom_domain_status: StoreSettings['customDomainStatus'] | null;
 }
@@ -38,7 +38,7 @@ interface ProductRow {
   store_username: string;
   product_id: string;
   image_url: string;
-  images_json: string | null;
+  images_json: string | null | unknown;
   name: string;
   price: number;
   description: string;
@@ -47,12 +47,14 @@ interface ProductRow {
   category: string;
   stock: number;
   collection_name: string | null;
-  highlights_json: string | null;
-  reviews_json: string | null;
+  highlights_json: string | null | unknown;
+  reviews_json: string | null | unknown;
 }
 
-function parseJson<T>(value: string | null, fallback: T): T {
-  if (!value) return fallback;
+function parseJson<T>(value: string | null | unknown, fallback: T): T {
+  if (value === null || value === undefined) return fallback;
+  if (typeof value === 'object') return value as T;
+  if (typeof value !== 'string') return fallback;
   try {
     return JSON.parse(value) as T;
   } catch {

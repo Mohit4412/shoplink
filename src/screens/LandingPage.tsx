@@ -71,6 +71,14 @@ export function LandingPage() {
 
       <main className="pt-16">
 
+        {/* ── EARLY ACCESS ANNOUNCEMENT BAR ── */}
+        <div className="w-full py-2.5 px-4 text-center text-xs font-bold text-white" style={{ background: EMERALD }}>
+          🎉 Early access offer — first 100 users get <span className="underline underline-offset-2">3 months Pro free</span>. Everyone else gets a 14-day trial.
+          <button onClick={handleCTA} className="ml-3 underline underline-offset-2 opacity-80 hover:opacity-100 transition-opacity">
+            Claim your spot →
+          </button>
+        </div>
+
         {/* ── HERO ── */}
         <section className="max-w-6xl mx-auto px-5 pt-16 pb-20 md:pt-24 md:pb-28">
           <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
@@ -237,6 +245,17 @@ export function LandingPage() {
           <div className="text-center mb-14">
             <span className="text-xs font-black tracking-[0.2em] uppercase mb-3 block" style={{ color: EMERALD }}>Simple pricing</span>
             <h2 className="text-3xl md:text-4xl font-heading font-black tracking-tight text-gray-900">Start free. Upgrade when you grow.</h2>
+          </div>
+
+          {/* Early access callout */}
+          <div className="rounded-2xl p-4 mb-10 flex flex-col sm:flex-row items-center justify-between gap-3 border" style={{ background: EMERALD_LIGHT, borderColor: `${EMERALD}30` }}>
+            <div className="flex items-center gap-3 text-sm font-bold" style={{ color: EMERALD }}>
+              <Star className="w-4 h-4 fill-current shrink-0" />
+              <span>First 100 users get <span className="underline underline-offset-2">3 months Pro free</span> — no credit card needed.</span>
+            </div>
+            <button onClick={handleCTA} className="shrink-0 px-4 py-2 rounded-xl text-white text-xs font-black transition-all active:scale-95" style={{ background: EMERALD }}>
+              Claim free Pro →
+            </button>
           </div>
 
           <div className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto">

@@ -368,6 +368,14 @@ export async function createUser(input: {
   return toUserProfile(user as UserRow);
 }
 
+export async function getUserCount(): Promise<number> {
+  if (isSupabaseEnabled()) {
+    const { supabaseCount } = await import('@/server/supabase');
+    return supabaseCount('users');
+  }
+  return (countUsersStmt.get() as { count: number }).count;
+}
+
 export async function authenticateUser(email: string, password: string) {
   const row = isSupabaseEnabled()
     ? (await supabaseSelect<UserRow>('users', { email: `eq.${email}`, select: '*', limit: 1 }))[0]

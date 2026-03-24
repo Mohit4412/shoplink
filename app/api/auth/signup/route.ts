@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { applySessionCookie, createSession, createUser } from '@/server/auth';
+import { applySessionCookie, createSession, createUser, getUserCount, updateAuthUserProfile } from '@/server/auth';
 import { replaceMerchantBundle } from '@/server/store-repository';
 import { getStarterMerchantBundle } from '@/src/lib/default-state';
 import { rateLimit, getClientIp, rateLimitedResponse } from '@/server/rate-limit';
+
+const EARLY_ACCESS_SLOTS = 100;
 
 export async function POST(request: NextRequest) {
   // 5 signups per IP per hour
@@ -21,6 +23,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
   }
 
+  // Check slot before creating — count is the number of existing users
+  const currentUserCount = await getUserCount();
+  const isEarlyAccess = currentUserCount < EARLY_ACCESS_SLOTS;
+
   const user = await createUser({
     email,
     password,
@@ -33,6 +39,20 @@ export async function POST(request: NextRequest) {
   if (!user) {
     return NextResponse.json({ error: 'Email or username is already in use' }, { status: 409 });
   }
+
+  // First 100 users: 3 months Pro free. Everyone else: 14-day Pro trial.
+  const renewalDate = new Date();
+  if (isEarlyAccess) {
+    renewalDate.setMonth(renewalDate.getMonth() + 3);
+  } else {
+    renewalDate.setDate(renewalDate.getDate() + 14);
+  }
+  user.plan = 'Pro';
+  user.subscriptionRenewalDate = renewalDate.toISOString();
+  await updateAuthUserProfile(user.id, {
+    plan: 'Pro',
+    subscriptionRenewalDate: renewalDate.toISOString(),
+  });
 
   await replaceMerchantBundle(getStarterMerchantBundle(user));
 

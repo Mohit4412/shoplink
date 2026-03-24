@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Search, Bell, Plus, Edit2, Trash2, FolderPlus } from 'lucide-react';
+import { Search, Bell, Plus, Edit2, Trash2, FolderPlus, Package, Zap } from 'lucide-react';
 import { format } from 'date-fns';
 import { useStore } from '../context/StoreContext';
 import { Button } from '../components/ui/Button';
@@ -16,7 +16,11 @@ import { LogOrderModal } from '../components/dashboard/LogOrderModal';
 import { UpgradeModal, useUpgradeModal } from '../components/billing/UpgradeModal';
 
 export function Products() {
-  const { products, addProduct, updateProduct, deleteProduct, store, orders, addOrder, updateOrder, deleteOrder } = useStore();
+  const { products, addProduct, updateProduct, deleteProduct, store, orders, addOrder, updateOrder, deleteOrder, user } = useStore();
+  const isPro = user?.plan === 'Pro';
+  const FREE_LIMIT = 10;
+  const atLimit = !isPro && products.length >= FREE_LIMIT;
+  const [showLimitBanner, setShowLimitBanner] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortOption, setSortOption] = useState<'name' | 'price'>('name');
   const [activeTab, setActiveTab] = useState<'products' | 'collections' | 'orders' | 'sales'>(() => {
@@ -280,12 +284,36 @@ export function Products() {
           <option value="price">Price</option>
         </select>
         <button
-          onClick={() => { resetForm(); setIsAddModalOpen(true); }}
+          onClick={() => {
+            if (atLimit) { setShowLimitBanner(true); return; }
+            setShowLimitBanner(false);
+            resetForm();
+            setIsAddModalOpen(true);
+          }}
           className="h-9 w-9 bg-gray-900 text-white rounded-xl flex items-center justify-center shrink-0 hover:bg-gray-700 transition-colors"
         >
           <Plus className="w-4 h-4" />
         </button>
       </div>
+
+      {/* Limit banner */}
+      {showLimitBanner && (
+        <div className="flex items-center justify-between bg-amber-50 border border-amber-200 rounded-2xl px-4 py-3">
+          <div className="flex items-center gap-3">
+            <Package className="w-4 h-4 text-amber-600 shrink-0" />
+            <div>
+              <p className="text-sm font-bold text-amber-900">Product limit reached</p>
+              <p className="text-xs text-amber-700 mt-0.5">Free plan allows up to 10 products. Upgrade to Pro to add unlimited products.</p>
+            </div>
+          </div>
+          <button
+            onClick={() => { setShowLimitBanner(false); upgradeModal.open(); }}
+            className="shrink-0 ml-3 h-8 px-3 rounded-xl bg-gray-900 text-white text-xs font-bold flex items-center gap-1.5 hover:bg-gray-800 transition-colors"
+          >
+            <Zap className="w-3.5 h-3.5" /> Upgrade
+          </button>
+        </div>
+      )}
 
       {/* Tabs */}
       <div className="border-b border-gray-200">

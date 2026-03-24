@@ -259,7 +259,7 @@ export const StoreProvider: React.FC<{ children: ReactNode; initialUser: UserPro
   }, []);
 
   const addProduct = useCallback((product: Omit<Product, 'id' | 'createdAt'>) => {
-    if (state.user?.plan === 'Free' && state.products.length >= 5) {
+    if (state.user?.plan === 'Free' && state.products.length >= 10) {
       return 'LIMIT_REACHED';
     }
 
