@@ -1,6 +1,4 @@
 import React from 'react';
-import { Card } from '../ui/Card';
-import { Button } from '../ui/Button';
 import { Edit2, Trash2 } from 'lucide-react';
 import { Product } from '../../types';
 
@@ -12,45 +10,55 @@ interface ProductMobileCardsProps {
 }
 
 export function ProductMobileCards({ filteredProducts, currencySymbol, onEdit, onDelete }: ProductMobileCardsProps) {
+  if (filteredProducts.length === 0) {
+    return (
+      <div className="sm:hidden text-center py-12 text-sm text-gray-400">
+        No products found.
+      </div>
+    );
+  }
+
   return (
-    <div className="sm:hidden space-y-3">
-      {filteredProducts.length === 0 ? (
-        <div className="text-center py-12 text-gray-500 bg-white rounded-xl border border-gray-200">
-          No products found.
+    <div className="sm:hidden divide-y divide-gray-100">
+      {filteredProducts.map((product) => (
+        <div key={product.id} className="flex items-center gap-3 py-3">
+          <img
+            src={product.imageUrl}
+            alt={product.name}
+            className="w-12 h-12 rounded-xl object-cover shrink-0"
+          />
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-semibold text-gray-900 truncate">{product.name}</p>
+            <div className="flex items-center gap-2 mt-0.5">
+              <span className="text-sm text-gray-500">{currencySymbol}{product.price.toFixed(2)}</span>
+              {product.collection && (
+                <span className="text-[11px] px-1.5 py-0.5 bg-gray-100 text-gray-500 rounded font-medium truncate max-w-[80px]">
+                  {product.collection}
+                </span>
+              )}
+              <span className={`text-[11px] px-1.5 py-0.5 rounded font-medium ${
+                product.status === 'Active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'
+              }`}>
+                {product.status}
+              </span>
+            </div>
+          </div>
+          <div className="flex items-center gap-1 shrink-0">
+            <button
+              onClick={() => onEdit(product)}
+              className="p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              <Edit2 className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => onDelete(product)}
+              className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+          </div>
         </div>
-      ) : (
-        filteredProducts.map((product) => (
-          <Card key={product.id} className="p-4 flex flex-col gap-4">
-            <div className="flex gap-4">
-              <img src={product.imageUrl} alt={product.name} className="w-20 h-20 rounded-lg object-cover border border-gray-200 flex-shrink-0" />
-              <div className="flex-1 min-w-0">
-                <h3 className="font-medium text-gray-900 truncate">{product.name}</h3>
-                <p className="text-gray-600 mt-1">{currencySymbol}{product.price.toFixed(2)}</p>
-                <div className="mt-2 flex flex-wrap gap-2">
-                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                    product.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
-                  }`}>
-                    {product.status}
-                  </span>
-                  {product.collection && (
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
-                      {product.collection}
-                    </span>
-                  )}
-                </div>
-              </div>
-            </div>
-            <div className="flex gap-2 border-t border-gray-100 pt-3">
-              <Button variant="outline" className="flex-1" onClick={() => onEdit(product)}>
-                <Edit2 className="w-4 h-4 mr-2" /> Edit
-              </Button>
-              <Button variant="outline" className="flex-1 border-red-200 text-red-600 hover:bg-red-50" onClick={() => onDelete(product)}>
-                <Trash2 className="w-4 h-4 mr-2" /> Delete
-              </Button>
-            </div>
-          </Card>
-        ))
-      )}
+      ))}
     </div>
   );
 }

@@ -24,6 +24,8 @@ interface StoreContextType extends AppState {
   trackWhatsAppClick: (productId?: string, username?: string) => void;
   addNotification: (noti: Omit<AppNotification, 'id' | 'date' | 'read'>) => void;
   markNotificationRead: (id: string) => void;
+  markAllNotificationsRead: () => void;
+  clearAllNotifications: () => void;
 }
 
 const StoreContext = createContext<StoreContextType | undefined>(undefined);
@@ -509,24 +511,26 @@ export const StoreProvider: React.FC<{ children: ReactNode; initialUser: UserPro
     }));
   }, []);
 
-  const contextValue = useMemo(() => ({
-    hydrated,
-    ...state,
-    login,
-    logout,
-    addProduct,
-    updateProduct,
-    deleteProduct,
-    addOrder,
-    updateOrder,
-    deleteOrder,
-    updateStoreSettings,
-    updateUserProfile,
-    trackStoreView,
-    trackWhatsAppClick,
-    addNotification,
-    markNotificationRead,
-  }), [hydrated, state, login, logout, addProduct, updateProduct, deleteProduct, addOrder, updateOrder, deleteOrder, updateStoreSettings, updateUserProfile, trackStoreView, trackWhatsAppClick, addNotification, markNotificationRead]);
+  const markAllNotificationsRead = useCallback(() => {
+    setState(prev => ({
+      ...prev,
+      notifications: (prev.notifications || []).map(n => ({ ...n, read: true }))
+    }));
+  }, []);
+
+  const clearAllNotifications = useCallback(() => {
+    setState(prev => ({ ...prev, notifications: [] }));
+  }, []);
+
+  const devForcePlan = process.env.NEXT_PUBLIC_DEV_FORCE_PLAN as 'Free' | 'Pro' | undefined;
+
+  const contextValue = useMemo(() => {
+    const base = { hydrated, ...state, login, logout, addProduct, updateProduct, deleteProduct, addOrder, updateOrder, deleteOrder, updateStoreSettings, updateUserProfile, trackStoreView, trackWhatsAppClick, addNotification, markNotificationRead, markAllNotificationsRead, clearAllNotifications };
+    if (devForcePlan && base.user) {
+      return { ...base, user: { ...base.user, plan: devForcePlan, subscriptionRenewalDate: devForcePlan === 'Free' ? '' : base.user.subscriptionRenewalDate } };
+    }
+    return base;
+  }, [hydrated, state, login, logout, addProduct, updateProduct, deleteProduct, addOrder, updateOrder, deleteOrder, updateStoreSettings, updateUserProfile, trackStoreView, trackWhatsAppClick, addNotification, markNotificationRead, markAllNotificationsRead, clearAllNotifications, devForcePlan]);
 
   return (
     <StoreContext.Provider value={contextValue}>

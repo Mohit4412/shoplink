@@ -125,16 +125,13 @@ function DonutChart({ data }: { data: Analytics['countrySummary'] }) {
 
 export function TrafficAnalytics({ sourceSummary, countrySummary }: TrafficAnalyticsProps) {
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-4">
 
       {/* Traffic Sources */}
-      <div className="rounded-2xl border border-gray-100 bg-white" style={{ padding: '20px' }}>
-        <div className="mb-4 flex items-center gap-3">
-          <LinkIcon className="h-5 w-5 text-gray-400" />
-          <div>
-            <h3 className="text-base font-semibold text-gray-900">Traffic Sources</h3>
-            <p className="text-sm text-gray-400">By platform.</p>
-          </div>
+      <div>
+        <div className="mb-3 flex items-center gap-2">
+          <LinkIcon className="h-4 w-4 text-gray-400" />
+          <h3 className="text-sm font-semibold text-gray-900">Traffic Sources</h3>
         </div>
 
         {sourceSummary.length > 0 && (
@@ -163,14 +160,14 @@ export function TrafficAnalytics({ sourceSummary, countrySummary }: TrafficAnaly
         )}
       </div>
 
+      {/* Divider */}
+      <div className="border-t border-gray-100" />
+
       {/* Audience Geography */}
-      <div className="rounded-2xl border border-gray-100 bg-white" style={{ padding: '20px' }}>
-        <div className="mb-4 flex items-center gap-3">
-          <Globe className="h-5 w-5 text-gray-400" />
-          <div>
-            <h3 className="text-base font-semibold text-gray-900">Audience Geography</h3>
-            <p className="text-sm text-gray-400">By location.</p>
-          </div>
+      <div>
+        <div className="mb-3 flex items-center gap-2">
+          <Globe className="h-4 w-4 text-gray-400" />
+          <h3 className="text-sm font-semibold text-gray-900">Audience Geography</h3>
         </div>
         <DonutChart data={countrySummary} />
       </div>

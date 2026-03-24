@@ -42,97 +42,115 @@ export function Analytics() {
   const isLast30Days = dateRange.end === todayStr && dateRange.start === last30DaysStart;
 
   return (
-    <div className="space-y-6 max-w-[500px] mx-auto pb-4">
+    <div className="space-y-3 max-w-[500px] mx-auto pb-4">
 
       {/* Header */}
-      <div>
-        <h2 className="text-lg font-bold text-gray-900">Analytics</h2>
-        <p className="text-xs text-gray-500 font-medium mt-0.5">Historical performance by date range</p>
-      </div>
-
-      {/* Date range selector */}
-      <div className="bg-white border border-gray-100 rounded-xl shadow-sm p-3 flex flex-col gap-3">
-        {/* Quick pills */}
-        <div className="flex gap-2">
-          {[
-            { label: 'Today', start: todayStr, end: todayStr },
-            { label: 'Last 7 days', start: last7DaysStart, end: todayStr },
-            { label: 'Last 30 days', start: last30DaysStart, end: todayStr },
-          ].map(({ label, start, end }) => {
-            const active =
-              (label === 'Today' && isTodayRange) ||
-              (label === 'Last 7 days' && isLast7Days) ||
-              (label === 'Last 30 days' && isLast30Days);
-            return (
-              <button
-                key={label}
-                onClick={() => setDateRange({ start, end })}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
-                  active ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
-              >
-                {label}
-              </button>
-            );
-          })}
+      <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
+        <div className="px-4 pt-3.5 pb-3">
+          <h2 className="text-[18px] font-bold text-gray-900">Analytics</h2>
+          <p className="text-xs text-gray-400 font-medium mt-0.5">Historical performance by date range</p>
         </div>
-        {/* Inline date inputs */}
-        <div className="flex items-center gap-2">
-          <input
-            type="date"
-            className="h-8 px-2 text-xs border border-gray-200 rounded-lg flex-1 text-gray-700 outline-none focus:border-[#25D366]"
-            value={dateRange.start}
-            max={dateRange.end}
-            onChange={e => {
-              const val = e.target.value;
-              if (val <= dateRange.end) setDateRange(prev => ({ ...prev, start: val }));
-            }}
-          />
-          <span className="text-xs text-gray-400 shrink-0">to</span>
-          <input
-            type="date"
-            className="h-8 px-2 text-xs border border-gray-200 rounded-lg flex-1 text-gray-700 outline-none focus:border-[#25D366]"
-            value={dateRange.end}
-            min={dateRange.start}
-            max={todayStr}
-            onChange={e => {
-              const val = e.target.value;
-              if (val >= dateRange.start && val <= todayStr) setDateRange(prev => ({ ...prev, end: val }));
-            }}
-          />
+
+        {/* Date range selector */}
+        <div className="border-t border-gray-50 px-4 py-3 flex flex-col gap-3">
+          <div className="flex gap-2">
+            {[
+              { label: 'Today', start: todayStr, end: todayStr },
+              { label: 'Last 7 days', start: last7DaysStart, end: todayStr },
+              { label: 'Last 30 days', start: last30DaysStart, end: todayStr },
+            ].map(({ label, start, end }) => {
+              const active =
+                (label === 'Today' && isTodayRange) ||
+                (label === 'Last 7 days' && isLast7Days) ||
+                (label === 'Last 30 days' && isLast30Days);
+              return (
+                <button
+                  key={label}
+                  onClick={() => setDateRange({ start, end })}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+                    active ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
+                >
+                  {label}
+                </button>
+              );
+            })}
+          </div>
+          <div className="flex items-center gap-2">
+            <input
+              type="date"
+              className="h-8 px-2 text-xs border border-gray-200 rounded-lg flex-1 text-gray-700 outline-none focus:border-[#059669]"
+              value={dateRange.start}
+              max={dateRange.end}
+              onChange={e => {
+                const val = e.target.value;
+                if (val <= dateRange.end) setDateRange(prev => ({ ...prev, start: val }));
+              }}
+            />
+            <span className="text-xs text-gray-400 shrink-0">to</span>
+            <input
+              type="date"
+              className="h-8 px-2 text-xs border border-gray-200 rounded-lg flex-1 text-gray-700 outline-none focus:border-[#059669]"
+              value={dateRange.end}
+              min={dateRange.start}
+              max={todayStr}
+              onChange={e => {
+                const val = e.target.value;
+                if (val >= dateRange.start && val <= todayStr) setDateRange(prev => ({ ...prev, end: val }));
+              }}
+            />
+          </div>
         </div>
       </div>
 
       {/* Summary stat cards */}
-      <div className="grid grid-cols-2 gap-3">
-        {[
-          { label: 'Views', value: rangeViews },
-          { label: 'Clicks', value: rangeClicks },
-          { label: 'Orders', value: rangeOrdersCount },
-          { label: 'Revenue', value: `${currencySymbol}${rangeRevenue.toFixed(2)}` },
-          { label: 'Conversion', value: `${conversionRate}%` },
-          { label: 'Avg. order', value: `${currencySymbol}${avgOrderValue}` },
-        ].map(({ label, value }) => (
-          <div key={label} className="bg-white border border-gray-100 rounded-xl p-4 shadow-sm">
-            <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wide">{label}</p>
-            <p className="text-[20px] font-black text-gray-900 leading-tight mt-1">{value}</p>
-          </div>
-        ))}
+      <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
+        <div className="px-4 pt-3.5 pb-2 border-b border-gray-50">
+          <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Summary</p>
+        </div>
+        <div className="grid grid-cols-2 divide-x divide-y divide-gray-50">
+          {[
+            { label: 'Views', value: rangeViews },
+            { label: 'Clicks', value: rangeClicks },
+            { label: 'Orders', value: rangeOrdersCount },
+            { label: 'Revenue', value: `${currencySymbol}${rangeRevenue.toFixed(2)}` },
+            { label: 'Conversion', value: `${conversionRate}%` },
+            { label: 'Avg. order', value: `${currencySymbol}${avgOrderValue}` },
+          ].map(({ label, value }) => (
+            <div key={label} className="p-4">
+              <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wide">{label}</p>
+              <p className="text-[20px] font-black text-gray-900 leading-tight mt-1">{value}</p>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Chart */}
-      <div className="w-full overflow-hidden">
-        <AnalyticsChart
-          data={filteredDailyStats}
-          subtitle={`${format(parseISO(dateRange.start), 'MMM dd, yyyy')} — ${format(parseISO(dateRange.end), 'MMM dd, yyyy')}`}
-        />
+      <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
+        <div className="px-4 pt-3.5 pb-2 border-b border-gray-50">
+          <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Trend</p>
+        </div>
+        <div className="p-3">
+          <AnalyticsChart
+            data={filteredDailyStats}
+            subtitle={`${format(parseISO(dateRange.start), 'MMM dd, yyyy')} — ${format(parseISO(dateRange.end), 'MMM dd, yyyy')}`}
+          />
+        </div>
       </div>
 
       {/* Traffic breakdown */}
-      <TrafficAnalytics
-        sourceSummary={analytics.sourceSummary}
-        countrySummary={analytics.countrySummary}
-      />
+      <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
+        <div className="px-4 pt-3.5 pb-2 border-b border-gray-50">
+          <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Traffic breakdown</p>
+        </div>
+        <div className="p-3">
+          <TrafficAnalytics
+            sourceSummary={analytics.sourceSummary}
+            countrySummary={analytics.countrySummary}
+          />
+        </div>
+      </div>
+
     </div>
   );
 }

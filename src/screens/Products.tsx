@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, Bell, Plus, Edit2, Trash2, FolderPlus } from 'lucide-react';
 import { format } from 'date-fns';
 import { useStore } from '../context/StoreContext';
@@ -9,7 +9,6 @@ import { Product, ProductStatus, Order } from '../types';
 import { getCurrencySymbol } from '../utils/currency';
 
 import { ProductTable } from '../components/products/ProductTable';
-import { ProductMobileCards } from '../components/products/ProductMobileCards';
 import { ProductModal } from '../components/products/ProductModal';
 import { DeleteProductModal } from '../components/products/DeleteProductModal';
 import { RecentOrdersTable } from '../components/dashboard/RecentOrdersTable';
@@ -17,7 +16,7 @@ import { LogOrderModal } from '../components/dashboard/LogOrderModal';
 import { UpgradeModal, useUpgradeModal } from '../components/billing/UpgradeModal';
 
 export function Products() {
-  const { products, addProduct, updateProduct, deleteProduct, store, orders, addOrder, updateOrder, deleteOrder, notifications, markNotificationRead } = useStore();
+  const { products, addProduct, updateProduct, deleteProduct, store, orders, addOrder, updateOrder, deleteOrder } = useStore();
   const [searchTerm, setSearchTerm] = useState('');
   const [sortOption, setSortOption] = useState<'name' | 'price'>('name');
   const [activeTab, setActiveTab] = useState<'products' | 'collections' | 'orders' | 'sales'>(() => {
@@ -39,27 +38,6 @@ export function Products() {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
   const todayStr = format(new Date(), 'yyyy-MM-dd');
-
-  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
-  const notificationRef = useRef<HTMLDivElement>(null);
-
-  const unreadCount = (notifications || []).filter(n => !n.read).length;
-
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (notificationRef.current && !notificationRef.current.contains(event.target as Node)) {
-        setIsNotificationsOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [notificationRef]);
-
-  const handleNotificationClick = (id: string) => {
-    markNotificationRead(id);
-  };
 
   const currencySymbol = getCurrencySymbol(store.currency);
 
@@ -346,12 +324,6 @@ export function Products() {
             <>
               <ProductTable
                 products={products}
-                filteredProducts={filteredProducts}
-                currencySymbol={currencySymbol}
-                onEdit={openEditModal}
-                onDelete={openDeleteModal}
-              />
-              <ProductMobileCards
                 filteredProducts={filteredProducts}
                 currencySymbol={currencySymbol}
                 onEdit={openEditModal}

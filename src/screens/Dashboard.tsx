@@ -53,62 +53,67 @@ export function Dashboard() {
   };
 
   return (
-    <div className="space-y-6 max-w-[500px] mx-auto pb-4">
+    <div className="space-y-3 max-w-[500px] mx-auto pb-4">
 
       {/* Greeting */}
-      <div className="bg-[#FFFBEB] border border-[#FDE68A] rounded-2xl p-4 sm:px-5">
+      <div className="bg-[#FFFBEB] border border-[#FDE68A] rounded-2xl px-4 py-3.5">
         <h1 className="text-[18px] font-bold text-gray-900 leading-tight">
           Hello {user?.firstName || 'there'} <span className="inline-block animate-wave">👋</span>
         </h1>
-        <p className="text-[13px] text-gray-500 font-medium mt-1">Here's your store activity today.</p>
+        <p className="text-[13px] text-gray-500 font-medium mt-0.5">Here's your store activity today.</p>
       </div>
 
-      {/* 2x2 Today Metrics */}
-      <div className="grid grid-cols-2 gap-3">
-        <div className="bg-white border border-gray-100 rounded-xl p-4 shadow-sm flex flex-col gap-2">
-          <div className="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center">
-            <Package className="w-4 h-4 text-amber-500" />
-          </div>
-          <div>
-            <p className="text-[22px] font-black text-gray-900 leading-none">{todayOrdersCount}</p>
-            <p className="text-[12px] font-semibold text-gray-500 mt-1">Orders (today)</p>
-          </div>
+      {/* Today's Metrics */}
+      <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
+        <div className="px-4 pt-3.5 pb-2 border-b border-gray-50">
+          <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Today's snapshot</p>
         </div>
+        <div className="grid grid-cols-2 divide-x divide-y divide-gray-50">
+          <div className="p-4 flex flex-col gap-2">
+            <div className="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center">
+              <Package className="w-4 h-4 text-amber-500" />
+            </div>
+            <div>
+              <p className="text-[22px] font-black text-gray-900 leading-none">{todayOrdersCount}</p>
+              <p className="text-[12px] font-semibold text-gray-500 mt-1">Orders</p>
+            </div>
+          </div>
 
-        <div className="bg-white border border-gray-100 rounded-xl p-4 shadow-sm flex flex-col gap-2">
-          <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
-            <Eye className="w-4 h-4 text-blue-500" />
+          <div className="p-4 flex flex-col gap-2">
+            <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
+              <Eye className="w-4 h-4 text-blue-500" />
+            </div>
+            <div>
+              <p className="text-[22px] font-black text-gray-900 leading-none">{todayStats.views}</p>
+              <p className="text-[12px] font-semibold text-gray-500 mt-1">Store views</p>
+            </div>
           </div>
-          <div>
-            <p className="text-[22px] font-black text-gray-900 leading-none">{todayStats.views}</p>
-            <p className="text-[12px] font-semibold text-gray-500 mt-1">Store views (today)</p>
-          </div>
-        </div>
 
-        <div className="bg-white border border-gray-100 rounded-xl p-4 shadow-sm flex flex-col gap-2">
-          <div className="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center">
-            <Store className="w-4 h-4 text-[#25D366]" />
+          <div className="p-4 flex flex-col gap-2">
+            <div className="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center">
+              <Store className="w-4 h-4 text-[#059669]" />
+            </div>
+            <div>
+              <p className="text-[22px] font-black text-gray-900 leading-none">{activeProductsCount}</p>
+              <p className="text-[12px] font-semibold text-gray-500 mt-1">Active products</p>
+            </div>
           </div>
-          <div>
-            <p className="text-[22px] font-black text-gray-900 leading-none">{activeProductsCount}</p>
-            <p className="text-[12px] font-semibold text-gray-500 mt-1">Active products</p>
-          </div>
-        </div>
 
-        <div className="bg-white border border-gray-100 rounded-xl p-4 shadow-sm flex flex-col gap-2">
-          <div className="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center">
-            <MessageCircle className="w-4 h-4 text-[#25D366]" />
-          </div>
-          <div>
-            <p className="text-[22px] font-black text-gray-900 leading-none">{todayStats.clicks}</p>
-            <p className="text-[12px] font-semibold text-gray-500 mt-1">WhatsApp clicks</p>
+          <div className="p-4 flex flex-col gap-2">
+            <div className="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center">
+              <MessageCircle className="w-4 h-4 text-[#059669]" />
+            </div>
+            <div>
+              <p className="text-[22px] font-black text-gray-900 leading-none">{todayStats.clicks}</p>
+              <p className="text-[12px] font-semibold text-gray-500 mt-1">WhatsApp clicks</p>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Plan Status */}
       {(!user?.plan || user.plan === 'Free') ? (
-        <div className="bg-[#FFFBEB] border border-amber-200 rounded-xl p-4 flex items-center justify-between shadow-sm">
+        <div className="bg-[#FFFBEB] border border-amber-200 rounded-2xl px-4 py-3.5 flex items-center justify-between shadow-sm">
           <div>
             <h3 className="text-sm font-bold text-amber-900">Free plan</h3>
             <p className="text-[11px] font-semibold text-amber-700 mt-0.5">
@@ -120,7 +125,7 @@ export function Dashboard() {
           </Link>
         </div>
       ) : (
-        <div className="bg-[#F0FDF4] border border-[#25D366]/30 rounded-xl p-4 flex items-center shadow-sm">
+        <div className="bg-[#ecfdf5] border border-[#059669]/30 rounded-2xl px-4 py-3.5 flex items-center shadow-sm">
           <div>
             <h3 className="text-sm font-bold text-green-900">Pro plan</h3>
             <p className="text-[11px] font-semibold text-green-700 mt-0.5">
@@ -130,16 +135,16 @@ export function Dashboard() {
         </div>
       )}
 
-      {/* Product limit warning — Free plan, 8+ products */}
+      {/* Product limit warning */}
       {(!user?.plan || user.plan === 'Free') && activeProductsCount >= 8 && (
-        <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex items-center justify-between">
+        <div className="bg-red-50 border border-red-200 rounded-2xl px-4 py-3.5 flex items-center justify-between">
           <div>
             <p className="text-sm font-bold text-red-800">
-              {activeProductsCount >= 10 ? 'Product limit reached' : `Almost at your limit`}
+              {activeProductsCount >= 10 ? 'Product limit reached' : 'Almost at your limit'}
             </p>
             <p className="text-[11px] text-red-600 mt-0.5">
               {activeProductsCount >= 10
-                ? 'You\'ve used all 10 free product slots. Upgrade to add more.'
+                ? "You've used all 10 free product slots. Upgrade to add more."
                 : `${activeProductsCount}/10 products used — only ${10 - activeProductsCount} slot${10 - activeProductsCount === 1 ? '' : 's'} left.`}
             </p>
           </div>
@@ -150,40 +155,45 @@ export function Dashboard() {
       )}
 
       {/* Quick Actions */}
-      <div className="flex gap-3">
-        <button
-          onClick={openNewOrderModal}
-          className="flex-1 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 h-11 rounded-xl flex items-center justify-center gap-2 text-sm font-semibold transition-colors shadow-sm"
-        >
-          <Plus className="w-4 h-4 text-gray-500" /> Log Order
-        </button>
-        <button
-          onClick={() => setIsShareModalOpen(true)}
-          className="flex-1 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 h-11 rounded-xl flex items-center justify-center gap-2 text-sm font-semibold transition-colors shadow-sm"
-        >
-          <Share2 className="w-4 h-4 text-gray-500" /> Share Store
-        </button>
-        <Link
-          href={`/${user?.username}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex-1 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 h-11 rounded-xl flex items-center justify-center gap-2 text-sm font-semibold transition-colors shadow-sm"
-        >
-          <Eye className="w-4 h-4 text-gray-500" /> View Store
-        </Link>
+      <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
+        <div className="px-4 pt-3.5 pb-2 border-b border-gray-50">
+          <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Quick actions</p>
+        </div>
+        <div className="p-3 flex gap-2">
+          <button
+            onClick={openNewOrderModal}
+            className="flex-1 bg-gray-50 hover:bg-gray-100 text-gray-700 h-11 rounded-xl flex items-center justify-center gap-2 text-sm font-semibold transition-colors"
+          >
+            <Plus className="w-4 h-4 text-gray-500" /> Log Order
+          </button>
+          <button
+            onClick={() => setIsShareModalOpen(true)}
+            className="flex-1 bg-gray-50 hover:bg-gray-100 text-gray-700 h-11 rounded-xl flex items-center justify-center gap-2 text-sm font-semibold transition-colors"
+          >
+            <Share2 className="w-4 h-4 text-gray-500" /> Share Store
+          </button>
+          <Link
+            href={`https://${user?.username}.myshoplink.site`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex-1 bg-gray-50 hover:bg-gray-100 text-gray-700 h-11 rounded-xl flex items-center justify-center gap-2 text-sm font-semibold transition-colors"
+          >
+            <Eye className="w-4 h-4 text-gray-500" /> View Store
+          </Link>
+        </div>
       </div>
 
       {/* Recent Orders */}
-      <div className="border-t border-gray-100 pt-4">
+      <div>
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-base font-bold text-gray-900">Recent orders</h2>
+          <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Recent orders</p>
           {orders.length > 0 && (
-            <span className="text-xs text-gray-400">{orders.length} total</span>
+            <span className="text-[11px] font-semibold text-gray-400">{orders.length} total</span>
           )}
         </div>
 
         {orders.length === 0 ? (
-          <div className="bg-white border border-dashed border-gray-200 rounded-2xl p-8 flex flex-col items-center text-center gap-3">
+          <div className="py-10 flex flex-col items-center text-center gap-3">
             <Package className="w-8 h-8 text-gray-300" />
             <div>
               <h3 className="font-semibold text-gray-900 text-sm">No orders yet</h3>
@@ -195,13 +205,23 @@ export function Dashboard() {
             </Button>
           </div>
         ) : (
-          <RecentOrdersTable
-            orders={orders.slice(0, 10)}
-            products={products}
-            currencySymbol={currencySymbol}
-            onEditOrder={handleEditOrder}
-            onDeleteOrder={handleDeleteOrder}
-          />
+          <div>
+            <div className="flex items-center justify-between bg-[#F0FDF4] rounded-xl px-4 py-3 mb-3">
+              <span className="text-sm text-gray-600">
+                {orders.length} confirmed {orders.length === 1 ? 'sale' : 'sales'}
+              </span>
+              <span className="text-sm font-bold text-green-700">
+                {currencySymbol}{orders.reduce((s, o) => s + o.revenue, 0).toFixed(2)}
+              </span>
+            </div>
+            <RecentOrdersTable
+              orders={orders.slice(0, 10)}
+              products={products}
+              currencySymbol={currencySymbol}
+              onEditOrder={handleEditOrder}
+              onDeleteOrder={handleDeleteOrder}
+            />
+          </div>
         )}
       </div>
 

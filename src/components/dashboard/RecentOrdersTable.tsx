@@ -39,10 +39,10 @@ export function RecentOrdersTable({ orders, products, currencySymbol, onEditOrde
         <table className="min-w-[420px] w-full text-sm">
           <thead>
             <tr className="border-b border-gray-100">
-              <th className="pb-2 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wide w-[120px]">Date</th>
               <th className="pb-2 text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wide">Product</th>
               <th className="pb-2 text-center text-[11px] font-semibold text-gray-400 uppercase tracking-wide w-[48px]">Qty</th>
               <th className="pb-2 text-right text-[11px] font-semibold text-gray-400 uppercase tracking-wide">Revenue</th>
+              <th className="pb-2 text-right text-[11px] font-semibold text-gray-400 uppercase tracking-wide w-[120px]">Date</th>
             </tr>
           </thead>
           <tbody>
@@ -55,9 +55,6 @@ export function RecentOrdersTable({ orders, products, currencySymbol, onEditOrde
                   style={{ height: 52 }}
                   onClick={() => onEditOrder(order)}
                 >
-                  <td className="py-2 text-xs text-gray-400 whitespace-nowrap pr-3">
-                    {format(new Date(order.date), 'MMM d, h:mm a')}
-                  </td>
                   <td className="py-2">
                     <div className="flex items-center gap-2">
                       {product?.imageUrl && (
@@ -75,6 +72,9 @@ export function RecentOrdersTable({ orders, products, currencySymbol, onEditOrde
                   <td className="py-2 text-center text-sm text-gray-600">{order.quantity}</td>
                   <td className="py-2 text-right text-sm font-semibold text-green-700">
                     {currencySymbol}{order.revenue.toFixed(2)}
+                  </td>
+                  <td className="py-2 text-right text-xs text-gray-400 whitespace-nowrap pl-3">
+                    {format(new Date(order.date), 'MMM d, h:mm a')}
                   </td>
                 </tr>
               );

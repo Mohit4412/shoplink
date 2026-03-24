@@ -18,14 +18,14 @@ export function SignupSuccess({ firstName, username, email }: SignupSuccessProps
   return (
     <div className="flex flex-col items-center text-center animate-in fade-in slide-in-from-bottom-4 duration-500">
       
-      <div className="w-20 h-20 bg-[#f0fdf4] rounded-full flex items-center justify-center border-8 border-white shadow-sm mb-6 mt-4">
-        <CheckCircle2 className="w-10 h-10 text-[#25D366]" />
+      <div className="w-20 h-20 bg-[#ecfdf5] rounded-full flex items-center justify-center border-8 border-white shadow-sm mb-6 mt-4">
+        <CheckCircle2 className="w-10 h-10 text-[#059669]" />
       </div>
 
       <h1 className="text-3xl font-black text-gray-900 tracking-tight mb-2">Store created!</h1>
       <p className="text-base text-gray-500 mb-8 max-w-sm">
         Welcome, {firstName || 'there'}.<br />
-        Your store is ready at <span className="font-semibold text-gray-700">myshoplink.site/{username}</span>
+        Your store is ready at <span className="font-semibold text-gray-700">{username}.myshoplink.site</span>
       </p>
 
       <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 w-full mb-8 text-left flex gap-3">
@@ -43,7 +43,7 @@ export function SignupSuccess({ firstName, username, email }: SignupSuccessProps
 
       <button 
         onClick={() => router.push('/dashboard')}
-        className="w-full h-[52px] rounded-xl bg-[#25D366] text-white font-semibold text-lg hover:bg-[#20bd5a] flex items-center justify-center transition-all shadow-lg shadow-[#25D366]/20 mb-4"
+        className="w-full h-[52px] rounded-xl bg-[#059669] text-white font-semibold text-lg hover:bg-[#047857] flex items-center justify-center transition-all shadow-lg shadow-[#059669]/20 mb-4"
       >
         Go to my dashboard
       </button>

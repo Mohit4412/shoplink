@@ -1,7 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { applySessionCookie, authenticateUser, createSession } from '@/server/auth';
+import { rateLimit, getClientIp, rateLimitedResponse } from '@/server/rate-limit';
 
 export async function POST(request: NextRequest) {
+  // 10 attempts per IP per 15 minutes
+  const ip = getClientIp(request);
+  const rl = rateLimit(`login:${ip}`, { limit: 10, windowSecs: 15 * 60 });
+  if (!rl.allowed) return rateLimitedResponse(rl.resetAt);
+
   const body = await request.json();
   const email = String(body?.email ?? '').trim().toLowerCase();
   const password = String(body?.password ?? '');

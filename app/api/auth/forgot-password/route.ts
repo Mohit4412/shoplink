@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createPasswordResetToken } from '@/server/auth';
+import { rateLimit, getClientIp, rateLimitedResponse } from '@/server/rate-limit';
 
 async function sendResetEmail(email: string, token: string) {
   const appUrl = process.env.APP_URL || 'http://localhost:3000';
@@ -42,6 +43,11 @@ async function sendResetEmail(email: string, token: string) {
 }
 
 export async function POST(request: NextRequest) {
+  // 3 reset requests per IP per hour
+  const ip = getClientIp(request);
+  const rl = rateLimit(`forgot:${ip}`, { limit: 3, windowSecs: 60 * 60 });
+  if (!rl.allowed) return rateLimitedResponse(rl.resetAt);
+
   const { email } = await request.json();
   if (!email || typeof email !== 'string') {
     return NextResponse.json({ error: 'Email is required' }, { status: 400 });

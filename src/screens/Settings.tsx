@@ -23,7 +23,7 @@ export function Settings() {
   if (view === 'plugins') return <div className="mt-4"><PluginsSettings /></div>;
   if (view === 'domain') return <div className="mt-4"><CustomDomainSettings /></div>;
   if (view === 'billing') return <BillingSettings />;
-  if (view === 'account') return <div className="mt-4"><AccountSettings onTabChange={() => {}} /></div>;
+  if (view === 'account') return <div className="mt-4"><AccountSettings /></div>;
 
   const handleLogout = () => {
     if (window.confirm('Are you sure you want to log out?')) {
@@ -73,7 +73,7 @@ export function Settings() {
     <div className="space-y-6 max-w-[500px] mx-auto pb-4">
       {/* Profile Card */}
       <div className="flex flex-col items-center pt-2 pb-6">
-        <div className="w-16 h-16 rounded-full bg-[#25D366] text-white flex items-center justify-center text-2xl font-bold shadow-sm mb-3">
+        <div className="w-16 h-16 rounded-full bg-[#059669] text-white flex items-center justify-center text-2xl font-bold shadow-sm mb-3">
           {user?.firstName ? user.firstName.charAt(0).toUpperCase() : user?.username?.charAt(0).toUpperCase() || 'U'}
         </div>
         <h2 className="text-xl font-bold text-gray-900 leading-tight">
@@ -89,7 +89,7 @@ export function Settings() {
             href={`https://${user?.username}.myshoplink.site`} 
             target="_blank" 
             rel="noopener noreferrer"
-            className="flex items-center gap-1.5 px-3 py-1 bg-[#f0fdf4] text-[#15803d] text-xs font-semibold rounded-md hover:bg-[#dcfce7] transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1 bg-[#ecfdf5] text-[#065f46] text-xs font-semibold rounded-md hover:bg-[#d1fae5] transition-colors"
           >
             View store <ExternalLink className="w-3.5 h-3.5" />
           </a>

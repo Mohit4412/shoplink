@@ -130,7 +130,7 @@ export function PluginsSettings() {
         {/* Preview Store button */}
         {user?.username && (
           <a
-            href={`/${user.username}`}
+            href={`https://${user.username}.myshoplink.site`}
             target="_blank"
             rel="noopener noreferrer"
             className="shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-300 text-xs font-semibold text-gray-600 hover:bg-gray-50 hover:border-gray-400 transition-colors"

@@ -35,7 +35,7 @@ export function ForgotPassword() {
   return (
     <div className="min-h-screen bg-[#F8F9FA] flex flex-col items-center py-12 px-4 font-sans text-gray-900">
       <Link href="/" className="flex items-center gap-2 mb-8 mt-4 hover:opacity-90 transition-opacity">
-        <div className="w-8 h-8 rounded-lg bg-[#25D366] flex items-center justify-center shadow-sm">
+        <div className="w-8 h-8 rounded-lg bg-[#059669] flex items-center justify-center shadow-sm">
           <Store className="w-5 h-5 text-white" />
         </div>
         <span className="font-bold text-2xl tracking-tight text-gray-900">MyShopLink</span>
@@ -69,7 +69,7 @@ export function ForgotPassword() {
                   onChange={e => setEmail(e.target.value)}
                   placeholder="you@example.com"
                   required
-                  className="w-full h-11 px-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#25D366] focus:border-transparent transition-all placeholder:text-gray-400"
+                  className="w-full h-11 px-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#059669] focus:border-transparent transition-all placeholder:text-gray-400"
                 />
               </div>
 
@@ -78,7 +78,7 @@ export function ForgotPassword() {
               <button
                 type="submit"
                 disabled={isLoading || !email.trim()}
-                className="w-full h-[52px] rounded-xl bg-[#25D366] text-white font-semibold text-base hover:bg-[#20bd5a] flex items-center justify-center gap-2 transition-all disabled:opacity-60"
+                className="w-full h-[52px] rounded-xl bg-[#059669] text-white font-semibold text-base hover:bg-[#047857] flex items-center justify-center gap-2 transition-all disabled:opacity-60"
               >
                 {isLoading && <Loader2 className="w-5 h-5 animate-spin" />}
                 {isLoading ? 'Sending...' : 'Send reset link'}

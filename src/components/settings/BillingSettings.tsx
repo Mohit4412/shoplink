@@ -1,11 +1,24 @@
 'use client';
 
 import React from 'react';
-import { CheckCircle2, CreditCard, Download, Receipt, Sparkles } from 'lucide-react';
+import { CheckCircle2, CreditCard, Download, Receipt, Sparkles, Zap } from 'lucide-react';
 import { useStore } from '../../context/StoreContext';
-import { Card, CardContent } from '../ui/Card';
-import { Button } from '../ui/Button';
 import { UpgradeModal, useUpgradeModal } from '../billing/UpgradeModal';
+
+const PRO_FEATURES = [
+  'Unlimited products',
+  'All storefront themes',
+  'No MyShopLink branding',
+  'Custom domain support',
+  'Priority support',
+];
+
+const FREE_LIMITS = [
+  'Up to 10 products',
+  'Classic theme only',
+  'MyShopLink branding shown',
+  'No custom domain',
+];
 
 export function BillingSettings() {
   const { user } = useStore();
@@ -13,16 +26,13 @@ export function BillingSettings() {
   const isPro = user?.plan === 'Pro';
   const renewalDate = user?.subscriptionRenewalDate ? new Date(user.subscriptionRenewalDate) : null;
   const hasValidRenewalDate = renewalDate instanceof Date && !Number.isNaN(renewalDate.getTime());
-  const isExpiredPro = isPro && (!hasValidRenewalDate || renewalDate.getTime() < Date.now());
+  const isExpiredPro = isPro && (!hasValidRenewalDate || renewalDate!.getTime() < Date.now());
   const isActivePro = isPro && !isExpiredPro;
   const [downloading, setDownloading] = React.useState<string | null>(null);
 
   const handleDownload = (id: string) => {
     setDownloading(id);
-    setTimeout(() => {
-      setDownloading(null);
-      alert(`Invoice ${id} download started!`);
-    }, 1000);
+    setTimeout(() => { setDownloading(null); alert(`Invoice ${id} download started!`); }, 1000);
   };
 
   const invoices = [
@@ -32,188 +42,137 @@ export function BillingSettings() {
   ];
 
   return (
-    <div className="space-y-6">
-      <Card>
-        <CardContent className="p-6">
-          <div className="flex flex-col justify-between gap-6 md:flex-row md:items-center">
-            <div>
-              <h3 className="flex items-center gap-2 text-lg font-semibold text-gray-900">
-                Current Plan
-                <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider ${
-                  isPro ? 'bg-brand- text-brand-' : 'bg-gray-100 text-gray-700'
-                }`}>
-                  {user?.plan || 'Free'} Plan
-                </span>
-              </h3>
+    <div className="space-y-3 mt-4">
 
-              {isPro ? (
-                <>
-                  {isActivePro ? (
-                    <p className="mt-1 text-sm text-gray-500">
-                      Your next renewal date is <span className="font-medium text-gray-900">{user?.subscriptionRenewalDate}</span>
-                    </p>
-                  ) : (
-                    <div className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 p-4">
-                      <div className="flex items-start gap-3">
-                        <div className="rounded-full bg-white p-2 text-amber-600 shadow-sm">
-                          <Sparkles className="h-4 w-4" />
-                        </div>
-                        <div>
-                          <p className="text-sm font-semibold text-amber-900">Pro renewal required</p>
-                          <p className="mt-1 text-sm text-amber-800">Your Pro access needs renewal to keep premium features active.</p>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                  <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
-                    {[
-                      'Unlimited products',
-                      'All storefront themes',
-                      'No MyShopLink branding',
-                      'Priority support',
-                    ].map((feature) => (
-                      <div key={feature} className="flex items-center text-sm text-gray-600">
-                        <CheckCircle2 className="mr-2 h-4 w-4 text-green-500" />
-                        {feature}
-                      </div>
-                    ))}
-                  </div>
-                </>
-              ) : (
-                <div className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 p-4">
-                  <div className="flex items-start gap-3">
-                    <div className="rounded-full bg-white p-2 text-amber-600 shadow-sm">
-                      <Sparkles className="h-4 w-4" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold text-amber-900">Free plan active</p>
-                      <p className="mt-1 text-sm text-amber-800">Upgrade to Pro for unlimited products, all themes, no MyShopLink branding, and custom domains.</p>
-                    </div>
-                  </div>
-                </div>
-              )}
+      {/* Current Plan Card */}
+      <div className={`rounded-2xl border overflow-hidden ${isActivePro ? 'border-[#059669]/30 bg-[#ecfdf5]' : 'border-amber-200 bg-[#FFFBEB]'}`}>
+        {/* Plan badge row */}
+        <div className={`px-4 py-3 flex items-center justify-between border-b ${isActivePro ? 'border-[#059669]/20' : 'border-amber-200/60'}`}>
+          <div className="flex items-center gap-2">
+            <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${isActivePro ? 'bg-[#059669]/10' : 'bg-amber-100'}`}>
+              {isActivePro ? <Zap className="w-4 h-4 text-[#059669]" /> : <Sparkles className="w-4 h-4 text-amber-600" />}
             </div>
-
-            <div className="flex flex-col gap-2">
-              {isPro ? (
-                <>
-                  <Button
-                    variant={isExpiredPro ? 'primary' : 'outline'}
-                    className="w-full md:w-auto"
-                    onClick={() => {
-                      if (isExpiredPro) {
-                        upgradeModal.open();
-                        return;
-                      }
-                      alert('Subscription management will be connected once Razorpay is live.');
-                    }}
-                  >
-                    {isExpiredPro ? 'Renew Pro' : 'Manage Subscription'}
-                  </Button>
-                  <button
-                    className="px-4 py-2 text-sm font-medium text-gray-500 hover:text-gray-700"
-                    onClick={() => alert('Renewal settings will be available after Razorpay integration.')}
-                  >
-                    {isExpiredPro ? 'Renewal help' : 'Renewal Options'}
-                  </button>
-                </>
-              ) : (
-                <Button className="w-full md:w-auto" onClick={upgradeModal.open}>
-                  Upgrade to Pro
-                </Button>
-              )}
+            <div>
+              <p className="text-sm font-bold text-gray-900">
+                {isActivePro ? 'Pro Plan' : isExpiredPro ? 'Pro (Expired)' : 'Free Plan'}
+              </p>
+              <p className="text-[11px] font-medium text-gray-500">
+                {isActivePro
+                  ? `Renews ${user?.subscriptionRenewalDate || 'lifetime'}`
+                  : isExpiredPro
+                  ? 'Your Pro access has expired'
+                  : 'Limited features'}
+              </p>
             </div>
           </div>
-        </CardContent>
-      </Card>
+          <span className={`text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full ${
+            isActivePro ? 'bg-[#059669] text-white' : 'bg-amber-200 text-amber-900'
+          }`}>
+            {isActivePro ? 'Active' : isExpiredPro ? 'Expired' : 'Free'}
+          </span>
+        </div>
 
-      {isActivePro ? (
-        <>
-          <Card>
-            <CardContent className="p-6">
-              <h3 className="mb-4 text-sm font-medium text-gray-900">Payment Method</h3>
-              <div className="flex items-center justify-between rounded-xl border border-gray-200 bg-gray-50 p-4">
-                <div className="flex items-center gap-4">
-                  <div className="flex h-8 w-12 items-center justify-center rounded border border-gray-200 bg-white">
-                    <CreditCard className="h-6 w-6 text-gray-400" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-900">Razorpay payment method placeholder</p>
-                    <p className="text-xs text-gray-500">Manage cards and UPI after checkout is connected.</p>
-                  </div>
+        {/* Features list */}
+        <div className="px-4 py-3 space-y-2">
+          {(isActivePro ? PRO_FEATURES : FREE_LIMITS).map(f => (
+            <div key={f} className="flex items-center gap-2.5">
+              <CheckCircle2 className={`w-3.5 h-3.5 shrink-0 ${isActivePro ? 'text-[#059669]' : 'text-gray-300'}`} />
+              <span className="text-sm text-gray-700">{f}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* CTA */}
+        <div className="px-4 pb-4">
+          {isActivePro ? (
+            <button
+              onClick={() => alert('Subscription management will be connected once Razorpay is live.')}
+              className="w-full h-10 rounded-xl border border-[#059669]/40 text-[#15803d] text-sm font-semibold hover:bg-[#dcfce7] transition-colors"
+            >
+              Manage subscription
+            </button>
+          ) : (
+            <button
+              onClick={upgradeModal.open}
+              className="w-full h-10 rounded-xl bg-gray-900 text-white text-sm font-semibold hover:bg-gray-800 transition-colors flex items-center justify-center gap-2"
+            >
+              <Zap className="w-4 h-4" />
+              {isExpiredPro ? 'Renew Pro' : 'Upgrade to Pro — ₹299/mo'}
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Payment Method — Pro only */}
+      {isActivePro && (
+        <div className="bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm">
+          <div className="px-4 pt-3.5 pb-2 border-b border-gray-50">
+            <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Payment method</p>
+          </div>
+          <div className="p-4 flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center shrink-0">
+              <CreditCard className="w-5 h-5 text-gray-400" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold text-gray-900">Razorpay</p>
+              <p className="text-xs text-gray-400">Manage cards and UPI after checkout is connected.</p>
+            </div>
+            <button
+              onClick={() => alert('Payment method management coming soon.')}
+              className="h-8 px-3 text-xs font-semibold rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors shrink-0"
+            >
+              Update
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Billing History — Pro only */}
+      {isActivePro && (
+        <div className="bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm">
+          <div className="px-4 pt-3.5 pb-2 border-b border-gray-50 flex items-center justify-between">
+            <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Billing history</p>
+            <button
+              onClick={() => alert('All invoices download started!')}
+              className="flex items-center gap-1 text-[11px] font-semibold text-gray-500 hover:text-gray-900 transition-colors"
+            >
+              <Download className="w-3 h-3" /> Download all
+            </button>
+          </div>
+
+          <div className="divide-y divide-gray-50">
+            {invoices.map(invoice => (
+              <div key={invoice.id} className="flex items-center gap-3 px-4 py-3">
+                <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center shrink-0">
+                  <Receipt className="w-4 h-4 text-gray-400" />
                 </div>
-                <Button variant="outline" size="sm">Update</Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="mb-6 flex items-center justify-between">
-                <h3 className="text-sm font-medium text-gray-900">Billing History</h3>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="text-xs"
-                  onClick={() => {
-                    alert('All invoices are being prepared for download...');
-                    setTimeout(() => alert('Download started!'), 1000);
-                  }}
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-gray-900">{invoice.id}</p>
+                  <p className="text-xs text-gray-400">{invoice.date}</p>
+                </div>
+                <span className="text-sm font-bold text-gray-900 shrink-0">{invoice.amount}</span>
+                <span className="text-[10px] font-bold bg-green-100 text-green-700 px-2 py-0.5 rounded-full shrink-0">
+                  {invoice.status}
+                </span>
+                <button
+                  onClick={() => handleDownload(invoice.id)}
+                  disabled={downloading === invoice.id}
+                  className="p-1.5 text-gray-400 hover:text-gray-700 disabled:opacity-40 transition-colors shrink-0"
                 >
-                  <Download className="mr-1 h-3 w-3" /> Download All
-                </Button>
+                  <Download className="w-3.5 h-3.5" />
+                </button>
               </div>
+            ))}
+          </div>
 
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-sm">
-                  <thead>
-                    <tr className="border-b border-gray-100 text-gray-500">
-                      <th className="pb-3 font-medium">Invoice</th>
-                      <th className="pb-3 font-medium">Date</th>
-                      <th className="pb-3 font-medium">Amount</th>
-                      <th className="pb-3 font-medium">Status</th>
-                      <th className="pb-3 text-right font-medium">Action</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-50">
-                    {invoices.map((invoice) => (
-                      <tr key={invoice.id} className="group transition-colors hover:bg-gray-50/50">
-                        <td className="flex items-center gap-2 py-4 font-medium text-gray-900">
-                          <Receipt className="h-4 w-4 text-gray-400" />
-                          {invoice.id}
-                        </td>
-                        <td className="py-4 text-gray-600">{invoice.date}</td>
-                        <td className="py-4 font-medium text-gray-900">{invoice.amount}</td>
-                        <td className="py-4">
-                          <span className="inline-flex items-center rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800">
-                            {invoice.status}
-                          </span>
-                        </td>
-                        <td className="py-4 text-right">
-                          <button
-                            onClick={() => handleDownload(invoice.id)}
-                            disabled={downloading === invoice.id}
-                            className="inline-flex items-center font-medium text-brand- hover:text-brand- disabled:opacity-50"
-                          >
-                            {downloading === invoice.id ? 'Downloading...' : 'Download'}
-                            <Download className="ml-1 h-3 w-3" />
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-
-              <div className="mt-6 border-t border-gray-100 pt-6">
-                <p className="text-center text-xs text-gray-500">
-                  Razorpay billing history will appear here once checkout is connected. For questions, contact <a href="mailto:support@example.com" className="text-brand- hover:underline">support@example.com</a>
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        </>
-      ) : null}
+          <div className="px-4 py-3 border-t border-gray-50">
+            <p className="text-[11px] text-gray-400 text-center">
+              Full billing history available after Razorpay integration. Questions?{' '}
+              <a href="mailto:support@myshoplink.site" className="underline hover:text-gray-700">support@myshoplink.site</a>
+            </p>
+          </div>
+        </div>
+      )}
 
       <UpgradeModal isOpen={upgradeModal.isOpen} onClose={upgradeModal.close} />
     </div>

@@ -160,11 +160,11 @@ export function Signup() {
   const errors = hasSubmitted ? getErrors() : {};
 
   return (
-    <div className="min-h-screen bg-[#F8F9FA] flex flex-col items-center py-12 px-4 font-sans text-gray-900 selection:bg-[#25D366]/30">
+    <div className="min-h-screen bg-[#F8F9FA] flex flex-col items-center py-12 px-4 font-sans text-gray-900 selection:bg-[#059669]/30">
       
       {/* Top Logo */}
       <Link href="/" className="flex items-center gap-2 mb-8 mt-4 hover:opacity-90 transition-opacity">
-        <div className="w-8 h-8 rounded-lg bg-[#25D366] flex items-center justify-center shadow-sm">
+        <div className="w-8 h-8 rounded-lg bg-[#059669] flex items-center justify-center shadow-sm">
           <Store className="w-5 h-5 text-white" />
         </div>
         <span className="font-bold text-2xl tracking-tight text-gray-900">
@@ -197,7 +197,7 @@ export function Signup() {
                   value={email}
                   onChange={e => setEmail(e.target.value)}
                   placeholder="you@example.com"
-                  className={`w-full h-11 px-3 rounded-lg border ${errors.email ? 'border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-[#25D366]'} focus:outline-none focus:ring-2 focus:border-transparent transition-all placeholder:text-gray-400`}
+                  className={`w-full h-11 px-3 rounded-lg border ${errors.email ? 'border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-[#059669]'} focus:outline-none focus:ring-2 focus:border-transparent transition-all placeholder:text-gray-400`}
                 />
                 {errors.email && <p className="text-xs text-red-500">{errors.email}</p>}
               </div>
@@ -210,7 +210,7 @@ export function Signup() {
                     value={password}
                     onChange={e => setPassword(e.target.value)}
                     placeholder="••••••••"
-                    className={`w-full h-11 pl-3 pr-10 rounded-lg border ${errors.password ? 'border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-[#25D366]'} focus:outline-none focus:ring-2 focus:border-transparent transition-all placeholder:text-gray-400`}
+                    className={`w-full h-11 pl-3 pr-10 rounded-lg border ${errors.password ? 'border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-[#059669]'} focus:outline-none focus:ring-2 focus:border-transparent transition-all placeholder:text-gray-400`}
                   />
                   <button 
                     type="button" 
@@ -228,7 +228,7 @@ export function Signup() {
               <button 
                 type="submit" 
                 disabled={isLoading}
-                className="w-full h-[52px] mt-2 rounded-xl bg-[#25D366] text-white font-semibold text-lg hover:bg-[#20bd5a] flex items-center justify-center gap-2 transition-all disabled:opacity-80 shadow-lg shadow-[#25D366]/20"
+                className="w-full h-[52px] mt-2 rounded-xl bg-[#059669] text-white font-semibold text-lg hover:bg-[#047857] flex items-center justify-center gap-2 transition-all disabled:opacity-80 shadow-lg shadow-[#059669]/20"
               >
                 {isLoading && <Loader2 className="w-5 h-5 animate-spin" />}
                 {isLoading ? "Logging in..." : "Log in to my store"}
@@ -270,7 +270,7 @@ export function Signup() {
                   value={fullName}
                   onChange={e => setFullName(e.target.value)}
                   placeholder="e.g. Priya Sharma"
-                  className={`w-full h-11 px-3 rounded-lg border ${errors.fullName ? 'border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-[#25D366]'} focus:outline-none focus:ring-2 focus:border-transparent transition-all placeholder:text-gray-400`}
+                  className={`w-full h-11 px-3 rounded-lg border ${errors.fullName ? 'border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-[#059669]'} focus:outline-none focus:ring-2 focus:border-transparent transition-all placeholder:text-gray-400`}
                 />
                 {errors.fullName && <p className="text-xs text-red-500">{errors.fullName}</p>}
               </div>
@@ -283,7 +283,7 @@ export function Signup() {
                     value={username}
                     onChange={handleUsernameChange}
                     placeholder="e.g. priyasarees"
-                    className={`w-full h-11 px-3 pr-9 rounded-lg border ${errors.username ? 'border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-[#25D366]'} focus:outline-none focus:ring-2 focus:border-transparent transition-all placeholder:text-gray-400`}
+                    className={`w-full h-11 px-3 pr-9 rounded-lg border ${errors.username ? 'border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-[#059669]'} focus:outline-none focus:ring-2 focus:border-transparent transition-all placeholder:text-gray-400`}
                   />
                   <div className="absolute right-3 top-1/2 -translate-y-1/2">
                     {checkingUsername && <Loader2 className="w-4 h-4 animate-spin text-gray-400" />}
@@ -313,7 +313,7 @@ export function Signup() {
                       const country = countryCodes.find(c => c.code === e.target.value);
                       if (country) setSelectedCountry(country);
                     }}
-                    className="w-24 h-11 shrink-0 bg-gray-50 border border-gray-300 rounded-lg px-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#25D366] focus:border-transparent"
+                    className="w-24 h-11 shrink-0 bg-gray-50 border border-gray-300 rounded-lg px-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#059669] focus:border-transparent"
                   >
                     {countryCodes.map((c) => (
                       <option key={c.code} value={c.code}>
@@ -326,7 +326,7 @@ export function Signup() {
                     value={whatsapp}
                     onChange={e => setWhatsapp(e.target.value)}
                     placeholder="98765 43210"
-                    className={`w-full h-11 px-3 rounded-lg border ${errors.whatsapp ? 'border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-[#25D366]'} focus:outline-none focus:ring-2 focus:border-transparent transition-all placeholder:text-gray-400`}
+                    className={`w-full h-11 px-3 rounded-lg border ${errors.whatsapp ? 'border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-[#059669]'} focus:outline-none focus:ring-2 focus:border-transparent transition-all placeholder:text-gray-400`}
                   />
                 </div>
                 <p className="text-xs text-gray-400 mt-1">Customers will contact you on this number to place orders</p>
@@ -340,7 +340,7 @@ export function Signup() {
                   value={email}
                   onChange={e => setEmail(e.target.value)}
                   placeholder="you@example.com"
-                  className={`w-full h-11 px-3 rounded-lg border ${errors.email ? 'border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-[#25D366]'} focus:outline-none focus:ring-2 focus:border-transparent transition-all placeholder:text-gray-400`}
+                  className={`w-full h-11 px-3 rounded-lg border ${errors.email ? 'border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-[#059669]'} focus:outline-none focus:ring-2 focus:border-transparent transition-all placeholder:text-gray-400`}
                 />
                 {errors.email && <p className="text-xs text-red-500">{errors.email}</p>}
               </div>
@@ -353,7 +353,7 @@ export function Signup() {
                     value={password}
                     onChange={e => setPassword(e.target.value)}
                     placeholder="Minimum 6 characters"
-                    className={`w-full h-11 pl-3 pr-10 rounded-lg border ${errors.password ? 'border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-[#25D366]'} focus:outline-none focus:ring-2 focus:border-transparent transition-all placeholder:text-gray-400`}
+                    className={`w-full h-11 pl-3 pr-10 rounded-lg border ${errors.password ? 'border-red-300 focus:ring-red-500' : 'border-gray-300 focus:ring-[#059669]'} focus:outline-none focus:ring-2 focus:border-transparent transition-all placeholder:text-gray-400`}
                   />
                   <button 
                     type="button" 
@@ -373,7 +373,7 @@ export function Signup() {
                       type="checkbox" 
                       checked={agreeTerms}
                       onChange={e => setAgreeTerms(e.target.checked)}
-                      className="w-5 h-5 rounded border-gray-300 text-[#25D366] focus:ring-[#25D366] transition-colors cursor-pointer"
+                      className="w-5 h-5 rounded border-gray-300 text-[#059669] focus:ring-[#059669] transition-colors cursor-pointer"
                     />
                   </div>
                   <span className="text-sm font-medium text-gray-600 leading-snug">
@@ -388,7 +388,7 @@ export function Signup() {
               <button 
                 type="submit" 
                 disabled={isLoading}
-                className="w-full h-[52px] mt-4 rounded-xl bg-[#25D366] text-white font-semibold text-lg hover:bg-[#20bd5a] flex items-center justify-center gap-2 transition-all disabled:opacity-80 shadow-lg shadow-[#25D366]/20"
+                className="w-full h-[52px] mt-4 rounded-xl bg-[#059669] text-white font-semibold text-lg hover:bg-[#047857] flex items-center justify-center gap-2 transition-all disabled:opacity-80 shadow-lg shadow-[#059669]/20"
               >
                 {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Store className="w-5 h-5" />}
                 {isLoading ? "Creating your store..." : "Create My Free Store"}

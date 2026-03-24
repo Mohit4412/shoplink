@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { MessageCircle, ShoppingBag } from 'lucide-react';
+import { MessageCircle, ShoppingBag, Search, X } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
 import { getCurrencySymbol } from '../utils/currency';
 import { getTheme, Theme } from '../utils/themes';
@@ -78,10 +78,11 @@ interface SectionContext {
   store: StoreSettings;
   activeProducts: Product[];
   featuredProducts: Product[];
-  remainingProducts: Product[];  // activeProducts minus featuredProducts when featured is enabled
+  remainingProducts: Product[];
   currencySymbol: string;
   resolvedStoreId: string;
   onContactClick: (product?: Product) => void;
+  searchQuery: string;
 }
 
 // ─── SectionRenderer – switch on section.id ───────────────────────────────────
@@ -273,8 +274,14 @@ function SectionRenderer({
 
     // ── All Products ────────────────────────────────────────────────────────
     case 'all-products': {
-      // Use remainingProducts so featured picks aren't duplicated when both sections are on
-      const displayProducts = remainingProducts;
+      const q = ctx.searchQuery.toLowerCase().trim();
+      const displayProducts = q
+        ? remainingProducts.filter(p =>
+            p.name.toLowerCase().includes(q) ||
+            p.description.toLowerCase().includes(q) ||
+            p.category.toLowerCase().includes(q)
+          )
+        : remainingProducts;
       const { wrapperClass, itemClass, isList } = getGridClasses(theme.layout.productGrid);
       const { style: cardSt, className: cardCls, isBorderless } = getCardStyle(theme.layout.cardStyle, t);
       return (
@@ -450,7 +457,7 @@ function SectionRenderer({
             {displayProducts.length === 0 && (
               <div className="w-full py-20 text-center">
                 <p className="text-sm uppercase tracking-widest font-semibold" style={{ color: t.productMeta }}>
-                  No products available yet
+                  {q ? `No products match "${ctx.searchQuery}"` : 'No products available yet'}
                 </p>
               </div>
             )}
@@ -568,14 +575,27 @@ export function StoreFront({ storefront }: { storefront?: PublicStorefrontData }
     : activeProducts;
   const currencySymbol = getCurrencySymbol(store.currency);
 
+  const [searchQuery, setSearchQuery] = useState('');
+
   useEffect(() => { trackStoreView(resolvedStoreId); }, [resolvedStoreId, trackStoreView]);
 
   const buildWhatsAppUrl = (product?: Product) => {
     const phone = activeUser?.whatsappNumber.replace(/\D/g, '') || '';
-    const productLink = product ? getProductUrl(resolvedStoreId, product.id) : '';
-    const message = product
-      ? `Hi! I want to order: *${product.name}* — ${currencySymbol}${product.price.toFixed(2)}.\n\n${productLink}\n\nPlease confirm availability. 🙏`
-      : `Hi ${store.name}, I'm interested in exploring your store.`;
+    if (product) {
+      const productLink = getProductUrl(resolvedStoreId, product.id);
+      const inStock = product.stock > 0 ? '' : '\n⚠️ Please confirm availability.';
+      const message =
+        `Hi ${store.name}! 👋\n\n` +
+        `I'd like to order:\n` +
+        `*${product.name}*\n` +
+        `Price: ${currencySymbol}${product.price.toFixed(2)}` +
+        (product.category ? `\nCategory: ${product.category}` : '') +
+        `\n\n🔗 ${productLink}` +
+        inStock +
+        `\n\nPlease confirm and let me know how to proceed. 🙏`;
+      return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+    }
+    const message = `Hi ${store.name}! 👋 I'm browsing your store and would love to know more about your products.`;
     return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
   };
 
@@ -598,6 +618,7 @@ export function StoreFront({ storefront }: { storefront?: PublicStorefrontData }
     currencySymbol,
     resolvedStoreId,
     onContactClick: handleContactClick,
+    searchQuery,
   };
 
   return (
@@ -631,6 +652,32 @@ export function StoreFront({ storefront }: { storefront?: PublicStorefrontData }
           <span className="truncate">{store.name}</span>
         </div>
         <div className="flex items-center gap-2 sm:gap-4 shrink-0">
+          {activeProducts.length > 5 && (
+            <div className="relative">
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none" style={{ color: t.productMeta }} />
+              <input
+                type="search"
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                placeholder="Search..."
+                className="h-8 pl-7 pr-7 rounded-full text-xs border focus:outline-none focus:ring-1 w-28 sm:w-40 transition-all"
+                style={{
+                  background: t.cardBg,
+                  borderColor: t.cardBorder,
+                  color: t.pageText,
+                }}
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-2 top-1/2 -translate-y-1/2"
+                  style={{ color: t.productMeta }}
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              )}
+            </div>
+          )}
           <a
             href="#all-products"
             className="flex items-center gap-1.5 text-sm font-medium transition-opacity hover:opacity-70 p-2"

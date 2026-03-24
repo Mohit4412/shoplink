@@ -140,11 +140,17 @@ export function StoreSettings() {
           {/* Logo */}
           <div className="flex items-center gap-4">
             <div className="relative group shrink-0">
-              <img
-                src={storeForm.logoUrl || store.logoUrl}
-                alt="Store Logo"
-                className="h-16 w-16 rounded-xl border border-gray-200 object-cover"
-              />
+              {storeForm.logoUrl || store.logoUrl ? (
+                <img
+                  src={storeForm.logoUrl || store.logoUrl}
+                  alt="Store Logo"
+                  className="h-16 w-16 rounded-xl border border-gray-200 object-cover"
+                />
+              ) : (
+                <div className="h-16 w-16 rounded-xl border border-gray-200 bg-gray-100 flex items-center justify-center text-2xl font-bold text-gray-400 select-none">
+                  {(storeForm.name || store.name || 'S').charAt(0).toUpperCase()}
+                </div>
+              )}
               <label
                 htmlFor="logo-upload"
                 className="absolute inset-0 flex cursor-pointer items-center justify-center rounded-xl bg-black/40 opacity-0 transition-opacity group-hover:opacity-100"
@@ -187,7 +193,7 @@ export function StoreSettings() {
             readOnly
             disabled
             className="bg-gray-50 text-gray-400 cursor-not-allowed"
-            helperText={`Live at: ${typeof window !== 'undefined' ? window.location.origin : ''}/${user?.username}`}
+            helperText={`Live at: https://${user?.username}.myshoplink.site`}
           />
 
           <div>

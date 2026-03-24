@@ -11,11 +11,11 @@ interface ProductTableProps {
 
 export function ProductTable({ products, filteredProducts, currencySymbol, onEdit, onDelete }: ProductTableProps) {
   return (
-    <div className="hidden sm:block overflow-x-auto -mx-4 px-4">
-      <table className="min-w-[500px] w-full text-sm text-left bg-white rounded-2xl border border-gray-100 overflow-hidden">
+    <div className="overflow-x-auto -mx-4 px-4">
+      <table className="min-w-[520px] w-full text-sm text-left bg-white rounded-2xl border border-gray-100 overflow-hidden">
         <thead className="text-xs text-gray-400 uppercase bg-gray-50 border-b border-gray-100">
           <tr>
-            <th className="px-3 py-3 font-semibold w-[48px]"></th>
+            <th className="px-3 py-3 font-semibold w-[64px]"></th>
             <th className="px-3 py-3 font-semibold min-w-[140px]">Product</th>
             <th className="px-3 py-3 font-semibold min-w-[80px]">Price</th>
             <th className="px-3 py-3 font-semibold min-w-[100px]">Collection</th>
@@ -32,13 +32,15 @@ export function ProductTable({ products, filteredProducts, currencySymbol, onEdi
             </tr>
           ) : (
             filteredProducts.map((product) => (
-              <tr key={product.id} className="hover:bg-gray-50 transition-colors h-14">
+              <tr key={product.id} className="hover:bg-gray-50 transition-colors h-16">
                 <td className="px-3 py-2">
-                  <img
-                    src={product.imageUrl}
-                    alt={product.name}
-                    className="w-10 h-10 rounded-lg object-cover border border-gray-100"
-                  />
+                  <div className="w-12 h-12 rounded-xl bg-gray-50 overflow-hidden flex items-center justify-center shrink-0">
+                    <img
+                      src={product.imageUrl}
+                      alt={product.name}
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
                 </td>
                 <td className="px-3 py-2 font-medium text-gray-900 text-sm">{product.name}</td>
                 <td className="px-3 py-2 text-sm text-gray-600">{currencySymbol}{product.price.toFixed(2)}</td>
