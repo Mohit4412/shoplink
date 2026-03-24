@@ -405,12 +405,14 @@ export async function replaceMerchantBundle(bundle: MerchantStorefrontBundle) {
     await supabaseInsert<StoreRow>('stores', serializeStore(bundle), { on_conflict: 'username' }, { upsert: true });
     await supabaseDelete('products', { store_username: `eq.${bundle.user.username}` });
     if (normalizedProducts.length > 0) {
-      await supabaseInsert<ProductRow>(
-        'products',
-        normalizedProducts.map((product) => serializeProduct(bundle.user.username, product)),
-        undefined,
-        {}
-      );
+      const serialized = normalizedProducts.map((product) => serializeProduct(bundle.user.username, product));
+      try {
+        await supabaseInsert<ProductRow>('products', serialized, undefined, {});
+      } catch {
+        // Retry without is_demo in case column doesn't exist yet in Supabase
+        const withoutDemo = serialized.map(({ is_demo: _, ...rest }) => rest);
+        await supabaseInsert<ProductRow>('products', withoutDemo, undefined, {});
+      }
     }
     return getMerchantBundleByUsername(bundle.user.username);
   }
@@ -445,7 +447,14 @@ export async function createProduct(username: string, product: Product) {
   }
 
   if (isSupabaseEnabled()) {
-    await supabaseInsert<ProductRow>('products', serializeProduct(username, normalizeProduct(product)));
+    const serialized = serializeProduct(username, normalizeProduct(product));
+    try {
+      await supabaseInsert<ProductRow>('products', serialized);
+    } catch {
+      // Retry without is_demo in case column doesn't exist yet
+      const { is_demo: _, ...withoutDemo } = serialized;
+      await supabaseInsert<ProductRow>('products', withoutDemo);
+    }
     return getMerchantBundleByUsername(username);
   }
 
@@ -479,14 +488,21 @@ export async function updateProductById(username: string, productId: string, upd
   });
 
   if (isSupabaseEnabled()) {
-    await supabasePatch<ProductRow>(
-      'products',
-      serializeProduct(username, nextProduct),
-      {
-        store_username: `eq.${username}`,
-        product_id: `eq.${productId}`,
-      }
-    );
+    const serialized = serializeProduct(username, nextProduct);
+    try {
+      await supabasePatch<ProductRow>(
+        'products',
+        serialized,
+        { store_username: `eq.${username}`, product_id: `eq.${productId}` }
+      );
+    } catch {
+      const { is_demo: _, ...withoutDemo } = serialized;
+      await supabasePatch<ProductRow>(
+        'products',
+        withoutDemo,
+        { store_username: `eq.${username}`, product_id: `eq.${productId}` }
+      );
+    }
   } else {
     requireDb();
     replaceProductStmt.run(serializeProduct(username, nextProduct));

@@ -55,6 +55,7 @@ create table if not exists public.products (
   collection_name text,
   highlights_json jsonb,
   reviews_json jsonb,
+  is_demo boolean not null default false,
   primary key (store_username, product_id)
 );
 
