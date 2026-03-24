@@ -32,12 +32,6 @@ export async function middleware(req: NextRequest) {
   }
 
   // Root domain + www + localhost — always serve the app as-is
-  // www.myshoplink.site → redirect to myshoplink.site (canonical)
-  if (host === `www.${ROOT_HOSTNAME}`) {
-    url.host = ROOT_HOSTNAME;
-    return NextResponse.redirect(url, 301);
-  }
-
   if (APP_HOSTNAMES.has(host)) {
     return NextResponse.next();
   }

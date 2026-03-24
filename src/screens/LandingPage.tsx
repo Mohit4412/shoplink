@@ -5,9 +5,10 @@ import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Store, Link as LinkIcon, MessageCircle, Palette, BarChart3,
-  CheckCircle2, Package, ChevronDown, ArrowRight, Zap,
-  ShoppingBag, ExternalLink, Star
+  CheckCircle2, ChevronDown, ArrowRight,
+  ShoppingBag, Star
 } from 'lucide-react';
+import Image from 'next/image';
 import Link from 'next/link';
 
 const EMERALD = '#059669';
@@ -26,47 +27,18 @@ function Logo() {
   );
 }
 
-/* ── Fake phone mockup ── */
+/* ── Hero phone image ── */
 function PhoneMockup() {
   return (
-    <div className="relative mx-auto w-[220px] sm:w-[260px]">
-      {/* glow */}
-      <div className="absolute inset-0 rounded-[2.5rem] blur-2xl opacity-20" style={{ background: EMERALD }} />
-      {/* shell */}
-      <div className="relative rounded-[2.5rem] border-[6px] border-gray-900 bg-white shadow-2xl overflow-hidden">
-        {/* status bar */}
-        <div className="h-6 bg-gray-900 flex items-center justify-center">
-          <div className="w-16 h-3 bg-gray-800 rounded-full" />
-        </div>
-        {/* store header */}
-        <div className="px-3 py-3 border-b border-gray-100 flex items-center gap-2">
-          <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-black" style={{ background: EMERALD }}>P</div>
-          <div>
-            <p className="text-[11px] font-black text-gray-900">Priya's Sarees</p>
-            <p className="text-[9px] text-gray-400">priyasarees.myshoplink.site</p>
-          </div>
-        </div>
-        {/* product cards */}
-        {[
-          { name: 'Banarasi Silk', price: '₹2,499', color: 'bg-rose-100' },
-          { name: 'Cotton Printed', price: '₹899', color: 'bg-amber-100' },
-        ].map((p) => (
-          <div key={p.name} className="flex items-center gap-2 px-3 py-2 border-b border-gray-50">
-            <div className={`w-10 h-10 rounded-xl ${p.color} shrink-0`} />
-            <div className="flex-1 min-w-0">
-              <p className="text-[10px] font-black text-gray-900 truncate">{p.name}</p>
-              <p className="text-[10px] font-bold" style={{ color: EMERALD }}>{p.price}</p>
-            </div>
-            <div className="text-[8px] font-black text-white px-1.5 py-0.5 rounded-md" style={{ background: EMERALD }}>Order</div>
-          </div>
-        ))}
-        {/* whatsapp cta */}
-        <div className="px-3 py-3">
-          <div className="w-full h-7 rounded-xl flex items-center justify-center gap-1 text-[10px] font-black text-white" style={{ background: EMERALD }}>
-            <MessageCircle className="w-3 h-3" /> Order via WhatsApp
-          </div>
-        </div>
-      </div>
+    <div className="relative mx-auto w-[240px] sm:w-[300px] lg:w-[340px] drop-shadow-2xl">
+      <Image
+        src="/hero-phone.png"
+        alt="MyShopLink store on mobile"
+        width={340}
+        height={680}
+        className="w-full h-auto object-contain"
+        priority
+      />
     </div>
   );
 }
