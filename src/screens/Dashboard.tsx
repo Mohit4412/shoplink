@@ -1,9 +1,11 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Plus, Share2, Package, Store, Eye, MessageCircle } from 'lucide-react';
 import Link from 'next/link';
 import { format } from 'date-fns';
+import { motion, AnimatePresence } from 'motion/react';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { useStore } from '../context/StoreContext';
 import { getCurrencySymbol } from '../utils/currency';
 import { Order } from '../types';
@@ -17,6 +19,20 @@ export function Dashboard() {
   const [isLogOrderModalOpen, setIsLogOrderModalOpen] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const [showCelebration, setShowCelebration] = useState(false);
+
+  useEffect(() => {
+    if (searchParams.get('upgraded') === '1') {
+      setShowCelebration(true);
+      // Clean the URL without reloading
+      router.replace('/dashboard', { scroll: false });
+      // Auto-dismiss after 4s
+      const t = setTimeout(() => setShowCelebration(false), 4000);
+      return () => clearTimeout(t);
+    }
+  }, [searchParams, router]);
 
   const today = new Date();
   const todayStr = format(today, 'yyyy-MM-dd');
@@ -240,6 +256,79 @@ export function Dashboard() {
         onClose={() => setIsShareModalOpen(false)}
         username={user?.username || ''}
       />
+
+      {/* Pro upgrade celebration overlay */}
+      <AnimatePresence>
+        {showCelebration && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4"
+            onClick={() => setShowCelebration(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.85, opacity: 0, y: 30 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              transition={{ type: 'spring', stiffness: 280, damping: 22 }}
+              className="relative bg-white rounded-3xl p-8 max-w-sm w-full text-center shadow-2xl overflow-hidden"
+              onClick={e => e.stopPropagation()}
+            >
+              {/* Confetti dots */}
+              {[...Array(14)].map((_, i) => (
+                <motion.div
+                  key={i}
+                  className="absolute w-2.5 h-2.5 rounded-full"
+                  style={{
+                    background: ['#059669','#fbbf24','#3b82f6','#f43f5e','#a855f7','#f97316'][i % 6],
+                    left: `${8 + (i * 6.5) % 84}%`,
+                    top: `${4 + (i * 11) % 35}%`,
+                  }}
+                  initial={{ opacity: 0, y: 0, scale: 0 }}
+                  animate={{ opacity: [0, 1, 0], y: -50 - i * 5, scale: [0, 1.2, 0] }}
+                  transition={{ delay: 0.1 + i * 0.07, duration: 1.4, ease: 'easeOut' }}
+                />
+              ))}
+
+              {/* Badge */}
+              <motion.div
+                initial={{ scale: 0, rotate: -15 }}
+                animate={{ scale: 1, rotate: 0 }}
+                transition={{ delay: 0.15, type: 'spring', stiffness: 300, damping: 16 }}
+                className="w-20 h-20 rounded-full mx-auto mb-5 flex items-center justify-center text-4xl"
+                style={{ background: 'linear-gradient(135deg, #059669, #047857)' }}
+              >
+                <span>⚡</span>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+              >
+                <p className="text-xs font-black tracking-[0.2em] uppercase mb-1" style={{ color: '#059669' }}>
+                  Pro Activated
+                </p>
+                <h2 className="text-2xl font-black text-gray-900 mb-2">You're on Pro! 🎉</h2>
+                <p className="text-sm text-gray-500 leading-relaxed mb-6">
+                  All Pro features are now unlocked. Time to grow your store.
+                </p>
+              </motion.div>
+
+              <motion.button
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+                onClick={() => setShowCelebration(false)}
+                className="w-full py-3 rounded-xl bg-gray-900 text-white text-sm font-black active:scale-95 transition-transform"
+              >
+                Let's go →
+              </motion.button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
