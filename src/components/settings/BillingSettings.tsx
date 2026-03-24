@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { CheckCircle2, CreditCard, Download, Receipt, Sparkles, Zap } from 'lucide-react';
+import { CheckCircle2, CreditCard, Sparkles, Zap, AlertTriangle, X } from 'lucide-react';
 import { useStore } from '../../context/StoreContext';
 import { UpgradeModal, useUpgradeModal } from '../billing/UpgradeModal';
 
@@ -22,26 +22,46 @@ const FREE_LIMITS = [
   'No custom domain',
 ];
 
+function formatRenewalDate(dateStr: string) {
+  if (!dateStr) return null;
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return null;
+  return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' });
+}
+
 export function BillingSettings() {
-  const { user } = useStore();
+  const { user, refreshUser } = useStore();
   const upgradeModal = useUpgradeModal();
   const isPro = user?.plan === 'Pro';
   const renewalDate = user?.subscriptionRenewalDate ? new Date(user.subscriptionRenewalDate) : null;
-  const hasValidRenewalDate = renewalDate instanceof Date && !Number.isNaN(renewalDate.getTime());
+  const hasValidRenewalDate = renewalDate instanceof Date && !isNaN(renewalDate.getTime());
   const isExpiredPro = isPro && (!hasValidRenewalDate || renewalDate!.getTime() < Date.now());
   const isActivePro = isPro && !isExpiredPro;
-  const [downloading, setDownloading] = React.useState<string | null>(null);
 
-  const handleDownload = (id: string) => {
-    setDownloading(id);
-    setTimeout(() => { setDownloading(null); alert(`Invoice ${id} download started!`); }, 1000);
+  const [showCancelConfirm, setShowCancelConfirm] = React.useState(false);
+  const [cancelState, setCancelState] = React.useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [cancelError, setCancelError] = React.useState('');
+
+  const handleCancel = async () => {
+    setCancelState('loading');
+    setCancelError('');
+    try {
+      const res = await fetch('/api/billing/cancel', { method: 'POST' });
+      if (res.ok) {
+        setCancelState('success');
+        refreshUser?.();
+      } else {
+        const data = await res.json().catch(() => ({}));
+        setCancelError(data.error || 'Failed to cancel. Contact support@myshoplink.site');
+        setCancelState('error');
+      }
+    } catch {
+      setCancelError('Network error. Please try again.');
+      setCancelState('error');
+    }
   };
 
-  const invoices = [
-    { id: 'INV-001', date: '2026-03-01', amount: '₹349.00', status: 'Paid' },
-    { id: 'INV-002', date: '2026-02-01', amount: '₹349.00', status: 'Paid' },
-    { id: 'INV-003', date: '2026-01-01', amount: '₹349.00', status: 'Paid' },
-  ];
+  const formattedRenewal = formatRenewalDate(user?.subscriptionRenewalDate ?? '');
 
   return (
     <div className="space-y-3 mt-4">
@@ -59,8 +79,10 @@ export function BillingSettings() {
                 {isActivePro ? 'Pro Plan' : isExpiredPro ? 'Pro (Expired)' : 'Free Plan'}
               </p>
               <p className="text-[11px] font-medium text-gray-500">
-                {isActivePro
-                  ? `Renews ${user?.subscriptionRenewalDate || 'lifetime'}`
+                {isActivePro && formattedRenewal
+                  ? `Renews on ${formattedRenewal}`
+                  : isActivePro
+                  ? 'Active'
                   : isExpiredPro
                   ? 'Your Pro access has expired'
                   : 'Limited features'}
@@ -84,24 +106,68 @@ export function BillingSettings() {
           ))}
         </div>
 
-        {/* CTA */}
-        <div className="px-4 pb-4">
+        {/* CTA / Cancel area */}
+        <div className="px-4 pb-4 space-y-2">
           {isActivePro ? (
-            <button
-              onClick={async () => {
-                if (!user?.razorpaySubscriptionId) {
-                  alert('No active subscription found. Contact support@myshoplink.site');
-                  return;
-                }
-                if (!confirm('Cancel your Pro subscription? You will keep Pro access until the end of your billing period.')) return;
-                const res = await fetch('/api/billing/cancel', { method: 'POST' });
-                if (res.ok) alert('Subscription cancelled. You will keep Pro until your renewal date.');
-                else alert('Failed to cancel. Please contact support@myshoplink.site');
-              }}
-              className="w-full h-10 rounded-xl border border-[#059669]/40 text-[#15803d] text-sm font-semibold hover:bg-[#dcfce7] transition-colors"
-            >
-              Cancel subscription
-            </button>
+            <>
+              {/* Cancel success state */}
+              {cancelState === 'success' && (
+                <div className="flex items-start gap-2 bg-green-50 border border-green-200 rounded-xl px-3 py-2.5">
+                  <CheckCircle2 className="w-4 h-4 text-green-600 mt-0.5 shrink-0" />
+                  <p className="text-xs text-green-800">
+                    Subscription cancelled. You'll keep Pro access until {formattedRenewal ?? 'your renewal date'}.
+                  </p>
+                </div>
+              )}
+
+              {/* Cancel error state */}
+              {cancelState === 'error' && (
+                <div className="flex items-start gap-2 bg-red-50 border border-red-200 rounded-xl px-3 py-2.5">
+                  <AlertTriangle className="w-4 h-4 text-red-500 mt-0.5 shrink-0" />
+                  <p className="text-xs text-red-700">{cancelError}</p>
+                </div>
+              )}
+
+              {/* Inline cancel confirmation */}
+              {showCancelConfirm && cancelState !== 'success' ? (
+                <div className="bg-white border border-red-200 rounded-xl p-3 space-y-2.5">
+                  <div className="flex items-start gap-2">
+                    <AlertTriangle className="w-4 h-4 text-red-500 mt-0.5 shrink-0" />
+                    <div>
+                      <p className="text-sm font-semibold text-gray-900">Cancel subscription?</p>
+                      <p className="text-xs text-gray-500 mt-0.5">
+                        You'll keep Pro access until {formattedRenewal ?? 'your renewal date'}, then revert to Free.
+                      </p>
+                    </div>
+                    <button onClick={() => setShowCancelConfirm(false)} className="ml-auto text-gray-400 hover:text-gray-600">
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => setShowCancelConfirm(false)}
+                      className="flex-1 h-9 rounded-xl border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-gray-50 transition-colors"
+                    >
+                      Keep Pro
+                    </button>
+                    <button
+                      onClick={handleCancel}
+                      disabled={cancelState === 'loading'}
+                      className="flex-1 h-9 rounded-xl bg-red-500 text-white text-sm font-semibold hover:bg-red-600 disabled:opacity-60 transition-colors"
+                    >
+                      {cancelState === 'loading' ? 'Cancelling…' : 'Yes, cancel'}
+                    </button>
+                  </div>
+                </div>
+              ) : cancelState !== 'success' && (
+                <button
+                  onClick={() => setShowCancelConfirm(true)}
+                  className="w-full h-10 rounded-xl border border-[#059669]/40 text-[#15803d] text-sm font-semibold hover:bg-[#dcfce7] transition-colors"
+                >
+                  Cancel subscription
+                </button>
+              )}
+            </>
           ) : (
             <button
               onClick={upgradeModal.open}
@@ -126,63 +192,18 @@ export function BillingSettings() {
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold text-gray-900">Razorpay</p>
-              <p className="text-xs text-gray-400">Manage cards and UPI after checkout is connected.</p>
+              <p className="text-xs text-gray-400">Cards, UPI, and netbanking via Razorpay.</p>
             </div>
-            <button
-              onClick={() => alert('Payment method management coming soon.')}
-              className="h-8 px-3 text-xs font-semibold rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors shrink-0"
-            >
-              Update
-            </button>
           </div>
         </div>
       )}
 
-      {/* Billing History — Pro only */}
+      {/* Billing support note */}
       {isActivePro && (
-        <div className="bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm">
-          <div className="px-4 pt-3.5 pb-2 border-b border-gray-50 flex items-center justify-between">
-            <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Billing history</p>
-            <button
-              onClick={() => alert('All invoices download started!')}
-              className="flex items-center gap-1 text-[11px] font-semibold text-gray-500 hover:text-gray-900 transition-colors"
-            >
-              <Download className="w-3 h-3" /> Download all
-            </button>
-          </div>
-
-          <div className="divide-y divide-gray-50">
-            {invoices.map(invoice => (
-              <div key={invoice.id} className="flex items-center gap-3 px-4 py-3">
-                <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center shrink-0">
-                  <Receipt className="w-4 h-4 text-gray-400" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-gray-900">{invoice.id}</p>
-                  <p className="text-xs text-gray-400">{invoice.date}</p>
-                </div>
-                <span className="text-sm font-bold text-gray-900 shrink-0">{invoice.amount}</span>
-                <span className="text-[10px] font-bold bg-green-100 text-green-700 px-2 py-0.5 rounded-full shrink-0">
-                  {invoice.status}
-                </span>
-                <button
-                  onClick={() => handleDownload(invoice.id)}
-                  disabled={downloading === invoice.id}
-                  className="p-1.5 text-gray-400 hover:text-gray-700 disabled:opacity-40 transition-colors shrink-0"
-                >
-                  <Download className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            ))}
-          </div>
-
-          <div className="px-4 py-3 border-t border-gray-50">
-            <p className="text-[11px] text-gray-400 text-center">
-              Full billing history available after Razorpay integration. Questions?{' '}
-              <a href="mailto:support@myshoplink.site" className="underline hover:text-gray-700">support@myshoplink.site</a>
-            </p>
-          </div>
-        </div>
+        <p className="text-[11px] text-gray-400 text-center px-2">
+          For billing queries, reach us at{' '}
+          <a href="mailto:support@myshoplink.site" className="underline hover:text-gray-700">support@myshoplink.site</a>
+        </p>
       )}
 
       <UpgradeModal isOpen={upgradeModal.isOpen} onClose={upgradeModal.close} />
