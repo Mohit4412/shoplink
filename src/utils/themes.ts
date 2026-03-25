@@ -43,6 +43,10 @@ export interface ThemeLayout {
   heroStyle: 'centered' | 'split' | 'fullbleed';
   productGrid: 'grid-2col' | 'grid-3col' | 'list';
   cardStyle: 'boxed' | 'borderless' | 'floating';
+  navStyle: 'minimal' | 'centered-logo' | 'inline-search';
+  typographyScale: 'compact' | 'editorial' | 'display';
+  cardAnatomy: 'portrait' | 'landscape' | 'square-overlay' | 'editorial-row';
+  sectionSpacing: 'tight' | 'relaxed' | 'airy';
 }
 
 export interface Theme {
@@ -114,6 +118,10 @@ const THEMES: Record<string, Theme> = {
       heroStyle: 'centered',
       productGrid: 'grid-2col',
       cardStyle: 'boxed',
+      navStyle: 'minimal',
+      typographyScale: 'editorial',
+      cardAnatomy: 'portrait',
+      sectionSpacing: 'relaxed',
     },
     defaultSections: STANDARD_SECTIONS,
   },
@@ -151,6 +159,10 @@ const THEMES: Record<string, Theme> = {
       heroStyle: 'fullbleed',
       productGrid: 'grid-3col',
       cardStyle: 'floating',
+      navStyle: 'centered-logo',
+      typographyScale: 'display',
+      cardAnatomy: 'square-overlay',
+      sectionSpacing: 'airy',
     },
     defaultSections: FULL_SECTIONS,
   },
@@ -188,6 +200,10 @@ const THEMES: Record<string, Theme> = {
       heroStyle: 'split',
       productGrid: 'grid-2col',
       cardStyle: 'borderless',
+      navStyle: 'minimal',
+      typographyScale: 'editorial',
+      cardAnatomy: 'portrait',
+      sectionSpacing: 'relaxed',
     },
     defaultSections: STANDARD_SECTIONS,
   },
@@ -225,6 +241,10 @@ const THEMES: Record<string, Theme> = {
       heroStyle: 'centered',
       productGrid: 'grid-3col',
       cardStyle: 'boxed',
+      navStyle: 'inline-search',
+      typographyScale: 'compact',
+      cardAnatomy: 'editorial-row',
+      sectionSpacing: 'tight',
     },
     defaultSections: FULL_SECTIONS,
   },
@@ -262,6 +282,10 @@ const THEMES: Record<string, Theme> = {
       heroStyle: 'split',
       productGrid: 'grid-3col',
       cardStyle: 'floating',
+      navStyle: 'centered-logo',
+      typographyScale: 'editorial',
+      cardAnatomy: 'landscape',
+      sectionSpacing: 'relaxed',
     },
     defaultSections: STANDARD_SECTIONS,
   },
@@ -299,6 +323,10 @@ const THEMES: Record<string, Theme> = {
       heroStyle: 'centered',
       productGrid: 'grid-2col',
       cardStyle: 'borderless',
+      navStyle: 'minimal',
+      typographyScale: 'compact',
+      cardAnatomy: 'square-overlay',
+      sectionSpacing: 'tight',
     },
     defaultSections: MINIMAL_SECTIONS,
   },
@@ -336,6 +364,10 @@ const THEMES: Record<string, Theme> = {
       heroStyle: 'split',
       productGrid: 'grid-3col',
       cardStyle: 'floating',
+      navStyle: 'centered-logo',
+      typographyScale: 'display',
+      cardAnatomy: 'editorial-row',
+      sectionSpacing: 'airy',
     },
     defaultSections: FULL_SECTIONS,
   },

@@ -6,7 +6,7 @@ Extend the existing theme mechanism from a color-swap system into a structurally
 
 ## Tasks
 
-- [ ] 1. Extend ThemeLayout types and update theme definitions
+- [-] 1. Extend ThemeLayout types and update theme definitions
   - [ ] 1.1 Extend `ThemeLayout` interface in `src/utils/themes.ts` with four new fields
     - Add `navStyle: 'minimal' | 'centered-logo' | 'inline-search'`
     - Add `typographyScale: 'compact' | 'editorial' | 'display'`
@@ -14,7 +14,7 @@ Extend the existing theme mechanism from a color-swap system into a structurally
     - Add `sectionSpacing: 'tight' | 'relaxed' | 'airy'`
     - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.6_
 
-  - [ ] 1.2 Update all 7 theme definitions in `src/utils/themes.ts` with the new layout fields
+  - [x] 1.2 Update all 7 theme definitions in `src/utils/themes.ts` with the new layout fields
     - classic: `navStyle: 'minimal'`, `typographyScale: 'editorial'`, `cardAnatomy: 'portrait'`, `sectionSpacing: 'relaxed'`
     - slate: `navStyle: 'centered-logo'`, `typographyScale: 'display'`, `cardAnatomy: 'square-overlay'`, `sectionSpacing: 'airy'`
     - rose: `navStyle: 'minimal'`, `typographyScale: 'editorial'`, `cardAnatomy: 'portrait'`, `sectionSpacing: 'relaxed'`
@@ -29,7 +29,7 @@ Extend the existing theme mechanism from a color-swap system into a structurally
     - **Validates: Requirements 2.5, 2.6, 7.1–7.7**
 
 - [ ] 2. Implement theme-aware Nav component
-  - [ ] 2.1 Create `src/components/storefront/Nav.tsx` with three `navStyle` variants
+  - [x] 2.1 Create `src/components/storefront/Nav.tsx` with three `navStyle` variants
     - `'minimal'`: store name left-aligned, transparent background until scroll > 40px, then transitions to `ThemeTokens.navBg`; no border until scrolled
     - `'centered-logo'`: store name/logo centered, always-visible background panel using `ThemeTokens.navBg`
     - `'inline-search'`: store name left, inline search `<input>` right; collapses to search icon below 640px viewport with tap-to-expand
@@ -43,7 +43,7 @@ Extend the existing theme mechanism from a color-swap system into a structurally
     - _Requirements: 3.5, 3.6, 10.4_
 
 - [ ] 3. Implement theme-aware ProductCard component
-  - [ ] 3.1 Create `src/components/storefront/ProductCard.tsx` with four `cardAnatomy` variants
+  - [x] 3.1 Create `src/components/storefront/ProductCard.tsx` with four `cardAnatomy` variants
     - `'portrait'`: tall image aspect-ratio 3:4, product name and price below
     - `'landscape'`: wide image aspect-ratio 16:9 or 4:3, compact text row below; minimum image height 120px on mobile
     - `'square-overlay'`: 1:1 image with product name and price overlaid on bottom via gradient scrim
@@ -63,7 +63,7 @@ Extend the existing theme mechanism from a color-swap system into a structurally
     - _Requirements: 4.6, 4.7_
 
 - [ ] 4. Implement typography scale and section spacing helpers
-  - [ ] 4.1 Create `src/utils/themeHelpers.ts` with `getTypographyClasses` and `getSectionSpacingClass` utilities
+  - [x] 4.1 Create `src/utils/themeHelpers.ts` with `getTypographyClasses` and `getSectionSpacingClass` utilities
     - `getTypographyClasses(scale)`: returns `{ productName, sectionHeading, heroHeading, productMeta, priceLabel }` Tailwind class strings
       - `'compact'`: productName `text-sm`, sectionHeading `text-xl`, tight line-heights
       - `'editorial'`: productName `text-base`, sectionHeading `text-2xl`, relaxed line-heights
@@ -82,23 +82,23 @@ Extend the existing theme mechanism from a color-swap system into a structurally
 - [ ] 5. Checkpoint — Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 6. Integrate Nav, ProductCard, typography, and spacing into StoreFront
-  - [ ] 6.1 Update `src/screens/StoreFront.tsx` to use the new `Nav` component
+  - [x] 6.1 Update `src/screens/StoreFront.tsx` to use the new `Nav` component
     - Replace the existing inline nav JSX with `<Nav>`, passing `theme` and `store`
     - _Requirements: 3.1–3.6_
 
-  - [ ] 6.2 Update `SectionRenderer` in `src/screens/StoreFront.tsx` to use `ProductCard`
+  - [x] 6.2 Update `SectionRenderer` in `src/screens/StoreFront.tsx` to use `ProductCard`
     - Replace inline product card JSX in `featured` and `all-products` cases with `<ProductCard>`
     - Pass `cardAnatomy` from `theme.layout.cardAnatomy`
     - _Requirements: 4.1–4.7_
 
-  - [ ] 6.3 Apply typography scale classes from `getTypographyClasses` to section headings, hero heading, product names, meta text, and price labels in `StoreFront.tsx`
+  - [x] 6.3 Apply typography scale classes from `getTypographyClasses` to section headings, hero heading, product names, meta text, and price labels in `StoreFront.tsx`
     - _Requirements: 5.1–5.4_
 
   - [ ] 6.4 Apply section spacing from `getSectionSpacingClass` to all enabled section wrappers in `StoreFront.tsx`
     - Replace hardcoded `mb-*` values on section wrappers with the spacing helper output
     - _Requirements: 6.1–6.4_
 
-  - [ ] 6.5 Enforce Free plan restriction at the `getTheme()` call site in `StoreFront.tsx`
+  - [~] 6.5 Enforce Free plan restriction at the `getTheme()` call site in `StoreFront.tsx`
     - When `activeUser?.plan === 'Free'`, always call `getTheme('classic')` regardless of `store.theme`
     - _Requirements: 9.1, 9.3, 9.4_
 
@@ -108,35 +108,35 @@ Extend the existing theme mechanism from a color-swap system into a structurally
     - _Requirements: 9.1, 9.3, 9.4_
 
 - [ ] 7. Enforce Free plan restriction in the store settings API
-  - [ ] 7.1 Update the store settings save handler (API route or server action) to always persist `theme: 'classic'` when `UserProfile.plan === 'Free'`
+  - [~] 7.1 Update the store settings save handler (API route or server action) to always persist `theme: 'classic'` when `UserProfile.plan === 'Free'`
     - Locate the relevant API route (e.g. `app/api/auth/profile/route.ts` or store update endpoint) and add server-side plan check
     - _Requirements: 9.2_
 
 - [ ] 8. Update theme preview in StoreSettings UI
-  - [ ] 8.1 Update the theme picker in `src/components/settings/StoreSettings.tsx` to show card anatomy layout indicator
+  - [~] 8.1 Update the theme picker in `src/components/settings/StoreSettings.tsx` to show card anatomy layout indicator
     - Add a small SVG or CSS-based miniature card anatomy indicator inside each theme swatch
     - `'square-overlay'`: square thumbnail with text overlay indicator
     - `'editorial-row'`: horizontal row layout indicator
     - `'portrait'` / `'landscape'`: vertical card layout indicator
     - _Requirements: 8.1, 8.2, 8.3, 8.4_
 
-  - [ ] 8.2 Add "Pro" lock badge on hover for Free users in the theme picker
+  - [~] 8.2 Add "Pro" lock badge on hover for Free users in the theme picker
     - Show a lock/Pro badge on hover over Pro themes without requiring a click
     - Continue displaying accent color, background color, and theme name
     - _Requirements: 8.5, 8.6_
 
 - [ ] 9. Mobile-first responsive fixes
-  - [ ] 9.1 Ensure `grid-3col` collapses to 2 columns below 640px in `StoreFront.tsx`
+  - [~] 9.1 Ensure `grid-3col` collapses to 2 columns below 640px in `StoreFront.tsx`
     - Update `getGridClasses` so `grid-3col` uses `grid-cols-2 sm:grid-cols-3` (or equivalent flex logic)
     - _Requirements: 10.2_
 
-  - [ ] 9.2 Verify hero sections have no horizontal overflow at 375px
+  - [~] 9.2 Verify hero sections have no horizontal overflow at 375px
     - Audit `HeroSection.tsx` for any fixed widths or non-responsive padding that could cause overflow
     - Fix any issues found
     - _Requirements: 10.1, 10.5_
 
 - [ ] 10. Backward compatibility and fallback verification
-  - [ ] 10.1 Verify `getTheme()` function signature is unchanged and falls back to `classic` for undefined or unknown slugs
+  - [~] 10.1 Verify `getTheme()` function signature is unchanged and falls back to `classic` for undefined or unknown slugs
     - Confirm existing call sites still work without modification
     - _Requirements: 11.1, 11.2, 11.4_
 
@@ -145,7 +145,7 @@ Extend the existing theme mechanism from a color-swap system into a structurally
     - **Property: `getTheme(undefined)` returns the classic theme**
     - **Validates: Requirements 11.2, 11.4**
 
-  - [ ] 10.3 Verify existing `SectionConfig` `enabled` and `order` fields are still respected after refactor
+  - [~] 10.3 Verify existing `SectionConfig` `enabled` and `order` fields are still respected after refactor
     - Confirm `StoreFront.tsx` still filters and sorts sections by `enabled`/`order` after all changes
     - _Requirements: 11.3_
 
