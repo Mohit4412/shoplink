@@ -56,21 +56,19 @@ export function ProductCarousel({ images, productName }: ProductCarouselProps) {
 
   return (
     <>
-      {/* Flipkart Style Layout: Thumbs on left, Main on right */}
+      {/* Mobile: full-width image with dot indicators. Desktop: Flipkart-style thumbs left + main right */}
       <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 h-full w-full">
-        
-        {/* Thumbnails - Vertical on Desktop, Horizontal on Mobile */}
+
+        {/* Thumbnails — horizontal strip below on mobile, vertical sidebar on desktop */}
         {images.length > 1 && (
-          <div className="flex lg:flex-col gap-3 overflow-x-auto lg:overflow-y-auto no-scrollbar order-2 lg:order-1 lg:w-20 shrink-0 pb-2 lg:pb-0 lg:max-h-[600px]">
+          <div className="flex lg:flex-col gap-2 overflow-x-auto lg:overflow-y-auto no-scrollbar order-2 lg:order-1 lg:w-20 shrink-0 px-4 lg:px-0 pb-1 lg:pb-0 lg:max-h-[600px]">
             {images.map((img, idx) => (
               <button
                 key={idx}
-                onMouseEnter={() => {
-                  if (window.innerWidth >= 1024) setCurrentIndex(idx);
-                }}
+                onMouseEnter={() => { if (window.innerWidth >= 1024) setCurrentIndex(idx); }}
                 onClick={() => setCurrentIndex(idx)}
-                className={`relative shrink-0 w-16 h-20 md:w-20 md:h-24 lg:w-20 lg:h-24 rounded-lg overflow-hidden border-2 transition-all ${
-                  currentIndex === idx ? 'border-teal-600' : 'border-transparent opacity-70 hover:opacity-100 hover:border-gray-300 bg-gray-100'
+                className={`relative shrink-0 w-14 h-16 lg:w-20 lg:h-24 rounded-lg overflow-hidden border-2 transition-all ${
+                  currentIndex === idx ? 'border-teal-600' : 'border-transparent opacity-60 hover:opacity-100 hover:border-gray-300 bg-gray-100'
                 }`}
               >
                 <Image src={img} alt={`Thumbnail ${idx + 1}`} fill className="object-cover" />
@@ -79,9 +77,9 @@ export function ProductCarousel({ images, productName }: ProductCarouselProps) {
           </div>
         )}
 
-        {/* Main Image Viewer */}
-        <div 
-          className="relative flex-1 aspect-[4/5] lg:aspect-auto lg:h-[600px] bg-gray-50 rounded-2xl md:rounded-3xl overflow-hidden border border-gray-100 order-1 lg:order-2 cursor-zoom-in"
+        {/* Main image */}
+        <div
+          className="relative flex-1 aspect-square lg:aspect-auto lg:h-[600px] bg-gray-50 lg:rounded-2xl overflow-hidden order-1 lg:order-2 cursor-zoom-in"
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
           onClick={() => setIsLightboxOpen(true)}
@@ -94,29 +92,28 @@ export function ProductCarousel({ images, productName }: ProductCarouselProps) {
             style={isHovering ? zoomStyle : { transform: 'scale(1)', transition: 'transform 0.4s ease-out' }}
             priority
           />
-          
-          {/* Mobile Arrows & Indicators (Hidden on Desktop) */}
+
+          {/* Mobile nav arrows + dots */}
           {images.length > 1 && (
             <div className="lg:hidden">
               <button
                 onClick={prevSlide}
-                className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center rounded-full bg-white/80 shadow-sm opacity-90 transition-opacity hover:bg-white"
+                className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center rounded-full bg-white/80 shadow-sm"
               >
-                <ChevronLeft className="w-5 h-5 text-gray-800" />
+                <ChevronLeft className="w-4 h-4 text-gray-800" />
               </button>
               <button
                 onClick={nextSlide}
-                className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center rounded-full bg-white/80 shadow-sm opacity-90 transition-opacity hover:bg-white"
+                className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center rounded-full bg-white/80 shadow-sm"
               >
-                <ChevronRight className="w-5 h-5 text-gray-800" />
+                <ChevronRight className="w-4 h-4 text-gray-800" />
               </button>
-              
-              <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2">
+              <div className="absolute bottom-3 left-0 right-0 flex justify-center gap-1.5">
                 {images.map((_, idx) => (
                   <div
                     key={idx}
-                    className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                      currentIndex === idx ? 'bg-teal-600 w-4' : 'bg-white/70 backdrop-blur w-2'
+                    className={`h-1.5 rounded-full transition-all duration-300 ${
+                      currentIndex === idx ? 'bg-teal-600 w-4' : 'bg-white/70 w-1.5'
                     }`}
                   />
                 ))}

@@ -3,13 +3,12 @@
 import React, { useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
-import { CheckCircle2, ShieldCheck, Truck, Star, Award, Heart, RotateCcw, Box, Package, Zap, CreditCard, Clock, Lock, Headphones, Gift, Leaf, ThumbsUp, Flame, BadgeCheck, Sparkles, Smile, MapPin, Globe, Recycle, Tag, Percent, Handshake } from 'lucide-react';
-
-const ICON_MAP: Record<string, React.ElementType> = {
-  ShieldCheck, CheckCircle2, BadgeCheck, Truck, Package, Box, RotateCcw, Recycle,
-  CreditCard, Lock, Award, Star, Sparkles, Flame, Zap, Clock, Headphones,
-  Heart, ThumbsUp, Smile, Gift, Tag, Percent, Leaf, Globe, MapPin, Handshake,
-};
+import {
+  CheckCircle2, ShieldCheck, Truck, Star, Award, Heart, RotateCcw,
+  Box, Package, Zap, CreditCard, Clock, Lock, Headphones, Gift, Leaf,
+  ThumbsUp, Flame, BadgeCheck, Sparkles, Smile, MapPin, Globe, Recycle,
+  Tag, Percent, Handshake, ChevronLeft,
+} from 'lucide-react';
 import { useStore } from '../context/StoreContext';
 import { getCurrencySymbol } from '../utils/currency';
 import { getTheme } from '../utils/themes';
@@ -18,6 +17,12 @@ import { FloatingWhatsApp } from '../components/product/FloatingWhatsApp';
 import { ProductAccordion } from '../components/product/ProductAccordion';
 import { ProductActions } from '../components/product/ProductActions';
 import { PublicStorefrontData } from '../types';
+
+const ICON_MAP: Record<string, React.ElementType> = {
+  ShieldCheck, CheckCircle2, BadgeCheck, Truck, Package, Box, RotateCcw, Recycle,
+  CreditCard, Lock, Award, Star, Sparkles, Flame, Zap, Clock, Headphones,
+  Heart, ThumbsUp, Smile, Gift, Tag, Percent, Leaf, Globe, MapPin, Handshake,
+};
 
 export function ProductDetail({ storefront }: { storefront?: PublicStorefrontData }) {
   const params = useParams<{ storeId: string; productId: string }>();
@@ -40,20 +45,20 @@ export function ProductDetail({ storefront }: { storefront?: PublicStorefrontDat
   }
 
   const resolvedStoreId = storeId || getSubdomain() || publicUser?.username || localUser?.username || 'store';
+  const isSubdomain = typeof window !== 'undefined'
+    ? window.location.hostname.split('.').length >= 3
+    : Boolean(publicUser?.username && !storeId);
+
+  const storeHref = isSubdomain ? '/' : `/${resolvedStoreId}`;
+  const productHref = (id: string) => isSubdomain ? `/product/${id}` : `/${resolvedStoreId}/product/${id}`;
+
   const activeUser = publicUser ?? (
-    localUser
-      ? {
-        username: localUser.username,
-        whatsappNumber: localUser.whatsappNumber,
-        plan: localUser.plan,
-      }
-      : null
+    localUser ? { username: localUser.username, whatsappNumber: localUser.whatsappNumber, plan: localUser.plan } : null
   );
 
   const { tokens: t } = getTheme(activeUser?.plan === 'Free' ? 'classic' : store.theme);
 
   const product = products.find((item) => item.id === productId && item.status === 'Active');
-
   const relatedProducts = useMemo(
     () => products.filter((item) => item.status === 'Active' && item.id !== productId).slice(0, 4),
     [productId, products]
@@ -61,11 +66,11 @@ export function ProductDetail({ storefront }: { storefront?: PublicStorefrontDat
 
   useEffect(() => {
     if (!product) {
-      router.replace(`/${resolvedStoreId}`);
+      router.replace(storeHref);
     } else {
       document.title = `${product.name} | ${store.name}`;
     }
-  }, [product, resolvedStoreId, router, store.name]);
+  }, [product, storeHref, router, store.name]);
 
   if (!product) return null;
 
@@ -83,226 +88,194 @@ export function ProductDetail({ storefront }: { storefront?: PublicStorefrontDat
   const tBadges = store.trustBadges || [
     { text: '7-Day Easy Returns', icon: 'ShieldCheck' },
     { text: 'Top Rated Seller', icon: 'CheckCircle2' },
-    { text: 'Fast Free Shipping', icon: 'Truck' }
+    { text: 'Fast Free Shipping', icon: 'Truck' },
   ];
-
-  // Gracefully handle older string tuples
-  const normalizedBadges = tBadges.map((b: any, idx) => {
-    if (typeof b === 'string') return { text: b, icon: ['ShieldCheck', 'CheckCircle2', 'Truck'][idx] };
-    return b;
-  });
-
+  const normalizedBadges = tBadges.map((b: any, idx) =>
+    typeof b === 'string' ? { text: b, icon: ['ShieldCheck', 'CheckCircle2', 'Truck'][idx] } : b
+  );
   const TRUST_BADGES = normalizedBadges.map((b) => {
     const IconComp = ICON_MAP[b.icon] || ShieldCheck;
-    return {
-      icon: <IconComp className="w-4 h-4" style={{ color: t.accent }} />,
-      text: b.text,
-    };
+    return { icon: <IconComp className="w-4 h-4" style={{ color: t.accent }} />, text: b.text };
   });
+  const activeBadges = TRUST_BADGES.filter(b => b.text.trim() !== '');
 
   return (
-    <div
-      className="min-h-screen flex flex-col font-sans transition-colors duration-300"
-      style={{ background: t.pageBg, color: t.pageText }}
-    >
-      {/* Sticky Nav */}
+    <div className="min-h-screen flex flex-col font-sans" style={{ background: t.pageBg, color: t.pageText }}>
+
+      {/* Nav — compact on mobile */}
       <div
-        className="sticky top-0 z-50 backdrop-blur-md border-b px-6 py-4 flex items-center justify-between transition-colors duration-300"
+        className="sticky top-0 z-50 backdrop-blur-md border-b px-4 py-3 flex items-center justify-between"
         style={{ background: t.navBg, borderColor: t.navBorder }}
       >
         <Link
-          href={`/${resolvedStoreId}`}
-          className="font-bold text-lg tracking-tight flex items-center gap-3 transition-opacity hover:opacity-80"
+          href={storeHref}
+          className="flex items-center gap-2 min-w-0 transition-opacity hover:opacity-80"
           style={{ color: t.navText }}
         >
+          <ChevronLeft className="w-5 h-5 shrink-0" />
           {store.logoUrl ? (
-            <img src={store.logoUrl} alt={store.name} className="h-8 w-8 rounded-full object-cover" />
+            <img src={store.logoUrl} alt={store.name} className="h-7 w-7 rounded-full object-cover shrink-0" />
           ) : (
             <div
-              className="flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold"
+              className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold"
               style={{ background: t.accent, color: t.btnText }}
             >
               {store.name.charAt(0)}
             </div>
           )}
-          {store.name}
+          <span className="font-bold text-sm truncate max-w-[140px]">{store.name}</span>
         </Link>
         <Link
-          href={`/${resolvedStoreId}`}
-          className="text-sm font-medium hidden sm:block transition-opacity hover:opacity-70"
+          href={storeHref}
+          className="text-xs font-semibold shrink-0 ml-2"
           style={{ color: t.accent }}
         >
-          View All Products
+          All Products
         </Link>
       </div>
 
-      <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 md:py-16 flex-1 pb-32">
-        {/* Breadcrumb */}
-        <nav className="mb-6 lg:mb-10 text-xs sm:text-sm font-medium tracking-wide" style={{ color: t.productMeta }}>
-          <Link href={`/${resolvedStoreId}`} className="transition-opacity hover:opacity-80" style={{ color: t.accent }}>
-            Store Home
-          </Link>
-          <span className="mx-2 opacity-40">/</span>
-          <span style={{ color: t.productMeta }}>{product.category}</span>
-          <span className="mx-2 opacity-40">/</span>
-          <span className="line-clamp-1" style={{ color: t.pageText }}>{product.name}</span>
-        </nav>
+      <main className="flex-1 pb-28">
 
-        {/* Main layout */}
-        <div className="flex flex-col lg:flex-row gap-10 lg:gap-16 xl:gap-20">
+        {/* Image carousel — full width, no side padding on mobile */}
+        <div className="w-full">
+          <ProductCarousel images={images} productName={product.name} />
+        </div>
 
-          {/* Images */}
-          <section className="flex-1 w-full lg:max-w-3xl lg:sticky lg:top-8 h-fit">
-            <ProductCarousel images={images} productName={product.name} />
-          </section>
+        {/* Product info — padded content below image */}
+        <div className="px-4 pt-5 max-w-2xl mx-auto lg:max-w-7xl">
 
-          {/* Details */}
-          <section className="flex-1 w-full flex flex-col">
+          {/* Category + title */}
+          <p className="text-xs font-semibold uppercase tracking-widest mb-1.5" style={{ color: t.productMeta }}>
+            {product.category}
+          </p>
+          <h1
+            className="text-2xl sm:text-3xl font-extrabold tracking-tight leading-tight mb-3"
+            style={{ color: t.heroHeading }}
+          >
+            {product.name}
+          </h1>
 
-            {/* Stars + Title */}
-            <div className="mb-6">
-              <div className="flex items-center gap-2 mb-3">
-                <div className="flex items-center text-amber-400">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className={`w-4 h-4 ${i < Math.floor(rating) ? 'fill-current' : 'opacity-20'}`} />
-                  ))}
+          {/* Stars */}
+          <div className="flex items-center gap-2 mb-5">
+            <div className="flex items-center text-amber-400">
+              {[...Array(5)].map((_, i) => (
+                <Star key={i} className={`w-3.5 h-3.5 ${i < Math.floor(rating) ? 'fill-current' : 'opacity-20'}`} />
+              ))}
+            </div>
+            <span className="text-sm font-semibold" style={{ color: t.pageText }}>{rating}</span>
+            <span className="text-xs" style={{ color: t.productMeta }}>({reviewsCount} reviews)</span>
+          </div>
+
+          {/* Price + CTA */}
+          <div onClick={() => trackWhatsAppClick(product.id, resolvedStoreId)}>
+            <ProductActions
+              productName={product.name}
+              price={product.price}
+              compareAtPrice={product.price * 1.25}
+              variants={[]}
+              stockQuantity={product.stock}
+              whatsAppNumber={phoneNumber}
+              currencySymbol={currencySymbol}
+              storeName={store.name}
+              accentColor={t.accent}
+            />
+          </div>
+
+          {/* Trust Badges */}
+          {activeBadges.length > 0 && (
+            <div
+              className="flex flex-row items-center justify-around gap-1 mb-7 py-3 border-y"
+              style={{ borderColor: t.cardBorder }}
+            >
+              {activeBadges.map((badge, idx) => (
+                <div key={idx} className="flex flex-col items-center gap-1 min-w-0 px-1">
+                  <div className="shrink-0">{badge.icon}</div>
+                  <span
+                    className="text-[9px] font-semibold uppercase tracking-wide text-center leading-tight line-clamp-2 max-w-[64px]"
+                    style={{ color: t.productMeta }}
+                  >
+                    {badge.text}
+                  </span>
                 </div>
-                <span className="text-sm font-semibold" style={{ color: t.pageText }}>{rating}</span>
-                <span className="text-xs font-medium" style={{ color: t.productMeta }}>({reviewsCount} reviews)</span>
-              </div>
-              <h1
-                className="text-3xl sm:text-4xl md:text-[42px] font-extrabold tracking-tight leading-[1.1]"
-                style={{ color: t.heroHeading }}
-              >
-                {product.name}
-              </h1>
+              ))}
             </div>
+          )}
 
-            {/* Price + WhatsApp CTA */}
-            <div onClick={() => trackWhatsAppClick(product.id, resolvedStoreId)}>
-              <ProductActions
-                productName={product.name}
-                price={product.price}
-                compareAtPrice={product.price * 1.25}
-                variants={[]}
-                stockQuantity={product.stock}
-                whatsAppNumber={phoneNumber}
-                currencySymbol={currencySymbol}
-                storeName={store.name}
-                accentColor={t.accent}
-              />
-            </div>
-
-            {/* Trust Badges */}
-            {TRUST_BADGES.filter(b => b.text.trim() !== '').length > 0 && (
-              <div
-                className="flex flex-row items-center justify-around gap-2 mb-8 py-3 px-2 border-y"
-                style={{ borderColor: t.cardBorder }}
-              >
-                {TRUST_BADGES.filter(b => b.text.trim() !== '').map((badge, idx) => (
-                  <div key={idx} className="flex flex-col items-center gap-1 min-w-0">
-                    <div className="shrink-0">{badge.icon}</div>
-                    <span
-                      className="text-[10px] font-semibold uppercase tracking-wide text-center leading-tight line-clamp-2 max-w-[72px]"
-                      style={{ color: t.productMeta }}
-                    >
-                      {badge.text}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* Key Features */}
-            <div className="mb-10">
-              <h3
-                className="text-sm font-bold uppercase tracking-widest mb-4"
-                style={{ color: t.sectionHeading }}
-              >
+          {/* Key Features */}
+          {features.length > 0 && (
+            <div className="mb-7">
+              <h3 className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: t.sectionHeading }}>
                 Key Features
               </h3>
-              <ul className="space-y-3">
+              <ul className="space-y-2">
                 {features.map((feature, idx) => (
                   <li key={idx} className="flex items-start text-sm" style={{ color: t.productMeta }}>
-                    <span className="mr-3 font-bold" style={{ color: t.accent }}>•</span>
+                    <span className="mr-2.5 font-bold shrink-0" style={{ color: t.accent }}>•</span>
                     <span className="leading-relaxed">{feature}</span>
                   </li>
                 ))}
               </ul>
             </div>
+          )}
 
-            <ProductAccordion description={product.description} />
-          </section>
-        </div>
+          {/* Description accordion */}
+          <ProductAccordion description={product.description} />
 
-        {/* Related Products */}
-        {relatedProducts.length > 0 && (
-          <div
-            className="mt-24 lg:mt-32 pt-16 border-t"
-            style={{ borderColor: t.cardBorder }}
-          >
-            <h2
-              className="text-2xl md:text-3xl font-bold tracking-tight mb-10 text-center"
-              style={{ color: t.sectionHeading }}
-            >
-              You May Also Like
-            </h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
-              {relatedProducts.map((prod) => (
-                <div key={prod.id} className="group flex flex-col">
-                  <Link
-                    href={`/${resolvedStoreId}/product/${prod.id}`}
-                    className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl mb-3"
-                    style={{ background: t.cardImageBg }}
-                  >
-                    <img
-                      src={prod.imageUrl}
-                      alt={prod.name}
-                      className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                    <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-5 transition-opacity" />
-                  </Link>
-                  <div className="flex flex-col gap-0.5 px-1">
-                    <p className="text-xs font-medium uppercase tracking-wider" style={{ color: t.productMeta }}>
+          {/* Related Products */}
+          {relatedProducts.length > 0 && (
+            <div className="mt-10 pt-8 border-t" style={{ borderColor: t.cardBorder }}>
+              <h2 className="text-base font-bold tracking-tight mb-5" style={{ color: t.sectionHeading }}>
+                You May Also Like
+              </h2>
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4">
+                {relatedProducts.map((prod) => (
+                  <div key={prod.id} className="group flex flex-col">
+                    <Link
+                      href={productHref(prod.id)}
+                      className="relative aspect-[4/5] w-full overflow-hidden rounded-xl mb-2"
+                      style={{ background: t.cardImageBg }}
+                    >
+                      <img
+                        src={prod.imageUrl}
+                        alt={prod.name}
+                        className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        loading="lazy"
+                      />
+                    </Link>
+                    <p className="text-[10px] font-medium uppercase tracking-wider mb-0.5" style={{ color: t.productMeta }}>
                       {prod.category}
                     </p>
-                    <div className="flex items-center justify-between gap-2">
-                      <Link
-                        href={`/${resolvedStoreId}/product/${prod.id}`}
-                        className="text-sm font-bold line-clamp-1 truncate pr-2 transition-opacity hover:opacity-70"
-                        style={{ color: t.productName }}
-                      >
-                        {prod.name}
-                      </Link>
-                      <span className="text-sm font-extrabold shrink-0" style={{ color: t.productPrice }}>
-                        {currencySymbol}{prod.price.toFixed(2)}
-                      </span>
-                    </div>
+                    <p className="text-xs font-semibold line-clamp-1" style={{ color: t.productName }}>
+                      {prod.name}
+                    </p>
+                    <p className="text-xs font-bold mt-0.5" style={{ color: t.productPrice }}>
+                      {currencySymbol}{prod.price.toFixed(2)}
+                    </p>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </main>
 
-      {/* Floating WhatsApp */}
-      <div onClick={() => trackWhatsAppClick(product.id, resolvedStoreId)}>
+      {/* Floating WhatsApp — hidden on mobile since the inline CTA is already visible */}
+      <div className="hidden sm:block" onClick={() => trackWhatsAppClick(product.id, resolvedStoreId)}>
         <FloatingWhatsApp phoneNumber={phoneNumber} productName={product.name} storeName={store.name} />
       </div>
 
       {/* Footer */}
       <footer
-        className="border-t py-12 text-center text-sm mt-16 transition-colors duration-300"
+        className="border-t py-6 text-center text-xs"
         style={{ background: t.footerBg, borderColor: t.footerBorder, color: t.footerText }}
       >
         <p>
-          Copyright &copy; {new Date().getFullYear()}{' '}
+          &copy; {new Date().getFullYear()}{' '}
           <span className="font-semibold" style={{ color: t.pageText }}>{store.name}</span>
         </p>
-        {activeUser?.plan === 'Free' ? (
-          <p className="mt-2 text-xs opacity-60 italic">Powered by MyShopLink</p>
-        ) : null}
+        {activeUser?.plan === 'Free' && (
+          <p className="mt-1 opacity-50 italic">Powered by MyShopLink</p>
+        )}
       </footer>
     </div>
   );
