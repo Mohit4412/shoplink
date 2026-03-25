@@ -81,8 +81,10 @@ interface SectionContext {
   remainingProducts: Product[];
   currencySymbol: string;
   resolvedStoreId: string;
+  isSubdomain: boolean;
   onContactClick: (product?: Product) => void;
   searchQuery: string;
+  sectionSettings: Record<string, SectionConfig['settings']>;
 }
 
 // ─── SectionRenderer – switch on section.id ───────────────────────────────────
@@ -96,7 +98,8 @@ function SectionRenderer({
 }) {
   const { theme, store, activeProducts, featuredProducts, remainingProducts, currencySymbol, resolvedStoreId, onContactClick } = ctx;
   const t = theme.tokens;
-  const getProductHref = (p: Product) => `/${resolvedStoreId}/product/${p.id}`;
+  const getProductHref = (p: Product) =>
+    ctx.isSubdomain ? `/product/${p.id}` : `/${resolvedStoreId}/product/${p.id}`;
   const getItemClass = (baseClass: string, itemCount: number, isList: boolean) =>
     itemCount === 1 && !isList ? 'w-full max-w-sm mx-auto' : baseClass;
 
@@ -104,11 +107,12 @@ function SectionRenderer({
 
     // ── Hero ────────────────────────────────────────────────────────────────
     case 'hero':
-      return <HeroSection theme={theme} store={store} />;
+      return <HeroSection theme={theme} store={store} ctaText={ctx.sectionSettings['hero']?.ctaText} />;
 
     // ── Featured Products ───────────────────────────────────────────────────
     case 'featured': {
       if (featuredProducts.length === 0) return null;
+      const featuredHeading = ctx.sectionSettings['featured']?.heading || 'Featured Highlights';
       const { wrapperClass, itemClass, isList } = getGridClasses(theme.layout.productGrid);
       const { style: cardSt, className: cardCls, isBorderless } = getCardStyle(theme.layout.cardStyle, t);
       return (
@@ -117,7 +121,7 @@ function SectionRenderer({
             className="text-2xl font-bold tracking-tight mb-8 md:text-center"
             style={{ color: t.sectionHeading }}
           >
-            Featured Highlights
+            {featuredHeading}
           </h2>
 
           <div className={`${wrapperClass} ${!isList ? 'justify-start md:justify-center' : ''}`}>
@@ -467,7 +471,9 @@ function SectionRenderer({
     }
 
     // ── About ───────────────────────────────────────────────────────────────
-    case 'about':
+    case 'about': {
+      const aboutHeading = ctx.sectionSettings['about']?.heading || `About ${store.name}`;
+      const aboutSubtext = ctx.sectionSettings['about']?.subtext || store.bio || store.tagline || 'We are passionate about bringing you the best products, curated with care and delivered with love.';
       return (
         <section className="mb-20 px-4 sm:px-6 lg:px-8">
           <div
@@ -478,17 +484,20 @@ function SectionRenderer({
               className="text-2xl md:text-3xl font-extrabold tracking-tight mb-4"
               style={{ color: t.sectionHeading }}
             >
-              About {store.name}
+              {aboutHeading}
             </h2>
             <p className="text-base md:text-lg leading-relaxed" style={{ color: t.heroSub }}>
-              {store.bio || store.tagline || 'We are passionate about bringing you the best products, curated with care and delivered with love.'}
+              {aboutSubtext}
             </p>
           </div>
         </section>
       );
+    }
 
     // ── WhatsApp CTA ────────────────────────────────────────────────────────
-    case 'whatsapp-cta':
+    case 'whatsapp-cta': {
+      const ctaHeading = ctx.sectionSettings['whatsapp-cta']?.heading || "Questions? We're on WhatsApp 💬";
+      const ctaSubtext = ctx.sectionSettings['whatsapp-cta']?.subtext || 'Chat with us directly to place an order, ask about availability, or get help.';
       return (
         <section className="mb-20 px-4 sm:px-6 lg:px-8">
           <div
@@ -500,10 +509,10 @@ function SectionRenderer({
                 className="text-xl md:text-2xl font-extrabold mb-2"
                 style={{ color: t.sectionHeading }}
               >
-                Questions? We're on WhatsApp 💬
+                {ctaHeading}
               </h2>
               <p className="text-sm" style={{ color: t.productMeta }}>
-                Chat with us directly to place an order, ask about availability, or get help.
+                {ctaSubtext}
               </p>
             </div>
             <button
@@ -512,11 +521,12 @@ function SectionRenderer({
               style={{ background: '#25D366' }}
             >
               <MessageCircle className="w-5 h-5" />
-              Chat to Order
+              {ctx.sectionSettings['whatsapp-cta']?.ctaText || 'Chat to Order'}
             </button>
           </div>
         </section>
       );
+    }
 
     default:
       return null;
@@ -543,6 +553,9 @@ export function StoreFront({ storefront }: { storefront?: PublicStorefrontData }
   }
 
   const resolvedStoreId = storeId || getSubdomain() || publicUser?.username || localUser?.username || 'store';
+  const isSubdomain = typeof window !== 'undefined'
+    ? window.location.hostname.split('.').length >= 3
+    : Boolean(publicUser?.username && !storeId);
   const activeUser = publicUser ?? (
     localUser
       ? {
@@ -617,8 +630,10 @@ export function StoreFront({ storefront }: { storefront?: PublicStorefrontData }
     remainingProducts,
     currencySymbol,
     resolvedStoreId,
+    isSubdomain,
     onContactClick: handleContactClick,
     searchQuery,
+    sectionSettings: Object.fromEntries(rawSections.map(s => [s.id, s.settings ?? {}])),
   };
 
   return (

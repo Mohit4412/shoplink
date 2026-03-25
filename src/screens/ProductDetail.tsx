@@ -3,10 +3,12 @@
 import React, { useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
-import { CheckCircle2, ShieldCheck, Truck, Star, Award, Heart, RotateCcw, Box, Package, Zap, CreditCard, Clock } from 'lucide-react';
+import { CheckCircle2, ShieldCheck, Truck, Star, Award, Heart, RotateCcw, Box, Package, Zap, CreditCard, Clock, Lock, Headphones, Gift, Leaf, ThumbsUp, Flame, BadgeCheck, Sparkles, Smile, MapPin, Globe, Recycle, Tag, Percent, Handshake } from 'lucide-react';
 
 const ICON_MAP: Record<string, React.ElementType> = {
-  ShieldCheck, CheckCircle2, Truck, Award, Star, Heart, RotateCcw, Box, Package, Zap, CreditCard, Clock
+  ShieldCheck, CheckCircle2, BadgeCheck, Truck, Package, Box, RotateCcw, Recycle,
+  CreditCard, Lock, Award, Star, Sparkles, Flame, Zap, Clock, Headphones,
+  Heart, ThumbsUp, Smile, Gift, Tag, Percent, Leaf, Globe, MapPin, Handshake,
 };
 import { useStore } from '../context/StoreContext';
 import { getCurrencySymbol } from '../utils/currency';
@@ -93,8 +95,8 @@ export function ProductDetail({ storefront }: { storefront?: PublicStorefrontDat
   const TRUST_BADGES = normalizedBadges.map((b) => {
     const IconComp = ICON_MAP[b.icon] || ShieldCheck;
     return {
-      icon: <IconComp className="w-5 h-5" style={{ color: t.accent }} />,
-      text: b.text
+      icon: <IconComp className="w-4 h-4" style={{ color: t.accent }} />,
+      text: b.text,
     };
   });
 
@@ -194,13 +196,16 @@ export function ProductDetail({ storefront }: { storefront?: PublicStorefrontDat
             {/* Trust Badges */}
             {TRUST_BADGES.filter(b => b.text.trim() !== '').length > 0 && (
               <div
-                className="flex flex-col sm:flex-row flex-wrap items-center justify-center gap-4 sm:gap-10 mb-10 py-6 border-y"
+                className="flex flex-row items-center justify-around gap-2 mb-8 py-3 px-2 border-y"
                 style={{ borderColor: t.cardBorder }}
               >
                 {TRUST_BADGES.filter(b => b.text.trim() !== '').map((badge, idx) => (
-                  <div key={idx} className="flex items-center gap-3">
+                  <div key={idx} className="flex flex-col items-center gap-1 min-w-0">
                     <div className="shrink-0">{badge.icon}</div>
-                    <span className="text-xs font-semibold uppercase tracking-wider text-center" style={{ color: t.productMeta }}>
+                    <span
+                      className="text-[10px] font-semibold uppercase tracking-wide text-center leading-tight line-clamp-2 max-w-[72px]"
+                      style={{ color: t.productMeta }}
+                    >
                       {badge.text}
                     </span>
                   </div>

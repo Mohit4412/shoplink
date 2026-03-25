@@ -8,9 +8,10 @@ import { StoreSettings } from '../../../types';
 interface HeroSectionProps {
   theme: Theme;
   store: StoreSettings;
+  ctaText?: string;
 }
 
-export function HeroSection({ theme, store }: HeroSectionProps) {
+export function HeroSection({ theme, store, ctaText }: HeroSectionProps) {
   const { tokens: t, layout } = theme;
 
   // ── CENTERED ──────────────────────────────────────────────────────────────
@@ -122,7 +123,7 @@ export function HeroSection({ theme, store }: HeroSectionProps) {
               className="inline-flex items-center gap-2 self-start px-6 py-3 rounded-full text-sm font-bold transition-opacity hover:opacity-90"
               style={{ background: t.btnBg, color: t.btnText }}
             >
-              Shop Now
+              {ctaText || 'Shop Now'}
               <ChevronDown className="w-4 h-4 rotate-[-90deg]" />
             </a>
           </div>
@@ -177,7 +178,7 @@ export function HeroSection({ theme, store }: HeroSectionProps) {
           className="flex items-center gap-2 px-7 py-3.5 rounded-full text-sm font-bold shadow-xl transition-opacity hover:opacity-90"
           style={{ background: t.btnBg, color: t.btnText }}
         >
-          Browse Products
+          {ctaText || 'Browse Products'}
           <ChevronDown className="w-4 h-4 rotate-[-90deg]" />
         </a>
       </div>

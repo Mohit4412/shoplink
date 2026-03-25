@@ -51,6 +51,12 @@ export interface SectionConfig {
   label: string;
   enabled: boolean;
   order: number;
+  settings?: {
+    ctaText?: string;        // hero: button label
+    heading?: string;        // about / featured: custom heading
+    subtext?: string;        // about: custom subtext
+    ctaMessage?: string;     // whatsapp-cta: custom chat message
+  };
 }
 
 export interface TrustBadgeConfig {
