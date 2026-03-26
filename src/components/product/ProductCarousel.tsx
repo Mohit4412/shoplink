@@ -15,10 +15,6 @@ export function ProductCarousel({ images, productName }: ProductCarouselProps) {
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
-  // Zoom State for Flipkart style magnifier
-  const [isHovering, setIsHovering] = useState(false);
-  const [zoomStyle, setZoomStyle] = useState<React.CSSProperties>({});
-
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -33,69 +29,27 @@ export function ProductCarousel({ images, productName }: ProductCarouselProps) {
     setCurrentIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
   };
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (window.innerWidth < 1024) return; // Only zoom on desktop
-    const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
-    const x = ((e.clientX - left) / width) * 100;
-    const y = ((e.clientY - top) / height) * 100;
-    
-    setIsHovering(true);
-    setZoomStyle({
-      transformOrigin: `${x}% ${y}%`,
-      transform: 'scale(2.5)' // Intensely zoom for the magnifier effect
-    });
-  };
-
-  const handleMouseLeave = () => {
-    setIsHovering(false);
-    setZoomStyle({
-      transformOrigin: 'center',
-      transform: 'scale(1)'
-    });
-  };
-
   return (
     <>
-      {/* Mobile: full-width image with dot indicators. Desktop: Flipkart-style thumbs left + main right */}
-      <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 h-full w-full">
-
-        {/* Thumbnails — horizontal strip below on mobile, vertical sidebar on desktop */}
-        {images.length > 1 && (
-          <div className="flex lg:flex-col gap-2 overflow-x-auto lg:overflow-y-auto no-scrollbar order-2 lg:order-1 lg:w-20 shrink-0 px-4 lg:px-0 pb-1 lg:pb-0 lg:max-h-[600px]">
-            {images.map((img, idx) => (
-              <button
-                key={idx}
-                onMouseEnter={() => { if (window.innerWidth >= 1024) setCurrentIndex(idx); }}
-                onClick={() => setCurrentIndex(idx)}
-                className={`relative shrink-0 w-14 h-16 lg:w-20 lg:h-24 rounded-lg overflow-hidden border-2 transition-all ${
-                  currentIndex === idx ? 'border-teal-600' : 'border-transparent opacity-60 hover:opacity-100 hover:border-gray-300 bg-gray-100'
-                }`}
-              >
-                <Image src={img} alt={`Thumbnail ${idx + 1}`} fill className="object-cover" />
-              </button>
-            ))}
-          </div>
-        )}
+      {/* Always mobile-style: full-width image with swipe arrows + dot indicators */}
+      <div className="flex flex-col gap-3 h-full w-full">
 
         {/* Main image */}
         <div
-          className="relative flex-1 aspect-square lg:aspect-auto lg:h-[600px] bg-gray-50 lg:rounded-2xl overflow-hidden order-1 lg:order-2 cursor-zoom-in"
-          onMouseMove={handleMouseMove}
-          onMouseLeave={handleMouseLeave}
+          className="relative flex-1 aspect-square overflow-hidden cursor-zoom-in"
           onClick={() => setIsLightboxOpen(true)}
         >
           <Image
             src={images[currentIndex]}
             alt={`${productName} - Image ${currentIndex + 1}`}
             fill
-            className="object-cover lg:object-contain transition-transform duration-100 ease-out"
-            style={isHovering ? zoomStyle : { transform: 'scale(1)', transition: 'transform 0.4s ease-out' }}
+            className="object-cover"
             priority
           />
 
-          {/* Mobile nav arrows + dots */}
+          {/* Nav arrows + dots */}
           {images.length > 1 && (
-            <div className="lg:hidden">
+            <>
               <button
                 onClick={prevSlide}
                 className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center rounded-full bg-white/80 shadow-sm"
@@ -118,9 +72,26 @@ export function ProductCarousel({ images, productName }: ProductCarouselProps) {
                   />
                 ))}
               </div>
-            </div>
+            </>
           )}
         </div>
+
+        {/* Thumbnail strip below */}
+        {images.length > 1 && (
+          <div className="flex gap-2 overflow-x-auto no-scrollbar px-4 pb-1">
+            {images.map((img, idx) => (
+              <button
+                key={idx}
+                onClick={() => setCurrentIndex(idx)}
+                className={`relative shrink-0 w-14 h-16 rounded-lg overflow-hidden border-2 transition-all ${
+                  currentIndex === idx ? 'border-teal-600' : 'border-transparent opacity-60 hover:opacity-100 hover:border-gray-300 bg-gray-100'
+                }`}
+              >
+                <Image src={img} alt={`Thumbnail ${idx + 1}`} fill className="object-cover" />
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Lightbox Modal via Portal */}
