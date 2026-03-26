@@ -182,7 +182,7 @@ function hydrateStore(row: StoreRow): { user: UserProfile; store: StoreSettings 
     },
     store: {
       logoUrl: row.logo_url ?? '',
-      name: row.store_name,
+      name: row.store_name?.trim() ? row.store_name : row.username,
       tagline: row.tagline,
       bio: row.store_bio ?? '',
       trustBadges: parseJson(row.trust_badges_json, []),
