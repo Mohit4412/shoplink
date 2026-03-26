@@ -100,7 +100,8 @@ export function ProductDetail({ storefront }: { storefront?: PublicStorefrontDat
   const activeBadges = TRUST_BADGES.filter(b => b.text.trim() !== '');
 
   return (
-    <div className="min-h-screen flex flex-col font-sans" style={{ background: t.pageBg, color: t.pageText }}>
+    <div className="min-h-screen sm:bg-gray-100 sm:flex sm:justify-center sm:items-start font-sans">
+    <div className="w-full sm:max-w-[480px] sm:min-h-screen sm:shadow-2xl flex flex-col" style={{ background: t.pageBg, color: t.pageText }}>
 
       {/* Nav — compact on mobile */}
       <div
@@ -277,6 +278,7 @@ export function ProductDetail({ storefront }: { storefront?: PublicStorefrontDat
           <p className="mt-1 opacity-50 italic">Powered by MyShopLink</p>
         )}
       </footer>
+      </div>
     </div>
   );
 }

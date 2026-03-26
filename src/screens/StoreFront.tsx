@@ -322,10 +322,11 @@ export function StoreFront({ storefront }: { storefront?: PublicStorefrontData }
   };
 
   return (
-    <div
-      className="min-h-screen flex flex-col font-sans transition-colors duration-300"
-      style={{ background: t.pageBg, color: t.pageText }}
-    >
+    <div className="min-h-screen sm:bg-gray-100 sm:flex sm:justify-center sm:items-start font-sans">
+      <div
+        className="w-full sm:max-w-[480px] sm:min-h-screen sm:shadow-2xl flex flex-col transition-colors duration-300 relative"
+        style={{ background: t.pageBg, color: t.pageText }}
+      >
       {/* Demo banner */}
       {isMismatch && (
         <div className="bg-amber-100 text-amber-900 px-4 py-2 text-center text-[10px] font-bold uppercase tracking-widest">
@@ -397,15 +398,15 @@ export function StoreFront({ storefront }: { storefront?: PublicStorefrontData }
           {/* Floating WhatsApp — always visible */}
           <button
             onClick={() => handleContactClick()}
-            className="fixed bottom-[max(1rem,env(safe-area-inset-bottom))] right-4 sm:right-6 z-50 flex items-center gap-3 px-4 py-3 sm:px-5 sm:py-4 rounded-full shadow-2xl hover:-translate-y-1 transition-all duration-300"
+            className="fixed bottom-[max(1rem,env(safe-area-inset-bottom))] right-4 sm:right-[max(1rem,calc(50%-224px))] z-50 flex items-center gap-3 px-4 py-3 rounded-full shadow-2xl hover:-translate-y-1 transition-all duration-300"
             style={{ background: '#25D366', color: '#FFFFFF' }}
             aria-label="Chat to Order on WhatsApp"
           >
             <MessageCircle className="w-6 h-6" />
-            <span className="font-semibold hidden sm:inline">Chat to Order</span>
           </button>
         </>
       )}
+      </div>
     </div>
   );
 }
