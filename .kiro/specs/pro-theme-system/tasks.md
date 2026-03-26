@@ -79,7 +79,7 @@ Extend the existing theme mechanism from a color-swap system into a structurally
     - **Property: `getTypographyClasses(undefined)` returns the same result as `getTypographyClasses('editorial')`**
     - **Validates: Requirements 5.1–5.5, 6.1–6.4**
 
-- [-] 5. Checkpoint — Ensure all tests pass, ask the user if questions arise.
+- [x] 5. Checkpoint — Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 6. Integrate Nav, ProductCard, typography, and spacing into StoreFront
   - [x] 6.1 Update `src/screens/StoreFront.tsx` to use the new `Nav` component
@@ -94,7 +94,7 @@ Extend the existing theme mechanism from a color-swap system into a structurally
   - [x] 6.3 Apply typography scale classes from `getTypographyClasses` to section headings, hero heading, product names, meta text, and price labels in `StoreFront.tsx`
     - _Requirements: 5.1–5.4_
 
-  - [~] 6.4 Apply section spacing from `getSectionSpacingClass` to all enabled section wrappers in `StoreFront.tsx`
+  - [ ] 6.4 Apply section spacing from `getSectionSpacingClass` to all enabled section wrappers in `StoreFront.tsx`
     - Replace hardcoded `mb-*` values on section wrappers with the spacing helper output
     - _Requirements: 6.1–6.4_
 
@@ -136,7 +136,7 @@ Extend the existing theme mechanism from a color-swap system into a structurally
     - _Requirements: 10.1, 10.5_
 
 - [ ] 10. Backward compatibility and fallback verification
-  - [~] 10.1 Verify `getTheme()` function signature is unchanged and falls back to `classic` for undefined or unknown slugs
+  - [ ] 10.1 Verify `getTheme()` function signature is unchanged and falls back to `classic` for undefined or unknown slugs
     - Confirm existing call sites still work without modification
     - _Requirements: 11.1, 11.2, 11.4_
 
@@ -145,11 +145,11 @@ Extend the existing theme mechanism from a color-swap system into a structurally
     - **Property: `getTheme(undefined)` returns the classic theme**
     - **Validates: Requirements 11.2, 11.4**
 
-  - [~] 10.3 Verify existing `SectionConfig` `enabled` and `order` fields are still respected after refactor
+  - [ ] 10.3 Verify existing `SectionConfig` `enabled` and `order` fields are still respected after refactor
     - Confirm `StoreFront.tsx` still filters and sorts sections by `enabled`/`order` after all changes
     - _Requirements: 11.3_
 
-- [~] 11. Final checkpoint — Ensure all tests pass, ask the user if questions arise.
+- [ ] 11. Final checkpoint — Ensure all tests pass, ask the user if questions arise.
 
 ## Notes
 
