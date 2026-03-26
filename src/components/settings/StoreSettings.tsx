@@ -64,6 +64,8 @@ function CardAnatomyIcon({ anatomy }: { anatomy: StoreTheme['cardAnatomy'] }) {
 const THEMES: StoreTheme[] = [
   { id: 'classic', name: 'Classic', cardAnatomy: 'portrait', description: 'Clean white with black accents. Timeless and professional.', imageUrl: 'https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?auto=format&fit=crop&w=400&q=80', preview: { bg: '#FAFAFA', card: '#FFFFFF', accent: '#111111', text: '#374151', button: '#111111' } },
   { id: 'spark', name: '⚡ Spark', cardAnatomy: 'square-overlay', description: 'Instagram-grid feel with category tabs. Perfect for fashion & clothing.', imageUrl: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=400&q=80', preview: { bg: '#FFFFFF', card: '#FFFFFF', accent: '#0f0f0f', text: '#0f0f0f', button: '#0f0f0f' } },
+  { id: 'craft', name: '🪡 Craft', cardAnatomy: 'editorial-row', description: 'Editorial storytelling for handmade & artisan goods. One product at a time.', imageUrl: 'https://images.unsplash.com/photo-1610701596007-11502861dcfa?auto=format&fit=crop&w=400&q=80', preview: { bg: '#FDFCFB', card: '#FFFFFF', accent: '#c9a961', text: '#2d2d2d', button: '#2d2d2d' } },
+  { id: 'fresh', name: '🌿 Fresh', cardAnatomy: 'landscape', description: 'Clean catalogue for food & homemade items. Quantity selectors built-in.', imageUrl: 'https://images.unsplash.com/photo-1488459716781-31db52582fe9?auto=format&fit=crop&w=400&q=80', preview: { bg: '#F8FAF6', card: '#FFFFFF', accent: '#4a7c2c', text: '#1a1a1a', button: '#4a7c2c' } },
 ];
 
 type Tab = 'identity' | 'theme';

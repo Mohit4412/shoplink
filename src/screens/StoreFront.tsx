@@ -13,6 +13,8 @@ import { ThemeLayout } from '../utils/themes';
 import { getProductUrl } from '../utils/storeUrl';
 import { getTypographyClasses, getSectionSpacingClass } from '../utils/themeHelpers';
 import { SparkStoreFront } from '../components/storefront/themes/SparkStoreFront';
+import { CraftStoreFront } from '../components/storefront/themes/CraftStoreFront';
+import { FreshStoreFront } from '../components/storefront/themes/FreshStoreFront';
 import { StoreFooter } from '../components/storefront/StoreFooter';
 
 // ─── Grid layout helper ───────────────────────────────────────────────────────
@@ -296,6 +298,26 @@ export function StoreFront({ storefront }: { storefront?: PublicStorefrontData }
         {/* ── Spark variant — category tabs + Instagram grid ── */}
         {theme.layout.variant === 'spark' ? (
           <SparkStoreFront
+            theme={theme}
+            store={store}
+            products={products}
+            resolvedStoreId={resolvedStoreId}
+            isSubdomain={isSubdomain}
+            onContactClick={handleContactClick}
+            isFreePlan={activeUser?.plan === 'Free'}
+          />
+        ) : theme.layout.variant === 'craft' ? (
+          <CraftStoreFront
+            theme={theme}
+            store={store}
+            products={products}
+            resolvedStoreId={resolvedStoreId}
+            isSubdomain={isSubdomain}
+            onContactClick={handleContactClick}
+            isFreePlan={activeUser?.plan === 'Free'}
+          />
+        ) : theme.layout.variant === 'fresh' ? (
+          <FreshStoreFront
             theme={theme}
             store={store}
             products={products}
