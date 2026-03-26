@@ -31,10 +31,6 @@ function ShellContent({ children }: { children: ReactNode }) {
         pageTitle = 'Plans & pricing';
         pageSubtitle = `Current plan: ${user?.plan || 'Free'}`;
         break;
-      case 'plugins':
-        pageTitle = 'Store sections';
-        pageSubtitle = 'Show and hide storefront blocks';
-        break;
       case 'domain':
         pageTitle = 'Custom domain';
         pageSubtitle = 'Connect your own domain';

@@ -1,5 +1,3 @@
-import { SectionConfig } from '../types';
-
 export interface ThemeTokens {
   // Page
   pageBg: string;
@@ -54,18 +52,7 @@ export interface ThemeLayout {
 export interface Theme {
   tokens: ThemeTokens;
   layout: ThemeLayout;
-  defaultSections: SectionConfig[];
 }
-
-// ─── Shared default sections ────────────────────────────────────────────────
-
-const STANDARD_SECTIONS: SectionConfig[] = [
-  { id: 'hero',         label: 'Hero Banner',       enabled: true,  order: 1 },
-  { id: 'featured',     label: 'Featured Products', enabled: true,  order: 2 },
-  { id: 'all-products', label: 'All Products',      enabled: true,  order: 3 },
-  { id: 'about',        label: 'About the Store',   enabled: false, order: 4 },
-  { id: 'whatsapp-cta', label: 'WhatsApp CTA',      enabled: true,  order: 5 },
-];
 
 // ─── Themes ──────────────────────────────────────────────────────────────────
 
@@ -109,7 +96,6 @@ const THEMES: Record<string, Theme> = {
       cardAnatomy: 'portrait',
       sectionSpacing: 'relaxed',
     },
-    defaultSections: STANDARD_SECTIONS,
   },
 
   // ⚡ Spark — Instagram-grid feel, category tabs, fashion/clothing
@@ -152,7 +138,6 @@ const THEMES: Record<string, Theme> = {
       sectionSpacing: 'tight',
       variant: 'spark',
     },
-    defaultSections: STANDARD_SECTIONS,
   },
 
 };

@@ -27,7 +27,7 @@ interface StoreRow {
   store_bio: string | null;
   currency: string;
   theme: string | null;
-  sections_json: string | null | unknown;
+  sections_json?: string | null | unknown; // retained in DB schema but no longer used
   trust_badges_json: string | null | unknown;
   banners_json: string | null | unknown;
   custom_domain: string | null;
@@ -136,7 +136,6 @@ function serializeStore(bundle: MerchantStorefrontBundle) {
     store_bio: store.bio ?? null,
     currency: store.currency,
     theme: store.theme ?? null,
-    sections_json: store.sections ? JSON.stringify(store.sections) : null,
     trust_badges_json: store.trustBadges ? JSON.stringify(store.trustBadges) : null,
     banners_json: store.banners ? JSON.stringify(store.banners) : null,
     custom_domain: store.customDomain ?? null,
@@ -185,7 +184,6 @@ function hydrateStore(row: StoreRow): { user: UserProfile; store: StoreSettings 
       trustBadges: parseJson(row.trust_badges_json, []),
       currency: row.currency,
       theme: row.theme ?? undefined,
-      sections: parseJson(row.sections_json, undefined),
       banners: parseJson(row.banners_json, undefined),
       customDomain: row.custom_domain ?? undefined,
       customDomainStatus: row.custom_domain_status ?? undefined,
@@ -229,11 +227,11 @@ if (db) {
   INSERT INTO stores (
     user_id, username, email, first_name, last_name, user_bio, whatsapp_number, avatar_url, plan,
     subscription_renewal_date, logo_url, store_name, tagline, store_bio, currency, theme,
-    sections_json, trust_badges_json, banners_json, custom_domain, custom_domain_status
+    trust_badges_json, banners_json, custom_domain, custom_domain_status
   ) VALUES (
     @user_id, @username, @email, @first_name, @last_name, @user_bio, @whatsapp_number, @avatar_url, @plan,
     @subscription_renewal_date, @logo_url, @store_name, @tagline, @store_bio, @currency, @theme,
-    @sections_json, @trust_badges_json, @banners_json, @custom_domain, @custom_domain_status
+    @trust_badges_json, @banners_json, @custom_domain, @custom_domain_status
   )
   ON CONFLICT(username) DO UPDATE SET
     user_id = excluded.user_id,
@@ -251,7 +249,6 @@ if (db) {
     store_bio = excluded.store_bio,
     currency = excluded.currency,
     theme = excluded.theme,
-    sections_json = excluded.sections_json,
     trust_badges_json = excluded.trust_badges_json,
     banners_json = excluded.banners_json,
     custom_domain = excluded.custom_domain,

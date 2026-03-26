@@ -45,18 +45,6 @@ export interface AppNotification {
   date: string;
 }
 
-export interface SectionConfig {
-  id: 'hero' | 'featured' | 'all-products' | 'about' | 'whatsapp-cta';
-  label: string;
-  enabled: boolean;
-  order: number;
-  settings?: {
-    ctaText?: string;        // hero: button label
-    heading?: string;        // about / featured: custom heading
-    subtext?: string;        // about: custom subtext
-    ctaMessage?: string;     // whatsapp-cta: custom chat message
-  };
-}
 
 export interface TrustBadgeConfig {
   text: string;
@@ -71,7 +59,6 @@ export interface StoreSettings {
   trustBadges?: TrustBadgeConfig[];
   currency: string;
   theme?: string;
-  sections?: SectionConfig[];
   banners?: string[];
   customDomain?: string;
   customDomainStatus?: 'pending' | 'active' | 'failed';
