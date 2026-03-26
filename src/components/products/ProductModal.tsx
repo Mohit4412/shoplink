@@ -25,12 +25,19 @@ interface ProductModalProps {
   onSubmit: (e: React.FormEvent) => void | Promise<void>;
   onUpgradeRequired?: () => void;
   currencySymbol: string;
+  existingCollections?: string[];
 }
 
-export function ProductModal({ isOpen, isEditMode, onClose, formData, setFormData, onSubmit, onUpgradeRequired, currencySymbol }: ProductModalProps) {
+export function ProductModal({ isOpen, isEditMode, onClose, formData, setFormData, onSubmit, onUpgradeRequired, currencySymbol, existingCollections = [] }: ProductModalProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const collectionInputRef = useRef<HTMLInputElement>(null);
   const [submitError, setSubmitError] = React.useState('');
   const [isUploadingImages, setIsUploadingImages] = React.useState(false);
+  const [showSuggestions, setShowSuggestions] = React.useState(false);
+
+  const filteredCollections = existingCollections.filter(
+    (c) => c.toLowerCase().includes(formData.collection.toLowerCase()) && c !== formData.collection
+  );
 
   const handleSubmit = async (e: React.FormEvent) => {
     try {
@@ -202,12 +209,40 @@ export function ProductModal({ isOpen, isEditMode, onClose, formData, setFormDat
           maxLength={200}
         />
 
-        <Input
-          label="Collection"
-          value={formData.collection}
-          onChange={(e) => setFormData({ ...formData, collection: e.target.value })}
-          placeholder="e.g. Summer Collection"
-        />
+        {/* Collection combobox */}
+        <div className="relative">
+          <label className="mb-1 block text-sm font-medium text-gray-700">Collection</label>
+          <input
+            ref={collectionInputRef}
+            className="flex h-11 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300"
+            value={formData.collection}
+            placeholder="e.g. Summer Collection"
+            autoComplete="off"
+            onChange={(e) => {
+              setFormData({ ...formData, collection: e.target.value });
+              setShowSuggestions(true);
+            }}
+            onFocus={() => setShowSuggestions(true)}
+            onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
+          />
+          {showSuggestions && filteredCollections.length > 0 && (
+            <ul className="absolute z-50 mt-1 w-full rounded-xl border border-gray-200 bg-white shadow-lg overflow-hidden">
+              {filteredCollections.map((col) => (
+                <li
+                  key={col}
+                  onMouseDown={() => {
+                    setFormData({ ...formData, collection: col });
+                    setShowSuggestions(false);
+                  }}
+                  className="flex items-center gap-2 px-3 py-2.5 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />
+                  {col}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
 
         <Textarea
           label="Highlights"

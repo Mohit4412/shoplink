@@ -569,6 +569,7 @@ export function Products() {
         onSubmit={isAddModalOpen ? handleAddSubmit : handleEditSubmit}
         onUpgradeRequired={handleUpgradeRequired}
         currencySymbol={currencySymbol}
+        existingCollections={collections.map(c => c.name)}
       />
 
       <UpgradeModal isOpen={upgradeModal.isOpen} onClose={upgradeModal.close} />
