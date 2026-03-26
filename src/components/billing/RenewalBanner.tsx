@@ -12,6 +12,7 @@ export function RenewalBanner() {
   const upgradeModal = useUpgradeModal();
 
   if (!user || user.plan !== 'Pro') return null;
+  const isTrialPro = !user.razorpaySubscriptionId;
 
   const renewalDate = user.subscriptionRenewalDate ? new Date(user.subscriptionRenewalDate) : null;
   if (!renewalDate || isNaN(renewalDate.getTime())) return null;
@@ -40,14 +41,14 @@ export function RenewalBanner() {
         <AlertTriangle className={`w-4 h-4 shrink-0 ${isExpired ? 'text-red-500' : 'text-amber-500'}`} />
         <p className={`text-xs font-semibold flex-1 ${isExpired ? 'text-red-700' : 'text-amber-700'}`}>
           {isExpired
-            ? `Your Pro plan has expired. You have ${GRACE_DAYS - Math.abs(Math.floor(daysUntilExpiry))} day(s) left before downgrade.`
-            : `Your Pro plan expires in ${daysLeft} day${daysLeft !== 1 ? 's' : ''}. Renew to keep access.`}
+            ? `${isTrialPro ? 'Your Pro trial' : 'Your Pro plan'} has expired. You have ${GRACE_DAYS - Math.abs(Math.floor(daysUntilExpiry))} day(s) left before downgrade.`
+            : `${isTrialPro ? 'Your Pro trial' : 'Your Pro plan'} ends in ${daysLeft} day${daysLeft !== 1 ? 's' : ''}. ${isTrialPro ? 'Upgrade to keep Pro access.' : 'Renew to keep access.'}`}
         </p>
         <button
           onClick={upgradeModal.open}
           className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gray-900 text-white text-xs font-bold"
         >
-          <Zap className="w-3 h-3" /> Renew
+          <Zap className="w-3 h-3" /> {isTrialPro ? 'Upgrade' : 'Renew'}
         </button>
       </div>
       <UpgradeModal isOpen={upgradeModal.isOpen} onClose={upgradeModal.close} />

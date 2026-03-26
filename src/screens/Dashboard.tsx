@@ -41,6 +41,7 @@ export function Dashboard() {
   const todayOrdersCount = orders.filter(o => o.date.startsWith(todayStr)).length;
   const todayStats = analytics.dailyStats.find(s => s.fullDate === todayStr) || { views: 0, clicks: 0 };
   const activeProductsCount = products.length;
+  const isTrialPro = user?.plan === 'Pro' && !user?.razorpaySubscriptionId;
 
   const handleSaveOrder = (newOrder: { productId: string; quantity: number; revenue: number; notes: string; date: string }) => {
     if (selectedOrder) {
@@ -143,9 +144,9 @@ export function Dashboard() {
       ) : (
         <div className="bg-[#ecfdf5] border border-[#059669]/30 rounded-2xl px-4 py-3.5 flex items-center shadow-sm">
           <div>
-            <h3 className="text-sm font-bold text-green-900">Pro plan</h3>
+            <h3 className="text-sm font-bold text-green-900">{isTrialPro ? 'Pro trial' : 'Pro plan'}</h3>
             <p className="text-[11px] font-semibold text-green-700 mt-0.5">
-              Active until {user?.subscriptionRenewalDate || 'lifetime'}
+              {isTrialPro ? 'Trial ends' : 'Active until'} {user?.subscriptionRenewalDate || 'lifetime'}
             </p>
           </div>
         </div>
@@ -175,26 +176,26 @@ export function Dashboard() {
         <div className="px-4 pt-3.5 pb-2 border-b border-gray-50">
           <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Quick actions</p>
         </div>
-        <div className="p-3 flex gap-2">
+        <div className="p-3 grid grid-cols-2 gap-2 sm:flex">
           <button
             onClick={openNewOrderModal}
-            className="flex-1 bg-gray-50 hover:bg-gray-100 text-gray-700 h-11 rounded-xl flex items-center justify-center gap-2 text-sm font-semibold transition-colors"
+            className="bg-gray-50 hover:bg-gray-100 text-gray-700 h-9 sm:h-11 rounded-lg sm:rounded-xl flex items-center justify-center gap-1.5 sm:gap-2 text-[12px] sm:text-sm font-semibold transition-colors sm:flex-1"
           >
-            <Plus className="w-4 h-4 text-gray-500" /> Log Order
+            <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-500" /> Log Order
           </button>
           <button
             onClick={() => setIsShareModalOpen(true)}
-            className="flex-1 bg-gray-50 hover:bg-gray-100 text-gray-700 h-11 rounded-xl flex items-center justify-center gap-2 text-sm font-semibold transition-colors"
+            className="bg-gray-50 hover:bg-gray-100 text-gray-700 h-9 sm:h-11 rounded-lg sm:rounded-xl flex items-center justify-center gap-1.5 sm:gap-2 text-[12px] sm:text-sm font-semibold transition-colors sm:flex-1"
           >
-            <Share2 className="w-4 h-4 text-gray-500" /> Share Store
+            <Share2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-500" /> Share Store
           </button>
           <Link
             href={`https://${user?.username}.myshoplink.site`}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex-1 bg-gray-50 hover:bg-gray-100 text-gray-700 h-11 rounded-xl flex items-center justify-center gap-2 text-sm font-semibold transition-colors"
+            className="col-span-2 bg-gray-50 hover:bg-gray-100 text-gray-700 h-9 sm:h-11 rounded-lg sm:rounded-xl flex items-center justify-center gap-1.5 sm:gap-2 text-[12px] sm:text-sm font-semibold transition-colors sm:col-span-1 sm:flex-1"
           >
-            <Eye className="w-4 h-4 text-gray-500" /> View Store
+            <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-500" /> View Store
           </Link>
         </div>
       </div>

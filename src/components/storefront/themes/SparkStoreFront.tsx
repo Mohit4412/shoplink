@@ -7,7 +7,6 @@ import type { Theme } from '../../../utils/themes';
 import type { StoreSettings, Product } from '../../../types';
 import { getCurrencySymbol } from '../../../utils/currency';
 import { StoreFooter } from '../StoreFooter';
-import { HeroSection } from '../sections/HeroSection';
 
 interface SparkStoreFrontProps {
   theme: Theme;
@@ -44,9 +43,6 @@ export function SparkStoreFront({
 
   return (
     <>
-      {/* Store Header / Profile */}
-      <HeroSection theme={theme} store={store} />
-
       {/* Category filter — pill buttons, horizontally scrollable */}
       <div
         className="sticky top-[52px] z-40 border-b overflow-x-auto no-scrollbar"

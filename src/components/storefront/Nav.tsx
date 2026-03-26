@@ -142,19 +142,41 @@ export function Nav({ theme, store, storeHref, searchQuery = '', onSearchChange 
   // ── MINIMAL (default) ──────────────────────────────────────────────────────
   return (
     <div
-      className="sticky top-0 z-50 border-b px-4 py-3 flex items-center justify-between"
+      className="sticky top-0 z-50 border-b px-4 py-3 flex items-center justify-between gap-3"
       style={navStyle_css}
     >
       <Link href={storeHref} className="flex items-center gap-2 min-w-0 transition-opacity hover:opacity-80">
         {LogoBlock}
       </Link>
-      <Link
-        href={storeHref}
-        className="text-xs font-semibold shrink-0 ml-2 min-h-[44px] flex items-center"
-        style={{ color: t.accent }}
-      >
-        All Products
-      </Link>
+      {searchOpen ? (
+        <div className="flex items-center gap-2 shrink-0">
+          <input
+            ref={searchRef}
+            type="search"
+            placeholder="Search…"
+            value={searchQuery}
+            onChange={e => onSearchChange?.(e.target.value)}
+            className="h-8 w-32 sm:w-40 px-2.5 text-xs rounded-lg border focus:outline-none focus:ring-2"
+            style={{ borderColor: t.navBorder, background: t.cardBg, color: t.pageText }}
+          />
+          <button
+            onClick={() => { setSearchOpen(false); onSearchChange?.(''); }}
+            className="p-1.5 min-h-[44px] min-w-[44px] flex items-center justify-center"
+            aria-label="Close search"
+          >
+            <X className="w-4 h-4" style={{ color: t.navText }} />
+          </button>
+        </div>
+      ) : (
+        <button
+          onClick={() => setSearchOpen(true)}
+          className="shrink-0 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full transition-opacity hover:opacity-80"
+          aria-label="Search products"
+          style={{ color: t.accent }}
+        >
+          <Search className="w-4 h-4" />
+        </button>
+      )}
     </div>
   );
 }

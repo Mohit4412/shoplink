@@ -1,7 +1,7 @@
 import { db, requireDb } from '@/server/db';
 import { deleteUploadedAssets } from '@/server/upload-storage';
 import { isSupabaseEnabled, supabaseDelete, supabaseInsert, supabasePatch, supabaseSelect } from '@/server/supabase';
-import { getDefaultAppState, normalizeProduct } from '@/src/lib/default-state';
+import { getDefaultAppState, getDemoStorefront, normalizeProduct } from '@/src/lib/default-state';
 import { Product, StoreSettings, UserProfile, PublicStorefrontData } from '@/src/types';
 
 export interface MerchantStorefrontBundle {
@@ -358,6 +358,10 @@ export async function getMerchantBundleByUsername(username: string): Promise<Mer
 }
 
 export async function getPublicStorefrontByUsername(username: string): Promise<PublicStorefrontData | null> {
+  if (username === 'demo') {
+    return getDemoStorefront();
+  }
+
   const bundle = await getMerchantBundleByUsername(username);
   if (!bundle) {
     return null;
@@ -375,6 +379,12 @@ export async function getPublicStorefrontByUsername(username: string): Promise<P
 }
 
 export async function getPublicProductByStore(username: string, productId: string) {
+  if (username === 'demo') {
+    const demoStorefront = getDemoStorefront();
+    const product = demoStorefront.products.find((item) => item.id === productId);
+    return product ? { ...demoStorefront, product } : null;
+  }
+
   const bundle = await getPublicStorefrontByUsername(username);
   if (!bundle) {
     return null;

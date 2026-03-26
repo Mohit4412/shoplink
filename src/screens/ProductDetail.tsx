@@ -7,7 +7,7 @@ import {
   CheckCircle2, ShieldCheck, Truck, Star, Award, Heart, RotateCcw,
   Box, Package, Zap, CreditCard, Clock, Lock, Headphones, Gift, Leaf,
   ThumbsUp, Flame, BadgeCheck, Sparkles, Smile, MapPin, Globe, Recycle,
-  Tag, Percent, Handshake, ChevronLeft,
+  Tag, Percent, Handshake, ChevronLeft, MessageCircle,
 } from 'lucide-react';
 import { useStore } from '../context/StoreContext';
 import { getCurrencySymbol } from '../utils/currency';
@@ -79,6 +79,8 @@ export function ProductDetail({ storefront }: { storefront?: PublicStorefrontDat
   const reviewsCount = product.reviews?.length || 128;
   const rating = product.reviews?.length && product.reviews[0].rating ? product.reviews[0].rating : 4.8;
   const phoneNumber = activeUser?.whatsappNumber.replace(/\D/g, '') || '';
+  const generalWhatsAppMessage = encodeURIComponent(`Hi ${store.name}! 👋 I'm browsing your store and have a quick question.`);
+  const generalWhatsAppUrl = phoneNumber ? `https://wa.me/${phoneNumber}?text=${generalWhatsAppMessage}` : '#';
   const features = product.highlights?.length ? product.highlights : [
     'Premium quality materials',
     'Hand-checked before shipping',
@@ -126,13 +128,16 @@ export function ProductDetail({ storefront }: { storefront?: PublicStorefrontDat
           )}
           <span className="font-bold text-sm truncate max-w-[140px]">{store.name}</span>
         </Link>
-        <Link
-          href={storeHref}
-          className="text-xs font-semibold shrink-0 ml-2"
+        <a
+          href={generalWhatsAppUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-xs font-semibold shrink-0 ml-2 min-h-[44px] flex items-center gap-1.5"
           style={{ color: t.accent }}
         >
-          All Products
-        </Link>
+          <MessageCircle className="w-3.5 h-3.5" />
+          Chat
+        </a>
       </div>
 
       <main className="flex-1 pb-28">

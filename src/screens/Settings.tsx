@@ -15,6 +15,7 @@ export function Settings() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user, logout } = useStore();
+  const isTrialPro = user?.plan === 'Pro' && !user?.razorpaySubscriptionId;
   
   const view = searchParams?.get('view');
 
@@ -48,7 +49,7 @@ export function Settings() {
     {
       id: 'billing',
       title: 'Plans & pricing',
-      subtitle: `Current plan: ${user?.plan || 'Free'}`,
+      subtitle: `Current plan: ${isTrialPro ? '14-day Pro trial' : user?.plan || 'Free'}`,
       icon: <CreditCard className="w-5 h-5 text-amber-600" />,
       bg: 'bg-amber-50',
     },
@@ -82,7 +83,7 @@ export function Settings() {
         
         <div className="flex items-center gap-2 mt-4">
           <span className="px-2.5 py-1 bg-gray-100 text-gray-700 text-[11px] font-bold uppercase tracking-wider rounded-md">
-            {user?.plan || 'FREE'}
+            {isTrialPro ? 'PRO TRIAL' : user?.plan || 'FREE'}
           </span>
           <a 
             href={`https://${user?.username}.myshoplink.site`} 

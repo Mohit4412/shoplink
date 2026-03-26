@@ -33,6 +33,7 @@ export function BillingSettings() {
   const { user, refreshUser } = useStore();
   const upgradeModal = useUpgradeModal();
   const isPro = user?.plan === 'Pro';
+  const isTrialPro = isPro && !user?.razorpaySubscriptionId;
   const renewalDate = user?.subscriptionRenewalDate ? new Date(user.subscriptionRenewalDate) : null;
   const hasValidRenewalDate = renewalDate instanceof Date && !isNaN(renewalDate.getTime());
   const isExpiredPro = isPro && (!hasValidRenewalDate || renewalDate!.getTime() < Date.now());
@@ -76,13 +77,17 @@ export function BillingSettings() {
             </div>
             <div>
               <p className="text-sm font-bold text-gray-900">
-                {isActivePro ? 'Pro Plan' : isExpiredPro ? 'Pro (Expired)' : 'Free Plan'}
+                {isActivePro ? (isTrialPro ? 'Pro Trial' : 'Pro Plan') : isExpiredPro ? 'Pro (Expired)' : 'Free Plan'}
               </p>
               <p className="text-[11px] font-medium text-gray-500">
                 {isActivePro && formattedRenewal
-                  ? `Renews on ${formattedRenewal}`
+                  ? isTrialPro
+                    ? `Trial ends on ${formattedRenewal}`
+                    : `Renews on ${formattedRenewal}`
                   : isActivePro
-                  ? 'Active'
+                  ? isTrialPro
+                    ? '14-day trial active'
+                    : 'Active'
                   : isExpiredPro
                   ? 'Your Pro access has expired'
                   : 'Limited features'}
@@ -115,7 +120,9 @@ export function BillingSettings() {
                 <div className="flex items-start gap-2 bg-green-50 border border-green-200 rounded-xl px-3 py-2.5">
                   <CheckCircle2 className="w-4 h-4 text-green-600 mt-0.5 shrink-0" />
                   <p className="text-xs text-green-800">
-                    Subscription cancelled. You'll keep Pro access until {formattedRenewal ?? 'your renewal date'}.
+                    {isTrialPro
+                      ? `Trial access will remain active until ${formattedRenewal ?? 'your trial end date'}.`
+                      : `Subscription cancelled. You'll keep Pro access until ${formattedRenewal ?? 'your renewal date'}.`}
                   </p>
                 </div>
               )}
@@ -134,9 +141,11 @@ export function BillingSettings() {
                   <div className="flex items-start gap-2">
                     <AlertTriangle className="w-4 h-4 text-red-500 mt-0.5 shrink-0" />
                     <div>
-                      <p className="text-sm font-semibold text-gray-900">Cancel subscription?</p>
+                      <p className="text-sm font-semibold text-gray-900">{isTrialPro ? 'End trial access?' : 'Cancel subscription?'}</p>
                       <p className="text-xs text-gray-500 mt-0.5">
-                        You'll keep Pro access until {formattedRenewal ?? 'your renewal date'}, then revert to Free.
+                        {isTrialPro
+                          ? `You'll keep trial access until ${formattedRenewal ?? 'your trial end date'}, then revert to Free.`
+                          : `You'll keep Pro access until ${formattedRenewal ?? 'your renewal date'}, then revert to Free.`}
                       </p>
                     </div>
                     <button onClick={() => setShowCancelConfirm(false)} className="ml-auto text-gray-400 hover:text-gray-600">
@@ -148,7 +157,7 @@ export function BillingSettings() {
                       onClick={() => setShowCancelConfirm(false)}
                       className="flex-1 h-9 rounded-xl border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-gray-50 transition-colors"
                     >
-                      Keep Pro
+                      {isTrialPro ? 'Keep trial' : 'Keep Pro'}
                     </button>
                     <button
                       onClick={handleCancel}
@@ -164,7 +173,7 @@ export function BillingSettings() {
                   onClick={() => setShowCancelConfirm(true)}
                   className="w-full h-10 rounded-xl border border-[#059669]/40 text-[#15803d] text-sm font-semibold hover:bg-[#dcfce7] transition-colors"
                 >
-                  Cancel subscription
+                  {isTrialPro ? 'End trial' : 'Cancel subscription'}
                 </button>
               )}
             </>

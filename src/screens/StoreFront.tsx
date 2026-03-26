@@ -7,7 +7,6 @@ import { useStore } from '../context/StoreContext';
 import { getCurrencySymbol } from '../utils/currency';
 import { getTheme, Theme } from '../utils/themes';
 import { StoreSettings, Product, PublicStorefrontData } from '../types';
-import { HeroSection } from '../components/storefront/sections/HeroSection';
 import { Nav } from '../components/storefront/Nav';
 import { ProductCard } from '../components/storefront/ProductCard';
 import { ThemeLayout } from '../utils/themes';
@@ -90,9 +89,6 @@ function ClassicLayout({
 
   return (
     <main className="flex-1 mx-auto w-full pt-10 pb-32 px-2 sm:px-0">
-      {/* Hero section ALWAYS visible */}
-      <HeroSection theme={theme} store={store} />
-
       {activeProducts.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 px-6 text-center">
           <div className="w-20 h-20 rounded-full flex items-center justify-center mb-6" style={{ backgroundColor: t.accentLight }}>
