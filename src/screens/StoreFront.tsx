@@ -14,6 +14,7 @@ import { ThemeLayout } from '../utils/themes';
 import { getProductUrl } from '../utils/storeUrl';
 import { getTypographyClasses, getSectionSpacingClass } from '../utils/themeHelpers';
 import { SparkStoreFront } from '../components/storefront/themes/SparkStoreFront';
+import { StoreFooter } from '../components/storefront/StoreFooter';
 
 // ─── Grid layout helper ───────────────────────────────────────────────────────
 
@@ -305,6 +306,7 @@ export function StoreFront({ storefront }: { storefront?: PublicStorefrontData }
             resolvedStoreId={resolvedStoreId}
             isSubdomain={isSubdomain}
             onContactClick={handleContactClick}
+            isFreePlan={activeUser?.plan === 'Free'}
           />
         ) : (
           <>
@@ -319,24 +321,7 @@ export function StoreFront({ storefront }: { storefront?: PublicStorefrontData }
               searchQuery={searchQuery}
             />
 
-            {/* Footer */}
-            <footer
-              className="border-t pb-28 pt-12 text-center text-sm transition-colors duration-300 px-4"
-              style={{ background: t.footerBg, borderColor: t.footerBorder, color: t.footerText }}
-            >
-              <p>
-                Copyright &copy; {new Date().getFullYear()}{' '}
-                <span className="font-semibold" style={{ color: t.pageText }}>{store.name}</span>
-              </p>
-              {activeUser?.plan === 'Free' ? (
-                <p className="mt-2 text-xs opacity-70">
-                  Powered by{' '}
-                  <a href="https://myshoplink.site" target="_blank" rel="noreferrer" className="font-medium underline underline-offset-2">
-                    MyShopLink
-                  </a>
-                </p>
-              ) : null}
-            </footer>
+            <StoreFooter store={store} theme={theme} isFreePlan={activeUser?.plan === 'Free'} />
 
             {/* Floating WhatsApp — always visible */}
             <button

@@ -6,6 +6,7 @@ import { MessageCircle } from 'lucide-react';
 import type { Theme } from '../../../utils/themes';
 import type { StoreSettings, Product } from '../../../types';
 import { getCurrencySymbol } from '../../../utils/currency';
+import { StoreFooter } from '../StoreFooter';
 
 interface SparkStoreFrontProps {
   theme: Theme;
@@ -14,6 +15,7 @@ interface SparkStoreFrontProps {
   resolvedStoreId: string;
   isSubdomain: boolean;
   onContactClick: (product?: Product) => void;
+  isFreePlan: boolean;
 }
 
 export function SparkStoreFront({
@@ -23,6 +25,7 @@ export function SparkStoreFront({
   resolvedStoreId,
   isSubdomain,
   onContactClick,
+  isFreePlan,
 }: SparkStoreFrontProps) {
   const t = theme.tokens;
   const currencySymbol = getCurrencySymbol(store.currency);
@@ -116,6 +119,8 @@ export function SparkStoreFront({
           </div>
         )}
       </main>
+
+      <StoreFooter store={store} theme={theme} isFreePlan={isFreePlan} />
 
       {/* Floating WhatsApp */}
       <button

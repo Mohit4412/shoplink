@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useStore } from '../../context/StoreContext';
 import { LegalPages } from '../../types';
-import { FileText, Truck, RotateCcw, Shield, Scale, ChevronDown, ChevronUp, Check, ExternalLink } from 'lucide-react';
+import { FileText, Truck, RotateCcw, Shield, Scale, ExternalLink, Plus, Edit2, Trash2, ArrowLeft, CheckCircle2 } from 'lucide-react';
 
 interface PageDef {
   key: keyof LegalPages;
@@ -82,66 +82,129 @@ By placing an order with us, you agree to the following terms:
   },
 ];
 
-const AUTO_SAVE_DELAY = 1200;
-
 export function LegalPagesSettings() {
   const { store, user, updateStoreSettings } = useStore();
-  const [expanded, setExpanded] = useState<keyof LegalPages | null>('shipping');
-  const [draft, setDraft] = useState<LegalPages>({
-    shipping: '',
-    returns: '',
-    privacy: '',
-    terms: '',
-    ...store.legalPages,
-  });
-  const [saveStatus, setSaveStatus] = useState<Record<keyof LegalPages, 'idle' | 'saving' | 'saved'>>({
-    shipping: 'idle',
-    returns: 'idle',
-    privacy: 'idle',
-    terms: 'idle',
-  });
+  
+  const [editingPage, setEditingPage] = useState<keyof LegalPages | null>(null);
+  const [draftContent, setDraftContent] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
 
-  // Sync from store when context loads
-  useEffect(() => {
-    if (store.legalPages) {
-      setDraft(prev => ({ ...prev, ...store.legalPages }));
-    }
-  }, [store.legalPages]);
+  // Derived state from store
+  const currentPages = store.legalPages || {};
+  const filledCount = LEGAL_PAGES.filter(p => currentPages[p.key]?.trim()).length;
 
-  // Autosave per-field with debounce
-  const handleChange = (key: keyof LegalPages, value: string) => {
-    setDraft(prev => ({ ...prev, [key]: value }));
-    setSaveStatus(prev => ({ ...prev, [key]: 'saving' }));
+  const handleEdit = (key: keyof LegalPages) => {
+    setDraftContent(currentPages[key] || '');
+    setEditingPage(key);
   };
 
-  const handleBlur = async (key: keyof LegalPages) => {
-    setSaveStatus(prev => ({ ...prev, [key]: 'saving' }));
+  const handleSave = async () => {
+    if (!editingPage) return;
+    setIsSaving(true);
     try {
-      await updateStoreSettings({ legalPages: { ...draft } });
-      setSaveStatus(prev => ({ ...prev, [key]: 'saved' }));
-      setTimeout(() => setSaveStatus(prev => ({ ...prev, [key]: 'idle' })), 2000);
+      await updateStoreSettings({ 
+        legalPages: { 
+          ...currentPages, 
+          [editingPage]: draftContent 
+        } 
+      });
+      setEditingPage(null);
     } catch {
-      setSaveStatus(prev => ({ ...prev, [key]: 'idle' }));
+      alert('Failed to save page. Please try again.');
+    } finally {
+      setIsSaving(false);
     }
   };
 
-  const filledCount = LEGAL_PAGES.filter(p => draft[p.key]?.trim()).length;
+  const handleDelete = async (key: keyof LegalPages) => {
+    if (!window.confirm('Are you sure you want to delete this page?')) return;
+    try {
+      await updateStoreSettings({ 
+        legalPages: { 
+          ...currentPages, 
+          [key]: '' 
+        } 
+      });
+    } catch {
+      alert('Failed to delete page. Please try again.');
+    }
+  };
 
+  // ─── Edit View ────────────────────────────────────────────────────────────────
+  if (editingPage) {
+    const pageObj = LEGAL_PAGES.find(p => p.key === editingPage)!;
+    return (
+      <div className="space-y-4 pb-6 animate-in slide-in-from-right-4 duration-300">
+        <button 
+          onClick={() => setEditingPage(null)}
+          className="flex items-center gap-2 text-sm font-semibold text-gray-500 hover:text-gray-900 transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back to Legal Pages
+        </button>
+
+        <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
+          {/* Header */}
+          <div className="px-4 py-4 border-b border-gray-100 flex items-center gap-3">
+             <div className="w-10 h-10 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-center shrink-0">
+               {pageObj.icon}
+             </div>
+             <div>
+               <h3 className="text-base font-bold text-gray-900 leading-none mb-1">{pageObj.title}</h3>
+               <p className="text-xs text-gray-500 leading-tight">{pageObj.description}</p>
+             </div>
+          </div>
+          
+          {/* Editor */}
+          <div className="p-4 bg-gray-50/50">
+             <textarea
+               className="w-full min-h-[300px] text-sm text-gray-800 bg-white border border-gray-200 rounded-xl px-4 py-3 resize-none focus:outline-none focus:ring-2 focus:ring-gray-900 placeholder:text-gray-400 placeholder:opacity-50 leading-relaxed shadow-sm transition-shadow"
+               placeholder={pageObj.placeholder}
+               value={draftContent}
+               onChange={(e) => setDraftContent(e.target.value)}
+             />
+             <p className="text-xs text-gray-400 mt-2">
+               You can use basic text formatting. Links are not supported yet.
+             </p>
+          </div>
+          
+          {/* Footer actions */}
+          <div className="px-4 py-3 border-t border-gray-100 flex justify-end gap-3 bg-white">
+             <button
+               onClick={() => setEditingPage(null)}
+               className="px-5 py-2.5 text-sm font-bold text-gray-600 hover:bg-gray-100 rounded-xl transition-colors"
+             >
+               Cancel
+             </button>
+             <button
+               onClick={handleSave}
+               disabled={isSaving}
+               className="px-6 py-2.5 text-sm font-bold text-white bg-gray-900 hover:bg-black rounded-xl transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 disabled:opacity-50 disabled:pointer-events-none disabled:shadow-none disabled:translate-y-0"
+             >
+               {isSaving ? 'Saving...' : 'Save changes'}
+             </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ─── List View ────────────────────────────────────────────────────────────────
   return (
-    <div className="space-y-2 pb-6">
+    <div className="space-y-4 pb-6">
 
       {/* Header */}
-      <div className="flex items-center justify-between mb-3">
+      <div className="flex items-center justify-between">
         <div>
           <p className="text-sm font-bold text-gray-900">Legal Pages</p>
-          <p className="text-xs text-gray-400 mt-0.5">{filledCount} of {LEGAL_PAGES.length} pages filled</p>
+          <p className="text-xs text-gray-500 mt-0.5">{filledCount} of {LEGAL_PAGES.length} pages published</p>
         </div>
         {user?.username && (
           <a
             href={`https://${user.username}.myshoplink.site`}
             target="_blank"
             rel="noopener noreferrer"
-            className="shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-200 text-xs font-semibold text-gray-600 hover:bg-gray-50 transition-colors"
+            className="shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-200 bg-white text-xs font-semibold text-gray-700 hover:bg-gray-50 transition-colors shadow-sm"
           >
             <ExternalLink className="w-3.5 h-3.5" />
             Preview store
@@ -149,78 +212,74 @@ export function LegalPagesSettings() {
         )}
       </div>
 
-      {/* Page cards */}
-      {LEGAL_PAGES.map((page) => {
-        const isOpen = expanded === page.key;
-        const isFilled = Boolean(draft[page.key]?.trim());
-        const status = saveStatus[page.key];
+      {/* List */}
+      <div className="bg-white border rounded-2xl shadow-sm overflow-hidden">
+        {LEGAL_PAGES.map((page, index) => {
+          const isFilled = Boolean(currentPages[page.key]?.trim());
+          const isLast = index === LEGAL_PAGES.length - 1;
 
-        return (
-          <div
-            key={page.key}
-            className={`bg-white rounded-2xl border overflow-hidden transition-all ${
-              isOpen ? 'border-gray-300' : 'border-gray-100'
-            }`}
-          >
-            {/* Card header — toggle */}
-            <button
-              className="w-full flex items-center gap-3 px-4 py-3.5 text-left hover:bg-gray-50 transition-colors"
-              onClick={() => setExpanded(isOpen ? null : page.key)}
+          return (
+            <div
+              key={page.key}
+              className={`flex items-start sm:items-center justify-between p-4 flex-col sm:flex-row gap-4 sm:gap-0 ${
+                !isLast ? 'border-b border-gray-100' : ''
+              }`}
             >
-              <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
-                isFilled ? 'bg-emerald-50' : 'bg-gray-50'
-              }`}>
-                {page.icon}
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <p className="text-[14px] font-bold text-gray-900 leading-tight">{page.title}</p>
-                  {isFilled && (
-                    <span className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-emerald-100 text-emerald-700 text-[10px] font-bold rounded-full uppercase tracking-wide">
-                      <Check className="w-2.5 h-2.5" /> Filled
-                    </span>
-                  )}
+              <div className="flex items-center gap-3.5">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border ${
+                  isFilled ? 'bg-emerald-50 border-emerald-100' : 'bg-gray-50 border-gray-100'
+                }`}>
+                  {page.icon}
                 </div>
-                <p className="text-[12px] text-gray-400 leading-tight mt-0.5">{page.description}</p>
+                <div>
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <p className="text-[14px] font-bold text-gray-900 leading-tight">{page.title}</p>
+                    {isFilled && (
+                      <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded pl-1">
+                        <CheckCircle2 className="w-3 h-3" /> Published
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-[12px] text-gray-500 leading-tight">{page.description}</p>
+                </div>
               </div>
-              <div className="flex items-center gap-2 shrink-0">
-                {status === 'saving' && (
-                  <span className="text-[10px] text-gray-400 font-medium">Saving…</span>
+              
+              <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+                {isFilled ? (
+                  <>
+                    <button
+                      onClick={() => handleEdit(page.key)}
+                      className="px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-700 bg-white border border-gray-200 hover:bg-gray-50 flex items-center gap-1.5 transition-colors flex-1 sm:flex-none justify-center"
+                    >
+                      <Edit2 className="w-3.5 h-3.5" /> Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(page.key)}
+                      className="px-3 py-1.5 rounded-lg text-xs font-semibold text-red-600 bg-white border border-gray-200 hover:bg-red-50 hover:border-red-200 flex items-center gap-1.5 transition-colors shrink-0"
+                      title="Delete page"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    onClick={() => handleEdit(page.key)}
+                    className="px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 flex items-center gap-1.5 transition-colors w-full sm:w-auto justify-center"
+                  >
+                    <Plus className="w-3.5 h-3.5" /> Create
+                  </button>
                 )}
-                {status === 'saved' && (
-                  <span className="text-[10px] text-emerald-600 font-bold">Saved ✓</span>
-                )}
-                {isOpen
-                  ? <ChevronUp className="w-4 h-4 text-gray-400" />
-                  : <ChevronDown className="w-4 h-4 text-gray-400" />
-                }
               </div>
-            </button>
-
-            {/* Editor */}
-            {isOpen && (
-              <div className="border-t border-gray-100 px-4 py-3 bg-gray-50/60">
-                <textarea
-                  className="w-full min-h-[220px] text-sm text-gray-800 bg-white border border-gray-200 rounded-xl px-3.5 py-3 resize-none focus:outline-none focus:ring-2 focus:ring-gray-300 placeholder:text-gray-300 leading-relaxed"
-                  placeholder={page.placeholder}
-                  value={draft[page.key] ?? ''}
-                  onChange={(e) => handleChange(page.key, e.target.value)}
-                  onBlur={() => handleBlur(page.key)}
-                />
-                <p className="text-[11px] text-gray-400 mt-2">
-                  Changes are saved automatically when you click away.
-                </p>
-              </div>
-            )}
-          </div>
-        );
-      })}
+            </div>
+          );
+        })}
+      </div>
 
       {/* Info footer */}
-      <div className="mt-4 bg-blue-50 border border-blue-100 rounded-2xl px-4 py-3.5 flex items-start gap-3">
-        <FileText className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" />
-        <p className="text-[12px] text-blue-700 leading-relaxed">
-          These pages are linked in your store footer. Customers can read your policies before placing an order, which builds trust and reduces disputes.
+      <div className="mt-4 bg-indigo-50/50 border border-indigo-100 rounded-xl px-4 py-3.5 flex items-start gap-3">
+        <FileText className="w-4 h-4 text-indigo-500 shrink-0 mt-0.5" />
+        <p className="text-[12px] text-indigo-700 leading-relaxed font-medium">
+          These pages are linked in your store footer automatically. Customers can read your policies before placing an order, which builds trust and reduces disputes.
         </p>
       </div>
     </div>
