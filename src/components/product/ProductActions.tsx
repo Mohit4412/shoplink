@@ -81,7 +81,7 @@ export function ProductActions({
             </>
           )}
         </div>
-        <div className="text-sm text-gray-500 mt-1">Tax included. Shipping calculated at checkout.</div>
+        <p className="text-xs text-gray-400 mt-1">Chat on WhatsApp to confirm price &amp; delivery</p>
       </div>
 
       {/* Variants */}
