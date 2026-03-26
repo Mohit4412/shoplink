@@ -51,11 +51,6 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
   const body = await request.json();
   const storePatch = body?.store ?? {};
 
-  // Free plan users cannot persist a Pro theme — enforce classic server-side
-  if (sessionUser.plan === 'Free' && storePatch.theme && storePatch.theme !== 'classic') {
-    storePatch.theme = 'classic';
-  }
-
   const bundle = await updateStoreDetails(username, storePatch);
 
   if (!bundle) {
