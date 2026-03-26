@@ -69,7 +69,7 @@ export function Dashboard() {
   };
 
   return (
-    <div className="space-y-3 max-w-[500px] mx-auto pb-4">
+    <div className="space-y-3 max-w-[680px] mx-auto pb-4">
 
       {/* Greeting */}
       <div className="bg-[#FFFBEB] border border-[#FDE68A] rounded-2xl px-4 py-3.5">

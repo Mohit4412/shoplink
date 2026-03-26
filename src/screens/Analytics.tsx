@@ -25,7 +25,7 @@ export function Analytics() {
 
   if (!isPro) {
     return (
-      <div className="space-y-3 max-w-[500px] mx-auto pb-4">
+      <div className="space-y-3 pb-4">
         <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
           <div className="px-4 pt-3.5 pb-2 border-b border-gray-50">
             <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Analytics</p>
@@ -77,7 +77,7 @@ export function Analytics() {
   const isLast30Days = dateRange.end === todayStr && dateRange.start === last30DaysStart;
 
   return (
-    <div className="space-y-3 max-w-[500px] mx-auto pb-4">
+    <div className="space-y-3 pb-4">
 
       {/* Header */}
       <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">

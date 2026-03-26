@@ -70,7 +70,7 @@ export function Settings() {
   ];
 
   return (
-    <div className="space-y-6 max-w-[500px] mx-auto pb-4">
+    <div className="space-y-6 pb-4">
       {/* Profile Card */}
       <div className="flex flex-col items-center pt-2 pb-6">
         <div className="w-16 h-16 rounded-full bg-[#059669] text-white flex items-center justify-center text-2xl font-bold shadow-sm mb-3">

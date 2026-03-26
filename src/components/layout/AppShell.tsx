@@ -8,7 +8,6 @@ import { useStore } from '../../context/StoreContext';
 import { formatDistanceToNow } from 'date-fns';
 import { AppLogo } from '../ui/AppLogo';
 import { RenewalBanner } from '../billing/RenewalBanner';
-import { DemoBanner } from '../dashboard/DemoBanner';
 
 interface AppShellProps {
   children: ReactNode;
@@ -74,7 +73,7 @@ export function AppShell({
 
   return (
     <div className="min-h-screen bg-[#F2F3F5] flex justify-center font-sans">
-      <div className="w-full max-w-[520px] bg-white min-h-screen relative shadow-sm flex flex-col">
+      <div className="w-full max-w-[720px] bg-white min-h-screen relative shadow-sm flex flex-col">
 
         {/* TOP HEADER */}
         <header className="h-[56px] bg-white border-b border-[#EEEEEE] sticky top-0 z-30 flex items-center justify-between px-4 shrink-0">
@@ -283,14 +282,13 @@ export function AppShell({
         {/* MAIN CONTENT AREA */}
         <main className="flex-1 overflow-y-auto w-full pb-[80px]">
           <RenewalBanner />
-          <DemoBanner />
           <div className="px-4 pt-4">
             {children}
           </div>
         </main>
 
         {/* BOTTOM NAVIGATION BAR */}
-        <nav className="h-[64px] bg-white border-t border-[#EEEEEE] fixed bottom-0 w-full max-w-[520px] z-30 flex items-center justify-between px-2 pb-safe">
+        <nav className="h-[64px] bg-white border-t border-[#EEEEEE] fixed bottom-0 w-full max-w-[720px] z-30 flex items-center justify-between px-2 pb-safe">
           <NavItem icon={<LayoutDashboard className="w-6 h-6" />} label="Dashboard" path="/dashboard" isActive={pathname === '/dashboard'} />
           <NavItem icon={<Package className="w-6 h-6" />} label="Products" path="/products" isActive={pathname.startsWith('/products')} />
           <NavItem icon={<BarChart3 className="w-6 h-6" />} label="Analytics" path="/analytics" isActive={pathname.startsWith('/analytics')} />

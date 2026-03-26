@@ -27,7 +27,6 @@ interface StoreContextType extends AppState {
   markNotificationRead: (id: string) => void;
   markAllNotificationsRead: () => void;
   clearAllNotifications: () => void;
-  resetDemoData: () => Promise<void>;
 }
 
 const StoreContext = createContext<StoreContextType | undefined>(undefined);
@@ -534,58 +533,16 @@ export const StoreProvider: React.FC<{ children: ReactNode; initialUser: UserPro
     setState(prev => ({ ...prev, notifications: [] }));
   }, []);
 
-  const resetDemoData = useCallback(async () => {
-    await fetch('/api/dashboard', { method: 'DELETE' });
-
-    // Mark demo dismissed first so banner never shows again
-    if (typeof window !== 'undefined') {
-      window.localStorage.setItem('myshoplink-demo-dismissed', '1');
-    }
-
-    // Update local state — filter out demo products, clear orders/analytics
-    setState(prev => {
-      const next = {
-        ...prev,
-        products: prev.products.filter(p => !p.isDemo),
-        orders: [],
-        analytics: {
-          totalViews: 0,
-          totalClicks: 0,
-          sourceSummary: [],
-          referrerSummary: [],
-          countrySummary: [],
-          dailyStats: [],
-        },
-        notifications: (prev.notifications || []).filter(n => n.id !== 'demo-data-notice'),
-      };
-
-      // Immediately persist the filtered bundle to the server so the
-      // localStorage→server sync doesn't re-save demo products on next load
-      if (prev.user?.username) {
-        void fetch(`/api/stores/${prev.user.username}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            user: prev.user,
-            store: prev.store,
-            products: next.products,
-          }),
-        });
-      }
-
-      return next;
-    });
-  }, []);
 
   const devForcePlan = process.env.NEXT_PUBLIC_DEV_FORCE_PLAN as 'Free' | 'Pro' | undefined;
 
   const contextValue = useMemo(() => {
-    const base = { hydrated, ...state, refreshUser, login, logout, addProduct, updateProduct, deleteProduct, addOrder, updateOrder, deleteOrder, updateStoreSettings, updateUserProfile, trackStoreView, trackWhatsAppClick, addNotification, markNotificationRead, markAllNotificationsRead, clearAllNotifications, resetDemoData };
+    const base = { hydrated, ...state, refreshUser, login, logout, addProduct, updateProduct, deleteProduct, addOrder, updateOrder, deleteOrder, updateStoreSettings, updateUserProfile, trackStoreView, trackWhatsAppClick, addNotification, markNotificationRead, markAllNotificationsRead, clearAllNotifications };
     if (devForcePlan && base.user) {
       return { ...base, user: { ...base.user, plan: devForcePlan, subscriptionRenewalDate: devForcePlan === 'Free' ? '' : base.user.subscriptionRenewalDate } };
     }
     return base;
-  }, [hydrated, state, refreshUser, login, logout, addProduct, updateProduct, deleteProduct, addOrder, updateOrder, deleteOrder, updateStoreSettings, updateUserProfile, trackStoreView, trackWhatsAppClick, addNotification, markNotificationRead, markAllNotificationsRead, clearAllNotifications, resetDemoData, devForcePlan]);
+  }, [hydrated, state, refreshUser, login, logout, addProduct, updateProduct, deleteProduct, addOrder, updateOrder, deleteOrder, updateStoreSettings, updateUserProfile, trackStoreView, trackWhatsAppClick, addNotification, markNotificationRead, markAllNotificationsRead, clearAllNotifications, devForcePlan]);
 
   return (
     <StoreContext.Provider value={contextValue}>

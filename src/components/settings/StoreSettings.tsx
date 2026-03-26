@@ -86,7 +86,7 @@ export function StoreSettings() {
     name: store.name || '',
     tagline: store.tagline || '',
     bio: store.bio || '',
-    currency: store.currency || 'USD',
+    currency: store.currency || 'INR',
   });
 
   const sanitizeName = (val: string) => val.trim().replace(/[<>"&]/g, '');

@@ -160,7 +160,6 @@ function serializeProduct(username: string, product: Product) {
     collection_name: product.collection ?? null,
     highlights_json: JSON.stringify(product.highlights ?? []),
     reviews_json: JSON.stringify(product.reviews ?? []),
-    is_demo: product.isDemo ? 1 : 0,
   };
 }
 
@@ -209,7 +208,6 @@ function hydrateProduct(row: ProductRow): Product {
     collection: row.collection_name ?? undefined,
     highlights: parseJson(row.highlights_json, []),
     reviews: parseJson(row.reviews_json, []),
-    isDemo: row.is_demo === 1 || row.is_demo === true,
   });
 }
 
@@ -223,7 +221,6 @@ let selectStoreProductStmt: any;
 let countStoresStmt: any;
 let replaceBundleTxn: any;
 
-let deleteDemoProductsStmt: any;
 
 if (db) {
   ensureStoreSchema();
@@ -264,10 +261,10 @@ if (db) {
   replaceProductStmt = db.prepare(`
   INSERT INTO products (
     store_username, product_id, image_url, images_json, name, price, description, status, created_at,
-    category, stock, collection_name, highlights_json, reviews_json, is_demo
+    category, stock, collection_name, highlights_json, reviews_json
   ) VALUES (
     @store_username, @product_id, @image_url, @images_json, @name, @price, @description, @status, @created_at,
-    @category, @stock, @collection_name, @highlights_json, @reviews_json, @is_demo
+    @category, @stock, @collection_name, @highlights_json, @reviews_json
   )
   ON CONFLICT(store_username, product_id) DO UPDATE SET
     image_url = excluded.image_url,
@@ -281,8 +278,7 @@ if (db) {
     stock = excluded.stock,
     collection_name = excluded.collection_name,
     highlights_json = excluded.highlights_json,
-    reviews_json = excluded.reviews_json,
-    is_demo = excluded.is_demo
+    reviews_json = excluded.reviews_json
 `);
 
   deleteStoreProductsStmt = db.prepare('DELETE FROM products WHERE store_username = ?');
@@ -291,7 +287,7 @@ if (db) {
   selectStoreProductsStmt = db.prepare('SELECT * FROM products WHERE store_username = ? ORDER BY datetime(created_at) DESC, product_id ASC');
   selectStoreProductStmt = db.prepare('SELECT * FROM products WHERE store_username = ? AND product_id = ?');
   countStoresStmt = db.prepare('SELECT COUNT(*) as count FROM stores');
-  deleteDemoProductsStmt = db.prepare('DELETE FROM products WHERE store_username = ? AND is_demo = 1');
+  // deleteDemoProductsStmt removed — demo data no longer seeded
 
   replaceBundleTxn = db.transaction((bundle: MerchantStorefrontBundle) => {
     upsertStoreStmt.run(serializeStore(bundle));
@@ -311,17 +307,7 @@ if (db) {
   }
 }
 
-export async function deleteDemoProducts(username: string) {
-  if (isSupabaseEnabled()) {
-    await supabaseDelete('products', {
-      store_username: `eq.${username}`,
-      is_demo: `eq.true`,
-    });
-  } else {
-    requireDb();
-    deleteDemoProductsStmt.run(username);
-  }
-}
+// deleteDemoProducts removed — demo data is no longer seeded for new users
 
 async function getMerchantBundleByUsernameSupabase(username: string): Promise<MerchantStorefrontBundle | null> {
   const [storeRow] = await supabaseSelect<StoreRow>('stores', {
@@ -406,13 +392,7 @@ export async function replaceMerchantBundle(bundle: MerchantStorefrontBundle) {
     await supabaseDelete('products', { store_username: `eq.${bundle.user.username}` });
     if (normalizedProducts.length > 0) {
       const serialized = normalizedProducts.map((product) => serializeProduct(bundle.user.username, product));
-      try {
-        await supabaseInsert<ProductRow>('products', serialized, undefined, {});
-      } catch {
-        // Retry without is_demo in case column doesn't exist yet in Supabase
-        const withoutDemo = serialized.map(({ is_demo: _, ...rest }) => rest);
-        await supabaseInsert<ProductRow>('products', withoutDemo, undefined, {});
-      }
+      await supabaseInsert<ProductRow>('products', serialized, undefined, {});
     }
     return getMerchantBundleByUsername(bundle.user.username);
   }
@@ -448,13 +428,7 @@ export async function createProduct(username: string, product: Product) {
 
   if (isSupabaseEnabled()) {
     const serialized = serializeProduct(username, normalizeProduct(product));
-    try {
-      await supabaseInsert<ProductRow>('products', serialized);
-    } catch {
-      // Retry without is_demo in case column doesn't exist yet
-      const { is_demo: _, ...withoutDemo } = serialized;
-      await supabaseInsert<ProductRow>('products', withoutDemo);
-    }
+    await supabaseInsert<ProductRow>('products', serialized);
     return getMerchantBundleByUsername(username);
   }
 
@@ -489,20 +463,11 @@ export async function updateProductById(username: string, productId: string, upd
 
   if (isSupabaseEnabled()) {
     const serialized = serializeProduct(username, nextProduct);
-    try {
-      await supabasePatch<ProductRow>(
-        'products',
-        serialized,
-        { store_username: `eq.${username}`, product_id: `eq.${productId}` }
-      );
-    } catch {
-      const { is_demo: _, ...withoutDemo } = serialized;
-      await supabasePatch<ProductRow>(
-        'products',
-        withoutDemo,
-        { store_username: `eq.${username}`, product_id: `eq.${productId}` }
-      );
-    }
+    await supabasePatch<ProductRow>(
+      'products',
+      serialized,
+      { store_username: `eq.${username}`, product_id: `eq.${productId}` }
+    );
   } else {
     requireDb();
     replaceProductStmt.run(serializeProduct(username, nextProduct));
