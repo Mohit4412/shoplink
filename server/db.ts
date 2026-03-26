@@ -7,11 +7,18 @@ const dbPath = process.env.MYSHOPLINK_DB_PATH
   ? path.resolve(process.env.MYSHOPLINK_DB_PATH)
   : path.join(process.cwd(), 'server', 'myshoplink.db');
 
+const globalForDb = globalThis as unknown as { sqliteDb: ReturnType<typeof Database> | undefined };
+
 export const db = isSupabaseEnabled()
   ? null
-  : (() => {
+  : globalForDb.sqliteDb ?? (() => {
       mkdirSync(path.dirname(dbPath), { recursive: true });
-      return new Database(dbPath);
+      const inst = new Database(dbPath);
+      // Cache connection in dev to avoid 'database is locked' errors from HMR
+      if (process.env.NODE_ENV !== 'production') {
+        globalForDb.sqliteDb = inst;
+      }
+      return inst;
     })();
 
 export function requireDb() {

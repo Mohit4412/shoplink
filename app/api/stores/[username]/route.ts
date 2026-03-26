@@ -62,8 +62,8 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
       return NextResponse.json({ error: 'Store not found' }, { status: 404 });
     }
     return NextResponse.json(bundle);
-  } catch (err) {
+  } catch (err: any) {
     console.error('[PATCH /api/stores]', err);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ error: 'Internal server error: ' + (err?.message || 'Unknown') }, { status: 500 });
   }
 }
