@@ -54,22 +54,22 @@ export function LandingPage() {
 
       {/* ── NAVBAR ── */}
       <nav className="fixed top-0 w-full z-50 border-b border-gray-100 bg-white/88 backdrop-blur-md">
-        <div className="mx-auto flex h-14 w-full max-w-6xl items-center justify-between px-4 sm:px-5">
-          <AppLogo size="md" />
+        <div className="mx-auto flex h-12 w-full max-w-6xl items-center justify-between px-3.5 sm:h-14 sm:px-5">
+          <AppLogo size="sm" className="sm:[&>span]:text-xl" />
           <div className="hidden sm:flex items-center gap-6 text-[13px] font-semibold text-gray-500">
             <a href="#features" className="hover:text-gray-900 transition-colors">Features</a>
             <a href="#pricing" className="hover:text-gray-900 transition-colors">Pricing</a>
           </div>
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2 sm:gap-2.5">
             <button
               onClick={handleLogin}
-              className="rounded-lg px-2.5 py-1.5 text-[13px] font-semibold text-gray-600 transition-colors hover:text-gray-900"
+              className="rounded-md px-2 py-1 text-[12px] font-semibold text-gray-600 transition-colors hover:text-gray-900 sm:rounded-lg sm:px-2.5 sm:py-1.5 sm:text-[13px]"
             >
               Log in
             </button>
             <button
               onClick={handleCTA}
-              className="rounded-lg px-3.5 py-2 text-[13px] font-semibold text-white shadow-sm transition-all active:scale-95"
+              className="rounded-md px-3 py-1.5 text-[12px] font-semibold text-white shadow-sm transition-all active:scale-95 sm:rounded-lg sm:px-3.5 sm:py-2 sm:text-[13px]"
               style={{ background: CHARCOAL }}
             >
               Start free
@@ -78,7 +78,7 @@ export function LandingPage() {
         </div>
       </nav>
 
-      <main className="pt-14">
+      <main className="pt-12 sm:pt-14">
 
         {/* ── EARLY ACCESS ANNOUNCEMENT BAR ── */}
         <div className="w-full py-2.5 px-4 text-center text-xs font-bold text-white" style={{ background: EMERALD }}>
