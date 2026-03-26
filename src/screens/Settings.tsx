@@ -3,12 +3,10 @@
 import React from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useStore } from '../context/StoreContext';
-import { Store, Settings2, Globe, CreditCard, User, LogOut, ChevronRight, ExternalLink } from 'lucide-react';
-import Link from 'next/link';
+import { Store, Globe, CreditCard, User, LogOut, ChevronRight, ExternalLink } from 'lucide-react';
 
 import { AccountSettings } from '../components/settings/AccountSettings';
 import { StoreSettings } from '../components/settings/StoreSettings';
-import { PluginsSettings } from '../components/settings/PluginsSettings';
 import { CustomDomainSettings } from '../components/settings/CustomDomainSettings';
 import { BillingSettings } from '../components/settings/BillingSettings';
 
@@ -20,7 +18,6 @@ export function Settings() {
   const view = searchParams?.get('view');
 
   if (view === 'store') return <StoreSettings />;
-  if (view === 'plugins') return <div className="mt-4"><PluginsSettings /></div>;
   if (view === 'domain') return <div className="mt-4"><CustomDomainSettings /></div>;
   if (view === 'billing') return <BillingSettings />;
   if (view === 'account') return <div className="mt-4"><AccountSettings /></div>;
@@ -38,13 +35,6 @@ export function Settings() {
       subtitle: 'Appearance, logo, theme',
       icon: <Store className="w-5 h-5 text-blue-600" />,
       bg: 'bg-blue-50',
-    },
-    {
-      id: 'plugins',
-      title: 'Store sections',
-      subtitle: 'Show/hide storefront blocks',
-      icon: <Settings2 className="w-5 h-5 text-purple-600" />,
-      bg: 'bg-purple-50',
     },
     {
       id: 'domain',
