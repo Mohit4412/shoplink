@@ -67,6 +67,7 @@ const THEMES: StoreTheme[] = [
   { id: 'craft', name: '🪡 Craft', cardAnatomy: 'editorial-row', description: 'Editorial storytelling for handmade & artisan goods. One product at a time.', imageUrl: 'https://images.unsplash.com/photo-1610701596007-11502861dcfa?auto=format&fit=crop&w=400&q=80', preview: { bg: '#FDFCFB', card: '#FFFFFF', accent: '#c9a961', text: '#2d2d2d', button: '#2d2d2d' } },
   { id: 'fresh', name: '🌿 Fresh', cardAnatomy: 'landscape', description: 'Clean catalogue for food & homemade items. Quantity selectors built-in.', imageUrl: 'https://images.unsplash.com/photo-1488459716781-31db52582fe9?auto=format&fit=crop&w=400&q=80', preview: { bg: '#F8FAF6', card: '#FFFFFF', accent: '#4a7c2c', text: '#1a1a1a', button: '#4a7c2c' } },
   { id: 'swift', name: '⚡ Swift', cardAnatomy: 'landscape', description: 'Compact list layout for electronics & accessories. Price-first display.', imageUrl: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=400&q=80', preview: { bg: '#FAFAFA', card: '#FFFFFF', accent: '#3b82f6', text: '#1a1a1a', button: '#1a1a1a' } },
+  { id: 'noir', name: '◆ Noir', cardAnatomy: 'portrait', description: 'Dark luxury editorial for premium boutiques. Minimal product count.', imageUrl: 'https://images.unsplash.com/photo-1617038260897-41a1f14a8ca0?auto=format&fit=crop&w=400&q=80', preview: { bg: '#0a0a0a', card: '#111111', accent: '#d4af37', text: '#e5e5e5', button: '#ffffff' } },
 ];
 
 type Tab = 'identity' | 'theme';

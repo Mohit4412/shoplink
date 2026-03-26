@@ -266,6 +266,48 @@ const THEMES: Record<string, Theme> = {
     },
   },
 
+  // ◆ Noir — Premium/luxury, dark editorial, minimal product count
+  noir: {
+    tokens: {
+      pageBg: '#0a0a0a',
+      pageText: '#e5e5e5',
+      navBg: 'rgba(10,10,10,0.95)',
+      navBorder: '#1f1f1f',
+      navText: '#e5e5e5',
+      heroBg: '#111111',
+      heroHeading: '#ffffff',
+      heroSub: '#a3a3a3',
+      cardBg: '#111111',
+      cardBorder: '#1f1f1f',
+      cardShadow: '0 4px 12px rgba(0,0,0,0.3)',
+      cardImageBg: '#1a1a1a',
+      productName: '#ffffff',
+      productMeta: '#737373',
+      productPrice: '#d4af37',
+      btnBg: '#ffffff',
+      btnText: '#0a0a0a',
+      btnHoverBg: '#e5e5e5',
+      waBg: '#25D366',
+      waText: '#FFFFFF',
+      accent: '#d4af37',
+      accentLight: '#1a1a1a',
+      sectionHeading: '#ffffff',
+      footerBg: '#0a0a0a',
+      footerBorder: '#1f1f1f',
+      footerText: '#737373',
+    },
+    layout: {
+      heroStyle: 'fullbleed',
+      productGrid: 'list',
+      cardStyle: 'floating',
+      navStyle: 'centered-logo',
+      typographyScale: 'display',
+      cardAnatomy: 'portrait',
+      sectionSpacing: 'airy',
+      variant: 'noir',
+    },
+  },
+
 };
 
 // ─── Public API ───────────────────────────────────────────────────────────────
