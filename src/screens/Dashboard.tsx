@@ -86,43 +86,43 @@ export function Dashboard() {
           <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Today's snapshot</p>
         </div>
         <div className="grid grid-cols-2 divide-x divide-y divide-gray-50">
-          <div className="p-4 flex flex-col gap-2">
-            <div className="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center">
-              <Package className="w-4 h-4 text-amber-500" />
+          <div className="p-4 flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center shrink-0">
+              <Package className="w-5 h-5 text-amber-500" />
             </div>
-            <div>
-              <p className="text-[22px] font-black text-gray-900 leading-none">{todayOrdersCount}</p>
-              <p className="text-[12px] font-semibold text-gray-500 mt-1">Orders</p>
-            </div>
-          </div>
-
-          <div className="p-4 flex flex-col gap-2">
-            <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
-              <Eye className="w-4 h-4 text-blue-500" />
-            </div>
-            <div>
-              <p className="text-[22px] font-black text-gray-900 leading-none">{todayStats.views}</p>
-              <p className="text-[12px] font-semibold text-gray-500 mt-1">Store views</p>
+            <div className="min-w-0">
+              <p className="text-[24px] font-black text-gray-900 leading-none">{todayOrdersCount}</p>
+              <p className="text-[12px] font-semibold text-gray-500 mt-0.5">Orders</p>
             </div>
           </div>
 
-          <div className="p-4 flex flex-col gap-2">
-            <div className="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center">
-              <Store className="w-4 h-4 text-[#059669]" />
+          <div className="p-4 flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center shrink-0">
+              <Eye className="w-5 h-5 text-blue-500" />
             </div>
-            <div>
-              <p className="text-[22px] font-black text-gray-900 leading-none">{activeProductsCount}</p>
-              <p className="text-[12px] font-semibold text-gray-500 mt-1">Active products</p>
+            <div className="min-w-0">
+              <p className="text-[24px] font-black text-gray-900 leading-none">{todayStats.views}</p>
+              <p className="text-[12px] font-semibold text-gray-500 mt-0.5">Store views</p>
             </div>
           </div>
 
-          <div className="p-4 flex flex-col gap-2">
-            <div className="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center">
-              <MessageCircle className="w-4 h-4 text-[#059669]" />
+          <div className="p-4 flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center shrink-0">
+              <Store className="w-5 h-5 text-[#059669]" />
             </div>
-            <div>
-              <p className="text-[22px] font-black text-gray-900 leading-none">{todayStats.clicks}</p>
-              <p className="text-[12px] font-semibold text-gray-500 mt-1">WhatsApp clicks</p>
+            <div className="min-w-0">
+              <p className="text-[24px] font-black text-gray-900 leading-none">{activeProductsCount}</p>
+              <p className="text-[12px] font-semibold text-gray-500 mt-0.5">Active products</p>
+            </div>
+          </div>
+
+          <div className="p-4 flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center shrink-0">
+              <MessageCircle className="w-5 h-5 text-[#059669]" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-[24px] font-black text-gray-900 leading-none">{todayStats.clicks}</p>
+              <p className="text-[12px] font-semibold text-gray-500 mt-0.5">WhatsApp clicks</p>
             </div>
           </div>
         </div>
