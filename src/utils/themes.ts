@@ -224,6 +224,48 @@ const THEMES: Record<string, Theme> = {
     },
   },
 
+  // ⚡ Swift — Electronics/accessories, compact list, price-first
+  swift: {
+    tokens: {
+      pageBg: '#FAFAFA',
+      pageText: '#1a1a1a',
+      navBg: 'rgba(255,255,255,0.95)',
+      navBorder: '#e5e7eb',
+      navText: '#1a1a1a',
+      heroBg: 'transparent',
+      heroHeading: '#1a1a1a',
+      heroSub: '#6b7280',
+      cardBg: '#FFFFFF',
+      cardBorder: '#e5e7eb',
+      cardShadow: '0 1px 2px rgba(0,0,0,0.05)',
+      cardImageBg: '#f3f4f6',
+      productName: '#1a1a1a',
+      productMeta: '#9ca3af',
+      productPrice: '#1a1a1a',
+      btnBg: '#1a1a1a',
+      btnText: '#FFFFFF',
+      btnHoverBg: '#374151',
+      waBg: '#25D366',
+      waText: '#FFFFFF',
+      accent: '#3b82f6',
+      accentLight: '#eff6ff',
+      sectionHeading: '#1a1a1a',
+      footerBg: '#FFFFFF',
+      footerBorder: '#e5e7eb',
+      footerText: '#9ca3af',
+    },
+    layout: {
+      heroStyle: 'centered',
+      productGrid: 'list',
+      cardStyle: 'boxed',
+      navStyle: 'minimal',
+      typographyScale: 'compact',
+      cardAnatomy: 'landscape',
+      sectionSpacing: 'tight',
+      variant: 'swift',
+    },
+  },
+
 };
 
 // ─── Public API ───────────────────────────────────────────────────────────────

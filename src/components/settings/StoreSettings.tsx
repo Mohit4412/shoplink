@@ -66,6 +66,7 @@ const THEMES: StoreTheme[] = [
   { id: 'spark', name: '⚡ Spark', cardAnatomy: 'square-overlay', description: 'Instagram-grid feel with category tabs. Perfect for fashion & clothing.', imageUrl: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=400&q=80', preview: { bg: '#FFFFFF', card: '#FFFFFF', accent: '#0f0f0f', text: '#0f0f0f', button: '#0f0f0f' } },
   { id: 'craft', name: '🪡 Craft', cardAnatomy: 'editorial-row', description: 'Editorial storytelling for handmade & artisan goods. One product at a time.', imageUrl: 'https://images.unsplash.com/photo-1610701596007-11502861dcfa?auto=format&fit=crop&w=400&q=80', preview: { bg: '#FDFCFB', card: '#FFFFFF', accent: '#c9a961', text: '#2d2d2d', button: '#2d2d2d' } },
   { id: 'fresh', name: '🌿 Fresh', cardAnatomy: 'landscape', description: 'Clean catalogue for food & homemade items. Quantity selectors built-in.', imageUrl: 'https://images.unsplash.com/photo-1488459716781-31db52582fe9?auto=format&fit=crop&w=400&q=80', preview: { bg: '#F8FAF6', card: '#FFFFFF', accent: '#4a7c2c', text: '#1a1a1a', button: '#4a7c2c' } },
+  { id: 'swift', name: '⚡ Swift', cardAnatomy: 'landscape', description: 'Compact list layout for electronics & accessories. Price-first display.', imageUrl: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=400&q=80', preview: { bg: '#FAFAFA', card: '#FFFFFF', accent: '#3b82f6', text: '#1a1a1a', button: '#1a1a1a' } },
 ];
 
 type Tab = 'identity' | 'theme';

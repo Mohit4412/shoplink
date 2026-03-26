@@ -15,6 +15,7 @@ import { getTypographyClasses, getSectionSpacingClass } from '../utils/themeHelp
 import { SparkStoreFront } from '../components/storefront/themes/SparkStoreFront';
 import { CraftStoreFront } from '../components/storefront/themes/CraftStoreFront';
 import { FreshStoreFront } from '../components/storefront/themes/FreshStoreFront';
+import { SwiftStoreFront } from '../components/storefront/themes/SwiftStoreFront';
 import { StoreFooter } from '../components/storefront/StoreFooter';
 
 // ─── Grid layout helper ───────────────────────────────────────────────────────
@@ -318,6 +319,16 @@ export function StoreFront({ storefront }: { storefront?: PublicStorefrontData }
           />
         ) : theme.layout.variant === 'fresh' ? (
           <FreshStoreFront
+            theme={theme}
+            store={store}
+            products={products}
+            resolvedStoreId={resolvedStoreId}
+            isSubdomain={isSubdomain}
+            onContactClick={handleContactClick}
+            isFreePlan={activeUser?.plan === 'Free'}
+          />
+        ) : theme.layout.variant === 'swift' ? (
+          <SwiftStoreFront
             theme={theme}
             store={store}
             products={products}
