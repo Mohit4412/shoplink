@@ -387,21 +387,29 @@ export const StoreProvider: React.FC<{ children: ReactNode; initialUser: UserPro
     }
 
     const response = await fetch(`/api/stores/${state.user.username}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ store: settings }),
-      });
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ store: settings }),
+    });
 
-    const payload = await response.json();
+    // Safely parse JSON — avoids "Unexpected end of JSON input" if server returns empty/HTML body
+    const text = await response.text();
+    let payload: Record<string, unknown> = {};
+    try {
+      payload = text ? JSON.parse(text) : {};
+    } catch {
+      throw new Error(`Server error (${response.status}): ${text.slice(0, 120) || 'No response body'}`);
+    }
+
     if (!response.ok || !payload?.store) {
-      throw new Error(payload?.error || 'Unable to update store settings.');
+      throw new Error((payload?.error as string) || `Unable to update store settings (${response.status}).`);
     }
 
     setState(prev => ({
       ...prev,
       store: {
         ...prev.store,
-        ...payload.store,
+        ...(payload.store as AppState['store']),
       },
     }));
   }, [state.user?.username]);
