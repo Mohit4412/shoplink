@@ -73,7 +73,7 @@ export function StoreSettings() {
   const upgradeModal = useUpgradeModal();
   const [activeTab, setActiveTab] = useState<Tab>('identity');
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saved'>('idle');
-  const [selectedTheme, setSelectedTheme] = useState(user?.plan === 'Free' ? 'classic' : store.theme || 'classic');
+  const [selectedTheme, setSelectedTheme] = useState(store.theme || 'classic');
   const [themeUpgradeMessage, setThemeUpgradeMessage] = useState('');
   const [lockedThemeId, setLockedThemeId] = useState<string | null>(null);
   const [uploadError, setUploadError] = useState('');
@@ -91,16 +91,21 @@ export function StoreSettings() {
 
   const sanitizeName = (val: string) => val.trim().replace(/[<>"&]/g, '');
 
+  // Sync selected theme when store data or plan loads/changes
   useEffect(() => {
-    if (user?.plan === 'Pro') {
+    if (!user) return; // not yet hydrated — do nothing
+    if (user.plan === 'Pro') {
+      // Pro user: sync to whatever is saved in the store
+      setSelectedTheme(store.theme || 'classic');
       setThemeUpgradeMessage('');
       setLockedThemeId(null);
       return;
     }
+    // Free user: always lock to classic
     setSelectedTheme('classic');
     setLockedThemeId(null);
     setSaveStatus('idle');
-  }, [user?.plan]);
+  }, [user, store.theme]);
 
   const handleStoreSave = async (e: React.FormEvent) => {
     e.preventDefault();
