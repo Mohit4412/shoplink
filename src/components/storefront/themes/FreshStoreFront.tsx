@@ -70,7 +70,12 @@ export function FreshStoreFront({
         <h1 className="text-2xl font-bold mb-1" style={{ color: t.heroHeading }}>
           Made fresh,<br />delivered with love
         </h1>
-        <p className="text-sm" style={{ color: t.heroSub }}>
+        {store.tagline && (
+          <p className="text-sm mt-2" style={{ color: t.heroSub }}>
+            {store.tagline}
+          </p>
+        )}
+        <p className="text-sm mt-1" style={{ color: t.heroSub }}>
           Browse menu below
         </p>
       </div>

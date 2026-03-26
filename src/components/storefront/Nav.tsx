@@ -54,9 +54,16 @@ export function Nav({ theme, store, storeHref, searchQuery = '', onSearchChange 
           {store.name.charAt(0)}
         </div>
       )}
-      <span className="font-bold text-sm truncate max-w-[140px]" style={{ color: t.navText }}>
-        {store.name}
-      </span>
+      <div className="min-w-0">
+        <span className="font-bold text-sm truncate block max-w-[140px]" style={{ color: t.navText }}>
+          {store.name}
+        </span>
+        {store.tagline && navStyle === 'centered-logo' && (
+          <span className="text-[10px] truncate block max-w-[180px]" style={{ color: t.heroSub }}>
+            {store.tagline}
+          </span>
+        )}
+      </div>
     </>
   );
 

@@ -109,6 +109,13 @@ export function CraftStoreFront({
 
             {/* Product details */}
             <div className="px-6 py-8">
+              {/* Store tagline */}
+              {store.tagline && (
+                <p className="text-xs italic text-center mb-4 pb-4 border-b" style={{ color: t.productMeta, borderColor: t.navBorder }}>
+                  {store.tagline}
+                </p>
+              )}
+
               {/* Category badge */}
               {currentProduct.category && (
                 <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: t.productMeta }}>

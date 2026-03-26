@@ -51,6 +51,11 @@ export function SwiftStoreFront({
     <>
       {/* Header with product count and sort */}
       <div className="px-4 py-4 border-b" style={{ borderColor: t.navBorder }}>
+        {store.tagline && (
+          <p className="text-xs mb-2 text-center" style={{ color: t.productMeta }}>
+            {store.tagline}
+          </p>
+        )}
         <div className="flex items-center justify-between mb-3">
           <h1 className="text-lg font-bold" style={{ color: t.sectionHeading }}>
             {activeProducts.length} products available

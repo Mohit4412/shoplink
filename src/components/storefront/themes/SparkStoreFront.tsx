@@ -48,6 +48,13 @@ export function SparkStoreFront({
         className="sticky top-[52px] z-40 border-b overflow-x-auto no-scrollbar"
         style={{ background: t.navBg, borderColor: t.navBorder }}
       >
+        {store.tagline && (
+          <div className="px-3 pt-2 pb-1">
+            <p className="text-[10px] text-center" style={{ color: t.productMeta }}>
+              {store.tagline}
+            </p>
+          </div>
+        )}
         <div className="flex gap-2 px-3 py-2.5">
           {categories.map(cat => (
             <button

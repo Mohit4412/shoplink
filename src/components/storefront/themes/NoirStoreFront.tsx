@@ -61,6 +61,11 @@ export function NoirStoreFront({
         <h1 className="text-4xl font-bold mb-3 leading-tight" style={{ color: t.heroHeading }}>
           Timeless<br />Elegance
         </h1>
+        {store.tagline && (
+          <p className="text-sm tracking-wide mb-2" style={{ color: t.heroSub }}>
+            {store.tagline}
+          </p>
+        )}
         <p className="text-sm tracking-wide" style={{ color: t.heroSub }}>
           Explore Collection →
         </p>
