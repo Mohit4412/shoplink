@@ -13,17 +13,57 @@ interface StoreTheme {
   name: string;
   description: string;
   imageUrl: string;
+  cardAnatomy: 'portrait' | 'landscape' | 'square-overlay' | 'editorial-row';
   preview: { bg: string; card: string; accent: string; text: string; button: string };
 }
 
+// Mini SVG indicators for each card anatomy
+function CardAnatomyIcon({ anatomy }: { anatomy: StoreTheme['cardAnatomy'] }) {
+  if (anatomy === 'square-overlay') {
+    return (
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" className="shrink-0">
+        <rect x="1" y="1" width="18" height="18" rx="2" fill="#e5e7eb" />
+        <rect x="1" y="12" width="18" height="7" rx="0" fill="#374151" opacity="0.6" />
+        <rect x="3" y="13.5" width="8" height="1.5" rx="1" fill="white" opacity="0.8" />
+        <rect x="3" y="16" width="5" height="1" rx="0.5" fill="white" opacity="0.5" />
+      </svg>
+    );
+  }
+  if (anatomy === 'editorial-row') {
+    return (
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" className="shrink-0">
+        <rect x="1" y="4" width="18" height="12" rx="2" fill="#e5e7eb" />
+        <rect x="2" y="5" width="7" height="10" rx="1" fill="#9ca3af" />
+        <rect x="11" y="7" width="7" height="1.5" rx="0.75" fill="#374151" opacity="0.7" />
+        <rect x="11" y="10" width="5" height="1" rx="0.5" fill="#9ca3af" />
+        <rect x="11" y="12.5" width="6" height="1" rx="0.5" fill="#9ca3af" />
+      </svg>
+    );
+  }
+  if (anatomy === 'landscape') {
+    return (
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" className="shrink-0">
+        <rect x="1" y="3" width="18" height="14" rx="2" fill="#e5e7eb" />
+        <rect x="2" y="4" width="16" height="8" rx="1" fill="#9ca3af" />
+        <rect x="3" y="14" width="8" height="1.5" rx="0.75" fill="#374151" opacity="0.7" />
+        <rect x="3" y="16.5" width="5" height="1" rx="0.5" fill="#9ca3af" />
+      </svg>
+    );
+  }
+  // portrait (default)
+  return (
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" className="shrink-0">
+      <rect x="4" y="1" width="12" height="18" rx="2" fill="#e5e7eb" />
+      <rect x="5" y="2" width="10" height="11" rx="1" fill="#9ca3af" />
+      <rect x="5" y="14.5" width="7" height="1.5" rx="0.75" fill="#374151" opacity="0.7" />
+      <rect x="5" y="17" width="4" height="1" rx="0.5" fill="#9ca3af" />
+    </svg>
+  );
+}
+
 const THEMES: StoreTheme[] = [
-  { id: 'classic', name: 'Classic', description: 'Clean white with black accents. Timeless and professional.', imageUrl: 'https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?auto=format&fit=crop&w=400&q=80', preview: { bg: '#FAFAFA', card: '#FFFFFF', accent: '#111111', text: '#374151', button: '#111111' } },
-  { id: 'slate', name: 'Slate', description: 'Dark charcoal tones for a sophisticated boutique feel.', imageUrl: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=400&q=80', preview: { bg: '#0f1117', card: '#1a1d27', accent: '#6366f1', text: '#e2e8f0', button: '#6366f1' } },
-  { id: 'rose', name: 'Rose', description: 'Warm blush tones perfect for beauty and lifestyle brands.', imageUrl: 'https://images.unsplash.com/photo-1515595967223-f9fa59af5a3b?auto=format&fit=crop&w=400&q=80', preview: { bg: '#fff5f5', card: '#FFFFFF', accent: '#e11d48', text: '#4b2d33', button: '#e11d48' } },
-  { id: 'forest', name: 'Forest', description: 'Nature-inspired greens for organic and wellness brands.', imageUrl: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=400&q=80', preview: { bg: '#f0fdf4', card: '#FFFFFF', accent: '#16a34a', text: '#15573a', button: '#16a34a' } },
-  { id: 'ocean', name: 'Ocean', description: 'Cool teal and blue vibes for a fresh, modern look.', imageUrl: 'https://images.unsplash.com/photo-1557682250-33bd709cbe85?auto=format&fit=crop&w=400&q=80', preview: { bg: '#f0f9ff', card: '#FFFFFF', accent: '#0891b2', text: '#155e75', button: '#0891b2' } },
-  { id: 'amber', name: 'Amber', description: 'Warm golden tones ideal for artisan and craft stores.', imageUrl: 'https://images.unsplash.com/photo-1603539947678-cd3954ed515d?auto=format&fit=crop&w=400&q=80', preview: { bg: '#fffbeb', card: '#FFFFFF', accent: '#d97706', text: '#78350f', button: '#d97706' } },
-  { id: 'vibe', name: 'Vibe Premium', description: 'Boutique luxury aesthetic. Deep teal and subtle gold on minimalist off-white.', imageUrl: 'https://images.unsplash.com/photo-1600607686527-6fb886090705?auto=format&fit=crop&w=400&q=80', preview: { bg: '#FCFBF8', card: '#FFFFFF', accent: '#0A7C6B', text: '#181C1A', button: '#0A7C6B' } },
+  { id: 'classic', name: 'Classic', cardAnatomy: 'portrait', description: 'Clean white with black accents. Timeless and professional.', imageUrl: 'https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?auto=format&fit=crop&w=400&q=80', preview: { bg: '#FAFAFA', card: '#FFFFFF', accent: '#111111', text: '#374151', button: '#111111' } },
+  { id: 'spark', name: '⚡ Spark', cardAnatomy: 'square-overlay', description: 'Instagram-grid feel with category tabs. Perfect for fashion & clothing.', imageUrl: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=400&q=80', preview: { bg: '#FFFFFF', card: '#FFFFFF', accent: '#0f0f0f', text: '#0f0f0f', button: '#0f0f0f' } },
 ];
 
 type Tab = 'identity' | 'theme';
@@ -252,13 +292,21 @@ export function StoreSettings() {
                     setThemeUpgradeMessage('');
                     setSelectedTheme(theme.id);
                   }}
-                  className={`relative text-left rounded-xl border-2 overflow-hidden transition-all focus:outline-none ${
+                  className={`relative text-left rounded-xl border-2 overflow-hidden transition-all focus:outline-none group ${
                     isSelected ? 'border-gray-900 shadow-md' : 'border-gray-200 hover:border-gray-400'
                   }`}
                 >
                   <div className="h-24 w-full relative bg-gray-100">
                     <img src={theme.imageUrl} alt={theme.name} className="w-full h-full object-cover" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent" />
+                    {/* Hover lock badge for Pro themes on Free plan */}
+                    {isLocked && (
+                      <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        <span className="bg-amber-400 text-amber-900 text-[10px] font-black uppercase tracking-wider px-2 py-1 rounded-full flex items-center gap-1">
+                          🔒 Pro
+                        </span>
+                      </div>
+                    )}
                   </div>
                   <div className="px-2.5 py-2 border-t border-gray-100">
                     <div className="flex items-center justify-between">
@@ -268,11 +316,14 @@ export function StoreSettings() {
                           <span className="rounded-full bg-amber-100 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-amber-700">Pro</span>
                         )}
                       </div>
-                      {isSelected && (
-                        <span className="flex items-center justify-center w-4 h-4 rounded-full bg-gray-900 shrink-0">
-                          <Check className="w-2.5 h-2.5 text-white" />
-                        </span>
-                      )}
+                      <div className="flex items-center gap-1">
+                        <CardAnatomyIcon anatomy={theme.cardAnatomy} />
+                        {isSelected && (
+                          <span className="flex items-center justify-center w-4 h-4 rounded-full bg-gray-900 shrink-0">
+                            <Check className="w-2.5 h-2.5 text-white" />
+                          </span>
+                        )}
+                      </div>
                     </div>
                     <p className="text-[10px] text-gray-400 mt-0.5 leading-tight line-clamp-1">{theme.description}</p>
                   </div>

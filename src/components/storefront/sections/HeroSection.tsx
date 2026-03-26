@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import { ShoppingBag, ChevronDown } from 'lucide-react';
 import { Theme } from '../../../utils/themes';
 import { StoreSettings } from '../../../types';
@@ -78,7 +78,7 @@ export function HeroSection({ theme, store, ctaText }: HeroSectionProps) {
         >
           {/* Left — logo / visual */}
           <div
-            className="flex-1 flex items-center justify-center p-10 md:p-16"
+            className="flex-1 flex items-center justify-center p-6 md:p-16"
             style={{ background: t.pageBg }}
           >
             {store.logoUrl ? (
@@ -99,7 +99,7 @@ export function HeroSection({ theme, store, ctaText }: HeroSectionProps) {
           </div>
 
           {/* Right — text */}
-          <div className="flex-1 flex flex-col justify-center p-10 md:p-14">
+          <div className="flex-1 flex flex-col justify-center p-6 md:p-14">
             <p
               className="text-xs font-bold uppercase tracking-widest mb-3 opacity-60"
               style={{ color: t.heroSub }}

@@ -49,7 +49,14 @@ export async function PATCH(request: NextRequest, { params }: RouteContext) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
   const body = await request.json();
-  const bundle = await updateStoreDetails(username, body?.store ?? {});
+  const storePatch = body?.store ?? {};
+
+  // Free plan users cannot persist a Pro theme — enforce classic server-side
+  if (sessionUser.plan === 'Free' && storePatch.theme && storePatch.theme !== 'classic') {
+    storePatch.theme = 'classic';
+  }
+
+  const bundle = await updateStoreDetails(username, storePatch);
 
   if (!bundle) {
     return NextResponse.json({ error: 'Store not found' }, { status: 404 });

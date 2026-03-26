@@ -98,7 +98,7 @@ Extend the existing theme mechanism from a color-swap system into a structurally
     - Replace hardcoded `mb-*` values on section wrappers with the spacing helper output
     - _Requirements: 6.1–6.4_
 
-  - [~] 6.5 Enforce Free plan restriction at the `getTheme()` call site in `StoreFront.tsx`
+  - [x] 6.5 Enforce Free plan restriction at the `getTheme()` call site in `StoreFront.tsx`
     - When `activeUser?.plan === 'Free'`, always call `getTheme('classic')` regardless of `store.theme`
     - _Requirements: 9.1, 9.3, 9.4_
 
@@ -108,35 +108,35 @@ Extend the existing theme mechanism from a color-swap system into a structurally
     - _Requirements: 9.1, 9.3, 9.4_
 
 - [ ] 7. Enforce Free plan restriction in the store settings API
-  - [~] 7.1 Update the store settings save handler (API route or server action) to always persist `theme: 'classic'` when `UserProfile.plan === 'Free'`
+  - [x] 7.1 Update the store settings save handler (API route or server action) to always persist `theme: 'classic'` when `UserProfile.plan === 'Free'`
     - Locate the relevant API route (e.g. `app/api/auth/profile/route.ts` or store update endpoint) and add server-side plan check
     - _Requirements: 9.2_
 
 - [ ] 8. Update theme preview in StoreSettings UI
-  - [~] 8.1 Update the theme picker in `src/components/settings/StoreSettings.tsx` to show card anatomy layout indicator
+  - [x] 8.1 Update the theme picker in `src/components/settings/StoreSettings.tsx` to show card anatomy layout indicator
     - Add a small SVG or CSS-based miniature card anatomy indicator inside each theme swatch
     - `'square-overlay'`: square thumbnail with text overlay indicator
     - `'editorial-row'`: horizontal row layout indicator
     - `'portrait'` / `'landscape'`: vertical card layout indicator
     - _Requirements: 8.1, 8.2, 8.3, 8.4_
 
-  - [~] 8.2 Add "Pro" lock badge on hover for Free users in the theme picker
+  - [x] 8.2 Add "Pro" lock badge on hover for Free users in the theme picker
     - Show a lock/Pro badge on hover over Pro themes without requiring a click
     - Continue displaying accent color, background color, and theme name
     - _Requirements: 8.5, 8.6_
 
 - [ ] 9. Mobile-first responsive fixes
-  - [~] 9.1 Ensure `grid-3col` collapses to 2 columns below 640px in `StoreFront.tsx`
+  - [x] 9.1 Ensure `grid-3col` collapses to 2 columns below 640px in `StoreFront.tsx`
     - Update `getGridClasses` so `grid-3col` uses `grid-cols-2 sm:grid-cols-3` (or equivalent flex logic)
     - _Requirements: 10.2_
 
-  - [~] 9.2 Verify hero sections have no horizontal overflow at 375px
+  - [x] 9.2 Verify hero sections have no horizontal overflow at 375px
     - Audit `HeroSection.tsx` for any fixed widths or non-responsive padding that could cause overflow
     - Fix any issues found
     - _Requirements: 10.1, 10.5_
 
 - [ ] 10. Backward compatibility and fallback verification
-  - [~] 10.1 Verify `getTheme()` function signature is unchanged and falls back to `classic` for undefined or unknown slugs
+  - [ ] 10.1 Verify `getTheme()` function signature is unchanged and falls back to `classic` for undefined or unknown slugs
     - Confirm existing call sites still work without modification
     - _Requirements: 11.1, 11.2, 11.4_
 

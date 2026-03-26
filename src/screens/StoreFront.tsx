@@ -14,6 +14,7 @@ import { ProductCard } from '../components/storefront/ProductCard';
 import { ThemeLayout } from '../utils/themes';
 import { getProductUrl } from '../utils/storeUrl';
 import { getTypographyClasses, getSectionSpacingClass } from '../utils/themeHelpers';
+import { SparkStoreFront } from '../components/storefront/themes/SparkStoreFront';
 
 // ─── Grid layout helper ───────────────────────────────────────────────────────
 
@@ -341,56 +342,70 @@ export function StoreFront({ storefront }: { storefront?: PublicStorefrontData }
         onSearchChange={setSearchQuery}
       />
 
-      {/* Main content – rendered sections */}
-      <main className="flex-1 mx-auto w-full max-w-7xl pt-10 pb-32 px-2 sm:px-0">
-        {activeProducts.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-32 px-6 text-center">
-            <div className="w-20 h-20 rounded-full flex items-center justify-center mb-6" style={{ backgroundColor: t.accentLight }}>
-              <MessageCircle className="w-10 h-10" style={{ color: t.accent }} />
-            </div>
-            <h2 className="text-2xl font-bold mb-2" style={{ color: t.heroHeading }}>No products yet</h2>
-            <p className="text-sm max-w-xs" style={{ color: t.heroSub }}>
-              {store.name} is setting up their store. Check back soon!
+      {/* ── Spark variant — category tabs + Instagram grid ── */}
+      {theme.layout.variant === 'spark' ? (
+        <SparkStoreFront
+          theme={theme}
+          store={store}
+          products={products}
+          resolvedStoreId={resolvedStoreId}
+          isSubdomain={isSubdomain}
+          onContactClick={handleContactClick}
+        />
+      ) : (
+        <>
+          {/* Main content – rendered sections */}
+          <main className="flex-1 mx-auto w-full max-w-7xl pt-10 pb-32 px-2 sm:px-0">
+            {activeProducts.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-32 px-6 text-center">
+                <div className="w-20 h-20 rounded-full flex items-center justify-center mb-6" style={{ backgroundColor: t.accentLight }}>
+                  <MessageCircle className="w-10 h-10" style={{ color: t.accent }} />
+                </div>
+                <h2 className="text-2xl font-bold mb-2" style={{ color: t.heroHeading }}>No products yet</h2>
+                <p className="text-sm max-w-xs" style={{ color: t.heroSub }}>
+                  {store.name} is setting up their store. Check back soon!
+                </p>
+              </div>
+            ) : (
+              enabledSections.map(section => (
+                <React.Fragment key={section.id}>
+                  <SectionRenderer section={section} ctx={ctx} />
+                </React.Fragment>
+              ))
+            )}
+          </main>
+
+          {/* Footer */}
+          <footer
+            className="border-t pb-28 pt-12 text-center text-sm transition-colors duration-300 px-4"
+            style={{ background: t.footerBg, borderColor: t.footerBorder, color: t.footerText }}
+          >
+            <p>
+              Copyright &copy; {new Date().getFullYear()}{' '}
+              <span className="font-semibold" style={{ color: t.pageText }}>{store.name}</span>
             </p>
-          </div>
-        ) : (
-          enabledSections.map(section => (
-            <React.Fragment key={section.id}>
-              <SectionRenderer section={section} ctx={ctx} />
-            </React.Fragment>
-          ))
-        )}
-      </main>
+            {activeUser?.plan === 'Free' ? (
+              <p className="mt-2 text-xs opacity-70">
+                Powered by{' '}
+                <a href="https://myshoplink.site" target="_blank" rel="noreferrer" className="font-medium underline underline-offset-2">
+                  MyShopLink
+                </a>
+              </p>
+            ) : null}
+          </footer>
 
-      {/* Footer */}
-      <footer
-        className="border-t pb-28 pt-12 text-center text-sm transition-colors duration-300 px-4"
-        style={{ background: t.footerBg, borderColor: t.footerBorder, color: t.footerText }}
-      >
-        <p>
-          Copyright &copy; {new Date().getFullYear()}{' '}
-          <span className="font-semibold" style={{ color: t.pageText }}>{store.name}</span>
-        </p>
-        {activeUser?.plan === 'Free' ? (
-          <p className="mt-2 text-xs opacity-70">
-            Powered by{' '}
-            <a href="https://myshoplink.site" target="_blank" rel="noreferrer" className="font-medium underline underline-offset-2">
-              MyShopLink
-            </a>
-          </p>
-        ) : null}
-      </footer>
-
-      {/* Floating WhatsApp — always visible */}
-      <button
-        onClick={() => handleContactClick()}
-        className="fixed bottom-[max(1rem,env(safe-area-inset-bottom))] right-4 sm:right-6 z-50 flex items-center gap-3 px-4 py-3 sm:px-5 sm:py-4 rounded-full shadow-2xl hover:-translate-y-1 transition-all duration-300"
-        style={{ background: '#25D366', color: '#FFFFFF' }}
-        aria-label="Chat to Order on WhatsApp"
-      >
-        <MessageCircle className="w-6 h-6" />
-        <span className="font-semibold hidden sm:inline">Chat to Order</span>
-      </button>
+          {/* Floating WhatsApp — always visible */}
+          <button
+            onClick={() => handleContactClick()}
+            className="fixed bottom-[max(1rem,env(safe-area-inset-bottom))] right-4 sm:right-6 z-50 flex items-center gap-3 px-4 py-3 sm:px-5 sm:py-4 rounded-full shadow-2xl hover:-translate-y-1 transition-all duration-300"
+            style={{ background: '#25D366', color: '#FFFFFF' }}
+            aria-label="Chat to Order on WhatsApp"
+          >
+            <MessageCircle className="w-6 h-6" />
+            <span className="font-semibold hidden sm:inline">Chat to Order</span>
+          </button>
+        </>
+      )}
     </div>
   );
 }
