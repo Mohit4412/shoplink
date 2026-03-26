@@ -53,23 +53,32 @@ export function LandingPage() {
     <div className="min-h-screen bg-white text-gray-900 font-sans overflow-x-hidden scroll-smooth">
 
       {/* ── NAVBAR ── */}
-      <nav className="fixed top-0 w-full z-50 bg-white/90 backdrop-blur-md border-b border-gray-100 h-16 flex items-center">
-        <div className="max-w-6xl mx-auto px-5 w-full flex items-center justify-between">
-          <AppLogo size="lg" />
-          <div className="hidden sm:flex items-center gap-8 text-sm font-semibold text-gray-500">
+      <nav className="fixed top-0 w-full z-50 border-b border-gray-100 bg-white/88 backdrop-blur-md">
+        <div className="mx-auto flex h-14 w-full max-w-6xl items-center justify-between px-4 sm:px-5">
+          <AppLogo size="md" />
+          <div className="hidden sm:flex items-center gap-6 text-[13px] font-semibold text-gray-500">
             <a href="#features" className="hover:text-gray-900 transition-colors">Features</a>
             <a href="#pricing" className="hover:text-gray-900 transition-colors">Pricing</a>
           </div>
-          <div className="flex items-center gap-3">
-            <button onClick={handleLogin} className="text-sm font-bold text-gray-600 hover:text-gray-900 transition-colors">Log in</button>
-            <button onClick={handleCTA} className="px-4 py-2 rounded-xl text-sm font-bold text-white transition-all shadow-sm active:scale-95" style={{ background: CHARCOAL }}>
+          <div className="flex items-center gap-2.5">
+            <button
+              onClick={handleLogin}
+              className="rounded-lg px-2.5 py-1.5 text-[13px] font-semibold text-gray-600 transition-colors hover:text-gray-900"
+            >
+              Log in
+            </button>
+            <button
+              onClick={handleCTA}
+              className="rounded-lg px-3.5 py-2 text-[13px] font-semibold text-white shadow-sm transition-all active:scale-95"
+              style={{ background: CHARCOAL }}
+            >
               Start free
             </button>
           </div>
         </div>
       </nav>
 
-      <main className="pt-16">
+      <main className="pt-14">
 
         {/* ── EARLY ACCESS ANNOUNCEMENT BAR ── */}
         <div className="w-full py-2.5 px-4 text-center text-xs font-bold text-white" style={{ background: EMERALD }}>
