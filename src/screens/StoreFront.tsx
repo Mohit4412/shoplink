@@ -90,8 +90,11 @@ function ClassicLayout({
 
   return (
     <main className="flex-1 mx-auto w-full pt-10 pb-32 px-2 sm:px-0">
+      {/* Hero section ALWAYS visible */}
+      <HeroSection theme={theme} store={store} />
+
       {activeProducts.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-32 px-6 text-center">
+        <div className="flex flex-col items-center justify-center py-16 px-6 text-center">
           <div className="w-20 h-20 rounded-full flex items-center justify-center mb-6" style={{ backgroundColor: t.accentLight }}>
             <MessageCircle className="w-10 h-10" style={{ color: t.accent }} />
           </div>
@@ -102,9 +105,6 @@ function ClassicLayout({
         </div>
       ) : (
         <>
-          {/* Hero section */}
-          <HeroSection theme={theme} store={store} />
-
           {/* Featured section — only when >4 products */}
           {featuredProducts.length > 0 && (
             <section id="products" className={`${spacingClass} px-4 sm:px-6 lg:px-8`}>

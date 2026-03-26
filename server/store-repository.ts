@@ -391,7 +391,14 @@ export async function getPublicProductByStore(username: string, productId: strin
 export async function replaceMerchantBundle(bundle: MerchantStorefrontBundle) {
   if (isSupabaseEnabled()) {
     const normalizedProducts = bundle.products.map(normalizeProduct);
-    await supabaseInsert<StoreRow>('stores', serializeStore(bundle), { on_conflict: 'username' }, { upsert: true });
+    const storeSerialized = serializeStore(bundle);
+    try {
+      await supabaseInsert<StoreRow>('stores', storeSerialized, { on_conflict: 'username' }, { upsert: true });
+    } catch {
+      // Retry without legal_json in case column doesn't exist yet in Supabase
+      const { legal_json: _, ...withoutLegal } = storeSerialized;
+      await supabaseInsert<StoreRow>('stores', withoutLegal, { on_conflict: 'username' }, { upsert: true });
+    }
     await supabaseDelete('products', { store_username: `eq.${bundle.user.username}` });
     if (normalizedProducts.length > 0) {
       const serialized = normalizedProducts.map((product) => serializeProduct(bundle.user.username, product));

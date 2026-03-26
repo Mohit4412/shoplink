@@ -145,7 +145,7 @@ Extend the existing theme mechanism from a color-swap system into a structurally
     - **Property: `getTheme(undefined)` returns the classic theme**
     - **Validates: Requirements 11.2, 11.4**
 
-  - [~] 10.3 Verify existing `SectionConfig` `enabled` and `order` fields are still respected after refactor
+  - [ ] 10.3 Verify existing `SectionConfig` `enabled` and `order` fields are still respected after refactor
     - Confirm `StoreFront.tsx` still filters and sorts sections by `enabled`/`order` after all changes
     - _Requirements: 11.3_
 
