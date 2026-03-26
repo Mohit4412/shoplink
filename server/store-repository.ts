@@ -30,6 +30,7 @@ interface StoreRow {
   sections_json?: string | null | unknown; // retained in DB schema but no longer used
   trust_badges_json: string | null | unknown;
   banners_json: string | null | unknown;
+  legal_json: string | null | unknown;
   custom_domain: string | null;
   custom_domain_status: StoreSettings['customDomainStatus'] | null;
 }
@@ -89,6 +90,7 @@ export function ensureStoreSchema() {
       sections_json TEXT,
       trust_badges_json TEXT,
       banners_json TEXT,
+      legal_json TEXT,
       custom_domain TEXT,
       custom_domain_status TEXT
     );
@@ -115,6 +117,7 @@ export function ensureStoreSchema() {
   `);
   // Migrate existing DBs
   try { db.exec(`ALTER TABLE products ADD COLUMN is_demo INTEGER NOT NULL DEFAULT 0`); } catch { /* already exists */ }
+  try { db.exec(`ALTER TABLE stores ADD COLUMN legal_json TEXT`); } catch { /* already exists */ }
 }
 
 function serializeStore(bundle: MerchantStorefrontBundle) {
@@ -138,6 +141,7 @@ function serializeStore(bundle: MerchantStorefrontBundle) {
     theme: store.theme ?? null,
     trust_badges_json: store.trustBadges ? JSON.stringify(store.trustBadges) : null,
     banners_json: store.banners ? JSON.stringify(store.banners) : null,
+    legal_json: store.legalPages ? JSON.stringify(store.legalPages) : null,
     custom_domain: store.customDomain ?? null,
     custom_domain_status: store.customDomainStatus ?? null,
   };
@@ -185,6 +189,7 @@ function hydrateStore(row: StoreRow): { user: UserProfile; store: StoreSettings 
       currency: row.currency,
       theme: row.theme ?? undefined,
       banners: parseJson(row.banners_json, undefined),
+      legalPages: parseJson(row.legal_json, undefined),
       customDomain: row.custom_domain ?? undefined,
       customDomainStatus: row.custom_domain_status ?? undefined,
     },
@@ -227,11 +232,11 @@ if (db) {
   INSERT INTO stores (
     user_id, username, email, first_name, last_name, user_bio, whatsapp_number, avatar_url, plan,
     subscription_renewal_date, logo_url, store_name, tagline, store_bio, currency, theme,
-    trust_badges_json, banners_json, custom_domain, custom_domain_status
+    trust_badges_json, banners_json, legal_json, custom_domain, custom_domain_status
   ) VALUES (
     @user_id, @username, @email, @first_name, @last_name, @user_bio, @whatsapp_number, @avatar_url, @plan,
     @subscription_renewal_date, @logo_url, @store_name, @tagline, @store_bio, @currency, @theme,
-    @trust_badges_json, @banners_json, @custom_domain, @custom_domain_status
+    @trust_badges_json, @banners_json, @legal_json, @custom_domain, @custom_domain_status
   )
   ON CONFLICT(username) DO UPDATE SET
     user_id = excluded.user_id,
@@ -251,6 +256,7 @@ if (db) {
     theme = excluded.theme,
     trust_badges_json = excluded.trust_badges_json,
     banners_json = excluded.banners_json,
+    legal_json = excluded.legal_json,
     custom_domain = excluded.custom_domain,
     custom_domain_status = excluded.custom_domain_status
 `);

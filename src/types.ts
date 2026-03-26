@@ -62,6 +62,14 @@ export interface StoreSettings {
   banners?: string[];
   customDomain?: string;
   customDomainStatus?: 'pending' | 'active' | 'failed';
+  legalPages?: LegalPages;
+}
+
+export interface LegalPages {
+  shipping?: string;
+  returns?: string;
+  privacy?: string;
+  terms?: string;
 }
 
 export type Store = StoreSettings;

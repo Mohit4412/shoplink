@@ -3,12 +3,13 @@
 import React from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useStore } from '../context/StoreContext';
-import { Store, Globe, CreditCard, User, LogOut, ChevronRight, ExternalLink } from 'lucide-react';
+import { Store, Globe, CreditCard, User, LogOut, ChevronRight, ExternalLink, FileText } from 'lucide-react';
 
 import { AccountSettings } from '../components/settings/AccountSettings';
 import { StoreSettings } from '../components/settings/StoreSettings';
 import { CustomDomainSettings } from '../components/settings/CustomDomainSettings';
 import { BillingSettings } from '../components/settings/BillingSettings';
+import { LegalPagesSettings } from '../components/settings/LegalPagesSettings';
 
 export function Settings() {
   const router = useRouter();
@@ -21,6 +22,7 @@ export function Settings() {
   if (view === 'domain') return <div className="mt-4"><CustomDomainSettings /></div>;
   if (view === 'billing') return <BillingSettings />;
   if (view === 'account') return <div className="mt-4"><AccountSettings /></div>;
+  if (view === 'legal') return <div className="mt-4"><LegalPagesSettings /></div>;
 
   const handleLogout = () => {
     if (window.confirm('Are you sure you want to log out?')) {
@@ -49,6 +51,13 @@ export function Settings() {
       subtitle: `Current plan: ${user?.plan || 'Free'}`,
       icon: <CreditCard className="w-5 h-5 text-amber-600" />,
       bg: 'bg-amber-50',
+    },
+    {
+      id: 'legal',
+      title: 'Legal pages',
+      subtitle: 'Shipping, returns, privacy, terms',
+      icon: <FileText className="w-5 h-5 text-teal-600" />,
+      bg: 'bg-teal-50',
     },
     {
       id: 'account',
