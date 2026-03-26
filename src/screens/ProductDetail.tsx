@@ -101,7 +101,7 @@ export function ProductDetail({ storefront }: { storefront?: PublicStorefrontDat
 
   return (
     <div className="min-h-screen sm:bg-gray-100 sm:flex sm:justify-center sm:items-start font-sans">
-    <div className="w-full sm:max-w-[480px] sm:min-h-screen sm:shadow-2xl flex flex-col" style={{ background: t.pageBg, color: t.pageText }}>
+    <div className="w-full sm:max-w-[640px] sm:min-h-screen sm:shadow-2xl flex flex-col" style={{ background: t.pageBg, color: t.pageText }}>
 
       {/* Nav — compact on mobile */}
       <div

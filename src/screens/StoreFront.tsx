@@ -324,7 +324,7 @@ export function StoreFront({ storefront }: { storefront?: PublicStorefrontData }
   return (
     <div className="min-h-screen sm:bg-gray-100 sm:flex sm:justify-center sm:items-start font-sans">
       <div
-        className="w-full sm:max-w-[480px] sm:min-h-screen sm:shadow-2xl flex flex-col transition-colors duration-300 relative"
+        className="w-full sm:max-w-[640px] sm:min-h-screen sm:shadow-2xl flex flex-col transition-colors duration-300 relative"
         style={{ background: t.pageBg, color: t.pageText }}
       >
       {/* Demo banner */}
@@ -398,7 +398,7 @@ export function StoreFront({ storefront }: { storefront?: PublicStorefrontData }
           {/* Floating WhatsApp — always visible */}
           <button
             onClick={() => handleContactClick()}
-            className="fixed bottom-[max(1rem,env(safe-area-inset-bottom))] right-4 sm:right-[max(1rem,calc(50%-224px))] z-50 flex items-center gap-3 px-4 py-3 rounded-full shadow-2xl hover:-translate-y-1 transition-all duration-300"
+            className="fixed bottom-[max(1rem,env(safe-area-inset-bottom))] right-4 sm:right-[max(1rem,calc(50%-304px))] z-50 flex items-center gap-3 px-4 py-3 rounded-full shadow-2xl hover:-translate-y-1 transition-all duration-300"
             style={{ background: '#25D366', color: '#FFFFFF' }}
             aria-label="Chat to Order on WhatsApp"
           >
