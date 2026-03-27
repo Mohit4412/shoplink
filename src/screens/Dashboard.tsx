@@ -1,9 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Plus, Share2, Package, Store, Eye, MessageCircle, Check, X } from 'lucide-react';
+import { Plus, Share2, Package, Store, Eye, MessageCircle, Check, X, ArrowUpRight, ArrowDownRight, Minus } from 'lucide-react';
 import Link from 'next/link';
-import { format } from 'date-fns';
+import { format, subDays } from 'date-fns';
 import { motion, AnimatePresence } from 'motion/react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useStore } from '../context/StoreContext';
@@ -13,6 +13,59 @@ import { Button } from '../components/ui/Button';
 import { LogOrderModal } from '../components/dashboard/LogOrderModal';
 import { ShareModal } from '../components/dashboard/ShareModal';
 import { RecentOrdersTable } from '../components/dashboard/RecentOrdersTable';
+
+type Trend = {
+  direction: 'up' | 'down' | 'flat';
+  percentage: string;
+  label: string;
+};
+
+function getTrend(current: number, previous: number): Trend {
+  if (current === previous) {
+    return {
+      direction: 'flat',
+      percentage: '0%',
+      label: 'vs yesterday',
+    };
+  }
+
+  if (previous === 0) {
+    return {
+      direction: current > 0 ? 'up' : 'flat',
+      percentage: current > 0 ? '100%' : '0%',
+      label: 'vs yesterday',
+    };
+  }
+
+  const delta = ((current - previous) / previous) * 100;
+  return {
+    direction: delta > 0 ? 'up' : 'down',
+    percentage: `${Math.abs(delta).toFixed(delta >= 10 || delta <= -10 ? 0 : 1)}%`,
+    label: 'vs yesterday',
+  };
+}
+
+function TrendBadge({ trend }: { trend: Trend }) {
+  const styles = trend.direction === 'up'
+    ? 'text-green-600'
+    : trend.direction === 'down'
+      ? 'text-red-500'
+      : 'text-gray-400';
+
+  return (
+    <div className={`mt-1 flex items-center gap-1 text-[11px] font-semibold ${styles}`}>
+      {trend.direction === 'up' ? (
+        <ArrowUpRight className="w-3.5 h-3.5" />
+      ) : trend.direction === 'down' ? (
+        <ArrowDownRight className="w-3.5 h-3.5" />
+      ) : (
+        <Minus className="w-3.5 h-3.5" />
+      )}
+      <span>{trend.percentage}</span>
+      <span className="text-gray-400">{trend.label}</span>
+    </div>
+  );
+}
 
 export function Dashboard() {
   const { products, analytics, orders, addOrder, updateOrder, deleteOrder, store, user } = useStore();
@@ -51,15 +104,23 @@ export function Dashboard() {
 
   const today = new Date();
   const todayStr = format(today, 'yyyy-MM-dd');
+  const yesterdayStr = format(subDays(today, 1), 'yyyy-MM-dd');
   const currencySymbol = getCurrencySymbol(store.currency);
 
   const todayOrdersCount = orders.filter(o => o.status === 'confirmed' && o.date.startsWith(todayStr)).length;
-  const todayStats = analytics.dailyStats.find(s => s.fullDate === todayStr) || { views: 0, clicks: 0 };
+  const yesterdayOrdersCount = orders.filter(o => o.status === 'confirmed' && o.date.startsWith(yesterdayStr)).length;
+  const todayStats = analytics.dailyStats.find(s => s.fullDate === todayStr) || { views: 0, clicks: 0, orders: 0 };
+  const yesterdayStats = analytics.dailyStats.find(s => s.fullDate === yesterdayStr) || { views: 0, clicks: 0, orders: 0 };
   const activeProductsCount = products.length;
+  const yesterdayProductsCount = products.filter(product => product.createdAt < `${todayStr}T00:00:00.000Z`).length;
   const isTrialPro = user?.plan === 'Pro' && !user?.razorpaySubscriptionId;
 
   const pendingOrders = orders.filter(o => o.status === 'pending');
   const confirmedOrders = orders.filter(o => o.status === 'confirmed');
+  const orderTrend = getTrend(todayOrdersCount, yesterdayOrdersCount);
+  const viewsTrend = getTrend(todayStats.views, yesterdayStats.views);
+  const productsTrend = getTrend(activeProductsCount, yesterdayProductsCount);
+  const clicksTrend = getTrend(todayStats.clicks, yesterdayStats.clicks);
 
   const handleSaveOrder = (newOrder: { productId: string; quantity: number; revenue: number; notes: string; date: string }) => {
     if (selectedOrder) {
@@ -111,6 +172,7 @@ export function Dashboard() {
             <div className="min-w-0">
               <p className="text-[24px] font-black text-gray-900 leading-none">{todayOrdersCount}</p>
               <p className="text-[12px] font-semibold text-gray-500 mt-0.5">Orders</p>
+              <TrendBadge trend={orderTrend} />
             </div>
           </div>
 
@@ -121,6 +183,7 @@ export function Dashboard() {
             <div className="min-w-0">
               <p className="text-[24px] font-black text-gray-900 leading-none">{todayStats.views}</p>
               <p className="text-[12px] font-semibold text-gray-500 mt-0.5">Store views</p>
+              <TrendBadge trend={viewsTrend} />
             </div>
           </div>
 
@@ -131,6 +194,7 @@ export function Dashboard() {
             <div className="min-w-0">
               <p className="text-[24px] font-black text-gray-900 leading-none">{activeProductsCount}</p>
               <p className="text-[12px] font-semibold text-gray-500 mt-0.5">Active products</p>
+              <TrendBadge trend={productsTrend} />
             </div>
           </div>
 
@@ -141,6 +205,7 @@ export function Dashboard() {
             <div className="min-w-0">
               <p className="text-[24px] font-black text-gray-900 leading-none">{todayStats.clicks}</p>
               <p className="text-[12px] font-semibold text-gray-500 mt-0.5">WhatsApp clicks</p>
+              <TrendBadge trend={clicksTrend} />
             </div>
           </div>
         </div>
