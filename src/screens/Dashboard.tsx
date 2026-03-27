@@ -53,16 +53,47 @@ function TrendBadge({ trend }: { trend: Trend }) {
       : 'text-gray-400';
 
   return (
-    <div className={`mt-1 flex items-center gap-1 text-[11px] font-semibold ${styles}`}>
-      {trend.direction === 'up' ? (
-        <ArrowUpRight className="w-3.5 h-3.5" />
-      ) : trend.direction === 'down' ? (
-        <ArrowDownRight className="w-3.5 h-3.5" />
-      ) : (
-        <Minus className="w-3.5 h-3.5" />
-      )}
-      <span>{trend.percentage}</span>
-      <span className="text-gray-400">{trend.label}</span>
+    <div className={`flex flex-col items-end text-right leading-none ${styles}`}>
+      <div className="flex items-center gap-1 text-[11px] font-semibold">
+        {trend.direction === 'up' ? (
+          <ArrowUpRight className="w-3.5 h-3.5" />
+        ) : trend.direction === 'down' ? (
+          <ArrowDownRight className="w-3.5 h-3.5" />
+        ) : (
+          <Minus className="w-3.5 h-3.5" />
+        )}
+        <span>{trend.percentage}</span>
+      </div>
+      <span className="mt-1 text-[10px] font-medium text-gray-400">{trend.label}</span>
+    </div>
+  );
+}
+
+function SnapshotCard({
+  icon,
+  iconWrapClassName,
+  value,
+  label,
+  trend,
+}: {
+  icon: React.ReactNode;
+  iconWrapClassName: string;
+  value: number;
+  label: string;
+  trend: Trend;
+}) {
+  return (
+    <div className="p-4 flex items-center gap-3">
+      <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${iconWrapClassName}`}>
+        {icon}
+      </div>
+      <div className="min-w-0 flex-1 flex items-center justify-between gap-3">
+        <div className="min-w-0">
+          <p className="text-[24px] font-black text-gray-900 leading-none">{value}</p>
+          <p className="text-[12px] font-semibold text-gray-500 mt-0.5">{label}</p>
+        </div>
+        <TrendBadge trend={trend} />
+      </div>
     </div>
   );
 }
@@ -165,49 +196,37 @@ export function Dashboard() {
           <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Today's snapshot</p>
         </div>
         <div className="grid grid-cols-2 divide-x divide-y divide-gray-50">
-          <div className="p-4 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center shrink-0">
-              <Package className="w-5 h-5 text-amber-500" />
-            </div>
-            <div className="min-w-0">
-              <p className="text-[24px] font-black text-gray-900 leading-none">{todayOrdersCount}</p>
-              <p className="text-[12px] font-semibold text-gray-500 mt-0.5">Orders</p>
-              <TrendBadge trend={orderTrend} />
-            </div>
-          </div>
+          <SnapshotCard
+            icon={<Package className="w-5 h-5 text-amber-500" />}
+            iconWrapClassName="bg-amber-50"
+            value={todayOrdersCount}
+            label="Orders"
+            trend={orderTrend}
+          />
 
-          <div className="p-4 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center shrink-0">
-              <Eye className="w-5 h-5 text-blue-500" />
-            </div>
-            <div className="min-w-0">
-              <p className="text-[24px] font-black text-gray-900 leading-none">{todayStats.views}</p>
-              <p className="text-[12px] font-semibold text-gray-500 mt-0.5">Store views</p>
-              <TrendBadge trend={viewsTrend} />
-            </div>
-          </div>
+          <SnapshotCard
+            icon={<Eye className="w-5 h-5 text-blue-500" />}
+            iconWrapClassName="bg-blue-50"
+            value={todayStats.views}
+            label="Store views"
+            trend={viewsTrend}
+          />
 
-          <div className="p-4 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center shrink-0">
-              <Store className="w-5 h-5 text-[#059669]" />
-            </div>
-            <div className="min-w-0">
-              <p className="text-[24px] font-black text-gray-900 leading-none">{activeProductsCount}</p>
-              <p className="text-[12px] font-semibold text-gray-500 mt-0.5">Active products</p>
-              <TrendBadge trend={productsTrend} />
-            </div>
-          </div>
+          <SnapshotCard
+            icon={<Store className="w-5 h-5 text-[#059669]" />}
+            iconWrapClassName="bg-green-50"
+            value={activeProductsCount}
+            label="Active products"
+            trend={productsTrend}
+          />
 
-          <div className="p-4 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center shrink-0">
-              <MessageCircle className="w-5 h-5 text-[#059669]" />
-            </div>
-            <div className="min-w-0">
-              <p className="text-[24px] font-black text-gray-900 leading-none">{todayStats.clicks}</p>
-              <p className="text-[12px] font-semibold text-gray-500 mt-0.5">WhatsApp clicks</p>
-              <TrendBadge trend={clicksTrend} />
-            </div>
-          </div>
+          <SnapshotCard
+            icon={<MessageCircle className="w-5 h-5 text-[#059669]" />}
+            iconWrapClassName="bg-green-50"
+            value={todayStats.clicks}
+            label="WhatsApp clicks"
+            trend={clicksTrend}
+          />
         </div>
       </div>
 
