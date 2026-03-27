@@ -59,11 +59,12 @@ interface ClassicLayoutProps {
   resolvedStoreId: string;
   isSubdomain: boolean;
   onContactClick: (product?: Product) => void;
+  onOrderClick: (product: Product) => void;
   searchQuery: string;
 }
 
 function ClassicLayout({
-  theme, store, activeProducts, currencySymbol, resolvedStoreId, isSubdomain, onContactClick, searchQuery,
+  theme, store, activeProducts, currencySymbol, resolvedStoreId, isSubdomain, onContactClick, onOrderClick, searchQuery,
 }: ClassicLayoutProps) {
   const t = theme.tokens;
   const typography = getTypographyClasses(theme.layout.typographyScale);
@@ -122,7 +123,7 @@ function ClassicLayout({
                       cardStyle={theme.layout.cardStyle}
                       typography={typography}
                       currencySymbol={currencySymbol}
-                      onOrder={() => onContactClick(product)}
+                      onOrder={() => onOrderClick(product)}
                     />
                   </div>
                 ))}
@@ -146,7 +147,7 @@ function ClassicLayout({
                     cardStyle={theme.layout.cardStyle}
                     typography={typography}
                     currencySymbol={currencySymbol}
-                    onOrder={() => onContactClick(product)}
+                    onOrder={() => onOrderClick(product)}
                   />
                 </div>
               ))}
@@ -275,6 +276,19 @@ export function StoreFront({ storefront }: { storefront?: PublicStorefrontData }
     window.open(buildWhatsAppUrl(product), '_blank', 'noopener,noreferrer');
   };
 
+  // Order button on product cards — tracks as a pending order
+  const handleOrderClick = (product: Product) => {
+    trackWhatsAppClick(product.id, resolvedStoreId);
+    if (publicUser?.username) {
+      void fetch(`/api/stores/${publicUser.username}/orders`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ productId: product.id, revenue: product.price }),
+      });
+    }
+    window.open(buildWhatsAppUrl(product), '_blank', 'noopener,noreferrer');
+  };
+
   return (
     <div className="min-h-screen sm:bg-gray-100 sm:flex sm:justify-center sm:items-start font-sans">
       <div
@@ -306,6 +320,7 @@ export function StoreFront({ storefront }: { storefront?: PublicStorefrontData }
             resolvedStoreId={resolvedStoreId}
             isSubdomain={isSubdomain}
             onContactClick={handleContactClick}
+            onOrderClick={handleOrderClick}
             isFreePlan={activeUser?.plan === 'Free'}
           />
         ) : theme.layout.variant === 'craft' ? (
@@ -316,6 +331,7 @@ export function StoreFront({ storefront }: { storefront?: PublicStorefrontData }
             resolvedStoreId={resolvedStoreId}
             isSubdomain={isSubdomain}
             onContactClick={handleContactClick}
+            onOrderClick={handleOrderClick}
             isFreePlan={activeUser?.plan === 'Free'}
           />
         ) : theme.layout.variant === 'fresh' ? (
@@ -326,6 +342,7 @@ export function StoreFront({ storefront }: { storefront?: PublicStorefrontData }
             resolvedStoreId={resolvedStoreId}
             isSubdomain={isSubdomain}
             onContactClick={handleContactClick}
+            onOrderClick={handleOrderClick}
             isFreePlan={activeUser?.plan === 'Free'}
           />
         ) : theme.layout.variant === 'swift' ? (
@@ -336,6 +353,7 @@ export function StoreFront({ storefront }: { storefront?: PublicStorefrontData }
             resolvedStoreId={resolvedStoreId}
             isSubdomain={isSubdomain}
             onContactClick={handleContactClick}
+            onOrderClick={handleOrderClick}
             isFreePlan={activeUser?.plan === 'Free'}
           />
         ) : theme.layout.variant === 'noir' ? (
@@ -346,6 +364,7 @@ export function StoreFront({ storefront }: { storefront?: PublicStorefrontData }
             resolvedStoreId={resolvedStoreId}
             isSubdomain={isSubdomain}
             onContactClick={handleContactClick}
+            onOrderClick={handleOrderClick}
             isFreePlan={activeUser?.plan === 'Free'}
           />
         ) : (
@@ -358,6 +377,7 @@ export function StoreFront({ storefront }: { storefront?: PublicStorefrontData }
               resolvedStoreId={resolvedStoreId}
               isSubdomain={isSubdomain}
               onContactClick={handleContactClick}
+              onOrderClick={handleOrderClick}
               searchQuery={searchQuery}
             />
 

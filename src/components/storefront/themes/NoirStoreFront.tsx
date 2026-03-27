@@ -14,17 +14,12 @@ interface NoirStoreFrontProps {
   resolvedStoreId: string;
   isSubdomain: boolean;
   onContactClick: (product?: Product) => void;
+  onOrderClick: (product: Product) => void;
   isFreePlan: boolean;
 }
 
 export function NoirStoreFront({
-  theme,
-  store,
-  products,
-  resolvedStoreId,
-  isSubdomain,
-  onContactClick,
-  isFreePlan,
+  theme, store, products, resolvedStoreId, isSubdomain, onContactClick, onOrderClick, isFreePlan,
 }: NoirStoreFrontProps) {
   const t = theme.tokens;
   const currencySymbol = getCurrencySymbol(store.currency);
@@ -205,7 +200,7 @@ export function NoirStoreFront({
                     {/* Enquire button */}
                     {product.stock > 0 && (
                       <button
-                        onClick={() => onContactClick(product)}
+                        onClick={() => onOrderClick(product)}
                         className="w-full flex items-center justify-center gap-2 py-4 rounded-full text-sm font-bold transition-colors min-h-[44px]"
                         style={{ background: t.btnBg, color: t.btnText }}
                       >

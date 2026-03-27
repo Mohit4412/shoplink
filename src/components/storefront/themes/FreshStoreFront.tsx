@@ -15,17 +15,12 @@ interface FreshStoreFrontProps {
   resolvedStoreId: string;
   isSubdomain: boolean;
   onContactClick: (product?: Product) => void;
+  onOrderClick: (product: Product) => void;
   isFreePlan: boolean;
 }
 
 export function FreshStoreFront({
-  theme,
-  store,
-  products,
-  resolvedStoreId,
-  isSubdomain,
-  onContactClick,
-  isFreePlan,
+  theme, store, products, resolvedStoreId, isSubdomain, onContactClick, onOrderClick, isFreePlan,
 }: FreshStoreFrontProps) {
   const t = theme.tokens;
   const currencySymbol = getCurrencySymbol(store.currency);
@@ -55,8 +50,7 @@ export function FreshStoreFront({
   };
 
   const handleOrderWithQty = (product: Product) => {
-    // Use the parent's onContactClick which handles WhatsApp message building
-    onContactClick(product);
+    onOrderClick(product);
   };
 
   return (

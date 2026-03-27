@@ -15,17 +15,12 @@ interface CraftStoreFrontProps {
   resolvedStoreId: string;
   isSubdomain: boolean;
   onContactClick: (product?: Product) => void;
+  onOrderClick: (product: Product) => void;
   isFreePlan: boolean;
 }
 
 export function CraftStoreFront({
-  theme,
-  store,
-  products,
-  resolvedStoreId,
-  isSubdomain,
-  onContactClick,
-  isFreePlan,
+  theme, store, products, resolvedStoreId, isSubdomain, onContactClick, onOrderClick, isFreePlan,
 }: CraftStoreFrontProps) {
   const t = theme.tokens;
   const currencySymbol = getCurrencySymbol(store.currency);
@@ -211,7 +206,7 @@ export function CraftStoreFront({
               {/* Order button */}
               {currentProduct.stock > 0 && (
                 <button
-                  onClick={() => onContactClick(currentProduct)}
+                  onClick={() => onOrderClick(currentProduct)}
                   className="w-full flex items-center justify-center gap-2 py-4 rounded-full text-base font-bold transition-colors min-h-[44px]"
                   style={{ background: t.waBg, color: t.waText }}
                 >

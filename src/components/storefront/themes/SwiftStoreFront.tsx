@@ -15,17 +15,12 @@ interface SwiftStoreFrontProps {
   resolvedStoreId: string;
   isSubdomain: boolean;
   onContactClick: (product?: Product) => void;
+  onOrderClick: (product: Product) => void;
   isFreePlan: boolean;
 }
 
 export function SwiftStoreFront({
-  theme,
-  store,
-  products,
-  resolvedStoreId,
-  isSubdomain,
-  onContactClick,
-  isFreePlan,
+  theme, store, products, resolvedStoreId, isSubdomain, onContactClick, onOrderClick, isFreePlan,
 }: SwiftStoreFrontProps) {
   const t = theme.tokens;
   const currencySymbol = getCurrencySymbol(store.currency);
@@ -153,7 +148,7 @@ export function SwiftStoreFront({
                       <button
                         onClick={(e) => {
                           e.preventDefault();
-                          onContactClick(product);
+                          onOrderClick(product);
                         }}
                         className="flex items-center gap-1 px-3 py-2 rounded-lg text-xs font-bold transition-colors min-h-[44px]"
                         style={{ background: t.accentLight, color: t.accent }}

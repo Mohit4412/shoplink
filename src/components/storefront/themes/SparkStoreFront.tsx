@@ -15,17 +15,12 @@ interface SparkStoreFrontProps {
   resolvedStoreId: string;
   isSubdomain: boolean;
   onContactClick: (product?: Product) => void;
+  onOrderClick: (product: Product) => void;
   isFreePlan: boolean;
 }
 
 export function SparkStoreFront({
-  theme,
-  store,
-  products,
-  resolvedStoreId,
-  isSubdomain,
-  onContactClick,
-  isFreePlan,
+  theme, store, products, resolvedStoreId, isSubdomain, onContactClick, onOrderClick, isFreePlan,
 }: SparkStoreFrontProps) {
   const t = theme.tokens;
   const currencySymbol = getCurrencySymbol(store.currency);
@@ -113,7 +108,7 @@ export function SparkStoreFront({
                 {/* Quick order button — appears on hover/tap */}
                 {product.stock > 0 && (
                   <button
-                    onClick={() => onContactClick(product)}
+                    onClick={() => onOrderClick(product)}
                     className="absolute bottom-[44px] left-2 right-2 h-8 rounded-lg text-[11px] font-bold opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1.5 min-h-[44px]"
                     style={{ background: t.waBg, color: t.waText }}
                   >
