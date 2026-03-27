@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import {
   Link as LinkIcon, MessageCircle, Palette, BarChart3,
   CheckCircle2, ChevronDown, ArrowRight,
-  ShoppingBag, Star
+  ShoppingBag, Star, Menu, X
 } from 'lucide-react';
 import Image from 'next/image';
 import { AppLogo } from '../components/ui/AppLogo';
@@ -35,10 +35,20 @@ function PhoneMockup() {
 export function LandingPage() {
   const router = useRouter();
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const handleCTA = () => router.push('/signup');
-  const handleLogin = () => router.push('/signup?mode=login');
-  const handleDemo = () => router.push('/demo');
+  const handleCTA = () => {
+    setMobileMenuOpen(false);
+    router.push('/signup');
+  };
+  const handleLogin = () => {
+    setMobileMenuOpen(false);
+    router.push('/signup?mode=login');
+  };
+  const handleDemo = () => {
+    setMobileMenuOpen(false);
+    router.push('/demo');
+  };
 
   const faqs = [
     { q: "Do my customers need to download an app?", a: "No. They just click your link and browse in their browser — no app, no signup, no friction." },
@@ -63,7 +73,7 @@ export function LandingPage() {
             <a href="#" rel="nofollow" className="hover:text-gray-900 transition-colors">Tools</a>
             <a href="#" rel="nofollow" className="hover:text-gray-900 transition-colors">Blog</a>
           </div>
-          <div className="flex items-center gap-2 sm:gap-2.5">
+          <div className="hidden sm:flex items-center gap-2.5">
             <button
               onClick={handleLogin}
               className="rounded-md px-2 py-1 text-[12px] font-semibold text-gray-600 transition-colors hover:text-gray-900 sm:rounded-lg sm:px-2.5 sm:py-1.5 sm:text-[13px]"
@@ -78,7 +88,51 @@ export function LandingPage() {
               Start free
             </button>
           </div>
+          <button
+            type="button"
+            aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={mobileMenuOpen}
+            onClick={() => setMobileMenuOpen((open) => !open)}
+            className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 text-gray-700 transition-colors hover:bg-gray-50 sm:hidden"
+          >
+            {mobileMenuOpen ? <X className="h-4.5 w-4.5" /> : <Menu className="h-4.5 w-4.5" />}
+          </button>
         </div>
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: -12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.18, ease: 'easeOut' }}
+              className="border-t border-gray-100 bg-white/95 px-3.5 pb-4 pt-3 shadow-sm backdrop-blur-md sm:hidden"
+            >
+              <div className="flex flex-col gap-1.5 text-[13px] font-semibold text-gray-600">
+                <a href="#features" onClick={() => setMobileMenuOpen(false)} className="rounded-lg px-3 py-2.5 transition-colors hover:bg-gray-50 hover:text-gray-900">Features</a>
+                <a href="#pricing" onClick={() => setMobileMenuOpen(false)} className="rounded-lg px-3 py-2.5 transition-colors hover:bg-gray-50 hover:text-gray-900">Pricing</a>
+                <Link href="/support" onClick={() => setMobileMenuOpen(false)} className="rounded-lg px-3 py-2.5 transition-colors hover:bg-gray-50 hover:text-gray-900">Contact</Link>
+                <a href="#" rel="nofollow" className="rounded-lg px-3 py-2.5 transition-colors hover:bg-gray-50 hover:text-gray-900">About</a>
+                <a href="#" rel="nofollow" className="rounded-lg px-3 py-2.5 transition-colors hover:bg-gray-50 hover:text-gray-900">Tools</a>
+                <a href="#" rel="nofollow" className="rounded-lg px-3 py-2.5 transition-colors hover:bg-gray-50 hover:text-gray-900">Blog</a>
+              </div>
+              <div className="mt-3 grid grid-cols-2 gap-2">
+                <button
+                  onClick={handleLogin}
+                  className="rounded-lg border border-gray-200 px-3 py-2.5 text-[13px] font-semibold text-gray-700 transition-colors hover:bg-gray-50"
+                >
+                  Log in
+                </button>
+                <button
+                  onClick={handleCTA}
+                  className="rounded-lg px-3 py-2.5 text-[13px] font-semibold text-white shadow-sm transition-all active:scale-95"
+                  style={{ background: CHARCOAL }}
+                >
+                  Start free
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </nav>
 
       <main className="pt-12 sm:pt-14">
