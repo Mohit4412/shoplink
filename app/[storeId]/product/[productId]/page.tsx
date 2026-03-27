@@ -31,5 +31,5 @@ export default async function ProductDetailPage({ params }: Props) {
     notFound();
   }
 
-  return <ProductDetail storefront={result} />;
+  return <ProductDetail storefront={result} productId={resolvedParams.productId} />;
 }

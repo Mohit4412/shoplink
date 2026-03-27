@@ -16,7 +16,7 @@ import { ProductCarousel } from '../components/product/ProductCarousel';
 import { FloatingWhatsApp } from '../components/product/FloatingWhatsApp';
 import { ProductAccordion } from '../components/product/ProductAccordion';
 import { ProductActions } from '../components/product/ProductActions';
-import { PublicStorefrontData } from '../types';
+import { PublicStorefrontData, Product } from '../types';
 
 const ICON_MAP: Record<string, ElementType> = {
   ShieldCheck, CheckCircle2, BadgeCheck, Truck, Package, Box, RotateCcw, Recycle,
@@ -24,11 +24,11 @@ const ICON_MAP: Record<string, ElementType> = {
   Heart, ThumbsUp, Smile, Gift, Tag, Percent, Leaf, Globe, MapPin, Handshake,
 };
 
-export function ProductDetail({ storefront }: { storefront?: PublicStorefrontData }) {
+export function ProductDetail({ storefront, productId: productIdProp }: { storefront?: PublicStorefrontData & { product?: Product }; productId?: string }) {
   const params = useParams<{ storeId: string; productId: string }>();
   const router = useRouter();
   const storeId = params?.storeId as string;
-  const productId = params?.productId as string;
+  const productId = productIdProp ?? params?.productId as string;
 
   const { store: localStore, products: localProducts, user: localUser, trackWhatsAppClick } = useStore();
   const publicUser = storefront?.user;
@@ -65,14 +65,15 @@ export function ProductDetail({ storefront }: { storefront?: PublicStorefrontDat
   );
 
   useEffect(() => {
+    if (!productId) return; // params not yet resolved during hydration
     if (!product) {
       router.replace(storeHref);
     } else {
       document.title = `${product.name} | ${store.name}`;
     }
-  }, [product, storeHref, router, store.name]);
+  }, [product, productId, storeHref, router, store.name]);
 
-  if (!product) return null;
+  if (!productId || !product) return null;
 
   const currencySymbol = getCurrencySymbol(store.currency);
   const images = product.images?.length ? product.images : [product.imageUrl];
