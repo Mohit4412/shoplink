@@ -27,6 +27,7 @@ interface StoreContextType extends AppState {
   markNotificationRead: (id: string) => void;
   markAllNotificationsRead: () => void;
   clearAllNotifications: () => void;
+  syncDashboard: () => Promise<void>;
 }
 
 const StoreContext = createContext<StoreContextType | undefined>(undefined);
@@ -543,7 +544,7 @@ export const StoreProvider: FC<{ children: ReactNode; initialUser: UserProfile |
   const devForcePlan = process.env.NEXT_PUBLIC_DEV_FORCE_PLAN as 'Free' | 'Pro' | undefined;
 
   const contextValue = useMemo(() => {
-    const base = { hydrated, ...state, refreshUser, login, logout, addProduct, updateProduct, deleteProduct, addOrder, updateOrder, deleteOrder, updateStoreSettings, updateUserProfile, trackStoreView, trackWhatsAppClick, addNotification, markNotificationRead, markAllNotificationsRead, clearAllNotifications };
+    const base = { hydrated, ...state, refreshUser, login, logout, addProduct, updateProduct, deleteProduct, addOrder, updateOrder, deleteOrder, updateStoreSettings, updateUserProfile, trackStoreView, trackWhatsAppClick, addNotification, markNotificationRead, markAllNotificationsRead, clearAllNotifications, syncDashboard: syncDashboardData };
     if (devForcePlan && base.user) {
       return { ...base, user: { ...base.user, plan: devForcePlan, subscriptionRenewalDate: devForcePlan === 'Free' ? '' : base.user.subscriptionRenewalDate } };
     }

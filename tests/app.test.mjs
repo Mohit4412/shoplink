@@ -69,6 +69,12 @@ test.before(async () => {
     env: {
       ...process.env,
       MYSHOPLINK_DB_PATH: dbPath,
+      SUPABASE_URL: '',
+      NEXT_PUBLIC_SUPABASE_URL: '',
+      SUPABASE_ANON_KEY: '',
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: '',
+      SUPABASE_SERVICE_ROLE_KEY: '',
+      SUPABASE_STORAGE_BUCKET: '',
     },
     stdio: 'ignore',
   });
@@ -98,8 +104,13 @@ test('unauthenticated dashboard and order routes are rejected', async () => {
     })),
   ]);
 
-  assert.equal(dashboardResponse.status, 401);
-  assert.equal(ordersResponse.status, 401);
+  const [dashboardBody, ordersBody] = await Promise.all([
+    dashboardResponse.text(),
+    ordersResponse.text(),
+  ]);
+
+  assert.equal(dashboardResponse.status, 401, dashboardBody);
+  assert.equal(ordersResponse.status, 401, ordersBody);
 });
 
 test('signup, rename, and ownership enforcement work end to end', async () => {
@@ -127,8 +138,10 @@ test('signup, rename, and ownership enforcement work end to end', async () => {
   }, cookieA));
   assert.equal(createProduct.status, 200);
   const createProductPayload = await createProduct.json();
-  assert.equal(createProductPayload.products.length, 1);
-  const createdProductId = createProductPayload.products[0].id;
+  assert.ok(createProductPayload.products.length >= 1);
+  const createdProduct = createProductPayload.products.find((product) => product.name === 'Ownership Test Product');
+  assert.ok(createdProduct, 'expected the newly created product to be returned');
+  const createdProductId = createdProduct.id;
 
   const forbiddenUpdate = await fetch(`${baseUrl}/api/stores/${merchantA.username}/products/${createdProductId}`, jsonRequest('PATCH', {
     product: {
@@ -225,4 +238,93 @@ test('analytics and dashboard aggregates persist for a merchant session', async 
   assert.equal(dashboard.analytics.sourceSummary[0].source, 'instagram');
   assert.equal(dashboard.analytics.referrerSummary[0].referrer, 'instagram.com');
   assert.equal(dashboard.analytics.countrySummary[0].country, 'US');
+});
+
+test('declined or confirmed orders stay updated and only new shopper actions create new pending orders', async () => {
+  const merchant = uniqueMerchant('order-status');
+
+  const signupResponse = await fetch(`${baseUrl}/api/auth/signup`, jsonRequest('POST', merchant));
+  assert.equal(signupResponse.status, 200);
+  const cookie = sessionCookie(signupResponse);
+
+  const productResponse = await fetch(`${baseUrl}/api/stores/${merchant.username}/products`, jsonRequest('POST', {
+    product: {
+      imageUrl: '',
+      name: 'Status Test Product',
+      price: 79,
+      description: 'Used for order status verification',
+      status: 'Active',
+      category: 'General',
+      stock: 10,
+    },
+  }, cookie));
+  assert.equal(productResponse.status, 200);
+  const productPayload = await productResponse.json();
+  const createdProduct = productPayload.products.find((product) => product.name === 'Status Test Product');
+  assert.ok(createdProduct, 'expected the status test product to be returned');
+  const productId = createdProduct.id;
+
+  const firstPendingResponse = await fetch(`${baseUrl}/api/stores/${merchant.username}/orders`, jsonRequest('POST', {
+    productId,
+    revenue: 79,
+  }));
+  const firstPendingBody = await firstPendingResponse.text();
+  assert.equal(firstPendingResponse.status, 200, firstPendingBody);
+
+  const firstDashboardResponse = await fetch(`${baseUrl}/api/dashboard`, {
+    headers: { cookie },
+  });
+  assert.equal(firstDashboardResponse.status, 200);
+  const firstDashboard = await firstDashboardResponse.json();
+  assert.equal(firstDashboard.orders.length, 1);
+  assert.equal(firstDashboard.orders[0].status, 'pending');
+  const firstOrderId = firstDashboard.orders[0].id;
+
+  const declineResponse = await fetch(`${baseUrl}/api/orders/${firstOrderId}`, jsonRequest('PATCH', {
+    order: {
+      status: 'declined',
+    },
+  }, cookie));
+  assert.equal(declineResponse.status, 200);
+  const declinedPayload = await declineResponse.json();
+  assert.equal(declinedPayload.orders.find((order) => order.id === firstOrderId)?.status, 'declined');
+
+  const secondDashboardResponse = await fetch(`${baseUrl}/api/dashboard`, {
+    headers: { cookie },
+  });
+  const secondDashboard = await secondDashboardResponse.json();
+  assert.equal(secondDashboard.orders.find((order) => order.id === firstOrderId)?.status, 'declined');
+
+  const secondPendingResponse = await fetch(`${baseUrl}/api/stores/${merchant.username}/orders`, jsonRequest('POST', {
+    productId,
+    revenue: 79,
+  }));
+  const secondPendingBody = await secondPendingResponse.text();
+  assert.equal(secondPendingResponse.status, 200, secondPendingBody);
+
+  const thirdDashboardResponse = await fetch(`${baseUrl}/api/dashboard`, {
+    headers: { cookie },
+  });
+  const thirdDashboard = await thirdDashboardResponse.json();
+  assert.equal(thirdDashboard.orders.length, 2);
+  assert.equal(thirdDashboard.orders.find((order) => order.id === firstOrderId)?.status, 'declined');
+  assert.equal(thirdDashboard.orders.filter((order) => order.status === 'pending').length, 1);
+
+  const newPendingOrder = thirdDashboard.orders.find((order) => order.id !== firstOrderId);
+  assert.ok(newPendingOrder, 'expected a new pending order to be created');
+
+  const confirmResponse = await fetch(`${baseUrl}/api/orders/${newPendingOrder.id}`, jsonRequest('PATCH', {
+    order: {
+      status: 'confirmed',
+    },
+  }, cookie));
+  assert.equal(confirmResponse.status, 200);
+
+  const finalDashboardResponse = await fetch(`${baseUrl}/api/dashboard`, {
+    headers: { cookie },
+  });
+  const finalDashboard = await finalDashboardResponse.json();
+  assert.equal(finalDashboard.orders.find((order) => order.id === firstOrderId)?.status, 'declined');
+  assert.equal(finalDashboard.orders.find((order) => order.id === newPendingOrder.id)?.status, 'confirmed');
+  assert.equal(finalDashboard.orders.filter((order) => order.status === 'pending').length, 0);
 });

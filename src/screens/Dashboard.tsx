@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Plus, Share2, Package, Store, Eye, MessageCircle, Check, X } from 'lucide-react';
 import Link from 'next/link';
 import { format } from 'date-fns';

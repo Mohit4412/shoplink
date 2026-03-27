@@ -7,7 +7,6 @@ import { db, requireDb } from '@/server/db';
 import { ensureDashboardSchema } from '@/server/dashboard-repository';
 import { ensureStoreSchema } from '@/server/store-repository';
 import { isSupabaseEnabled, supabaseDelete, supabaseInsert, supabasePatch, supabaseSelect } from '@/server/supabase';
-import { getDefaultAppState } from '@/src/lib/default-state';
 import { UserProfile } from '@/src/types';
 
 const SESSION_COOKIE = 'myshoplink_session';
@@ -197,23 +196,6 @@ if (db) {
 
   deleteExpiredSessionsStmt.run();
 
-  if ((countUsersStmt.get() as { count: number }).count === 0) {
-    const defaultUser = getDefaultAppState().user!;
-    insertUserStmt.run({
-      id: defaultUser.id,
-      email: defaultUser.email,
-      username: defaultUser.username,
-      password_hash: hashPassword('password123'),
-      first_name: defaultUser.firstName ?? null,
-      last_name: defaultUser.lastName ?? null,
-      bio: defaultUser.bio ?? null,
-      whatsapp_number: defaultUser.whatsappNumber,
-      avatar_url: defaultUser.avatarUrl ?? null,
-      plan: defaultUser.plan,
-      subscription_renewal_date: defaultUser.subscriptionRenewalDate,
-      created_at: new Date().toISOString(),
-    });
-  }
 }
 
 // ─── Password reset tokens ────────────────────────────────────────────────────

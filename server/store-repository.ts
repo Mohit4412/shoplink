@@ -1,7 +1,7 @@
 import { db, requireDb } from '@/server/db';
 import { deleteUploadedAssets } from '@/server/upload-storage';
 import { isSupabaseEnabled, supabaseDelete, supabaseInsert, supabasePatch, supabaseSelect } from '@/server/supabase';
-import { getDefaultAppState, getDemoStorefront, normalizeProduct } from '@/src/lib/default-state';
+import { getDemoStorefront, normalizeProduct } from '@/src/lib/default-state';
 import { Product, StoreSettings, UserProfile, PublicStorefrontData } from '@/src/types';
 
 export interface MerchantStorefrontBundle {
@@ -300,14 +300,6 @@ if (db) {
     }
   });
 
-  if ((countStoresStmt.get() as { count: number }).count === 0) {
-    const initialState = getDefaultAppState();
-    replaceBundleTxn({
-      user: initialState.user!,
-      store: initialState.store,
-      products: initialState.products,
-    });
-  }
 }
 
 // deleteDemoProducts removed — demo data is no longer seeded for new users
