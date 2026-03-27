@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, FormEvent } from 'react';
 import { useStore } from '../../context/StoreContext';
 import { Input, Textarea } from '../ui/Input';
 import { CheckCircle2, Upload, ChevronDown, Loader2 } from 'lucide-react';
@@ -67,7 +67,7 @@ export function AccountSettings() {
     }
   };
 
-  const handleSave = async (e: React.FormEvent) => {
+  const handleSave = async (e: FormEvent) => {
     e.preventDefault();
     const digits = phoneNumber.replace(/\D/g, '');
     if (digits.length < 7 || digits.length > 15) {

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState, ReactNode } from 'react';
 import { useStore } from '../../context/StoreContext';
 import { LegalPages } from '../../types';
 import { FileText, Truck, RotateCcw, Shield, Scale, ExternalLink, Plus, Edit2, Trash2, ArrowLeft, CheckCircle2 } from 'lucide-react';
@@ -8,7 +8,7 @@ import { FileText, Truck, RotateCcw, Shield, Scale, ExternalLink, Plus, Edit2, T
 interface PageDef {
   key: keyof LegalPages;
   title: string;
-  icon: React.ReactNode;
+  icon: ReactNode;
   description: string;
   placeholder: string;
 }

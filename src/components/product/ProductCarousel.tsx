@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, MouseEvent } from 'react';
 import { createPortal } from 'react-dom';
 import Image from 'next/image';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
@@ -19,12 +19,12 @@ export function ProductCarousel({ images, productName }: ProductCarouselProps) {
     setMounted(true);
   }, []);
 
-  const prevSlide = (e?: React.MouseEvent) => {
+  const prevSlide = (e?: MouseEvent) => {
     e?.stopPropagation();
     setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
   };
 
-  const nextSlide = (e?: React.MouseEvent) => {
+  const nextSlide = (e?: MouseEvent) => {
     e?.stopPropagation();
     setCurrentIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
   };

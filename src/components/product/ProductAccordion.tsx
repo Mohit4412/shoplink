@@ -1,11 +1,11 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState, ReactNode } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 
 interface AccordionItemProps {
   title: string;
-  content: React.ReactNode;
+  content: ReactNode;
   defaultOpen?: boolean;
 }
 
@@ -41,9 +41,9 @@ function AccordionItem({ title, content, defaultOpen = false }: AccordionItemPro
 
 interface ProductAccordionProps {
   description: string;
-  shippingInfo?: React.ReactNode;
-  careInstructions?: React.ReactNode;
-  sizeGuide?: React.ReactNode;
+  shippingInfo?: ReactNode;
+  careInstructions?: ReactNode;
+  sizeGuide?: ReactNode;
 }
 
 export function ProductAccordion({ description, shippingInfo, careInstructions, sizeGuide }: ProductAccordionProps) {

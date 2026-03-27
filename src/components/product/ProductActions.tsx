@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { ShoppingBag } from 'lucide-react';
 
 interface Variant {
@@ -18,26 +18,24 @@ interface ProductActionsProps {
   currencySymbol?: string;
   storeName?: string;
   accentColor?: string;
+  onOrder?: () => void;
 }
 
-export function ProductActions({ 
-  productName, 
-  price, 
-  compareAtPrice, 
-  variants = [], 
-  stockQuantity, 
+export function ProductActions({
+  productName,
+  price,
+  compareAtPrice,
+  variants = [],
+  stockQuantity,
   whatsAppNumber,
-  currencySymbol = '$',
-  storeName = 'our',
-  accentColor = '#0d9488'
+  currencySymbol = '₹',
+  accentColor = '#0d9488',
+  onOrder,
 }: ProductActionsProps) {
   const [selectedVariants, setSelectedVariants] = useState<Record<string, string>>({});
 
   const handleVariantSelect = (variantName: string, option: string) => {
-    setSelectedVariants(prev => ({
-      ...prev,
-      [variantName]: option
-    }));
+    setSelectedVariants(prev => ({ ...prev, [variantName]: option }));
   };
 
   const allVariantsSelected = variants.every(v => selectedVariants[v.name]);
@@ -48,8 +46,10 @@ export function ProductActions({
       return;
     }
 
+    // Fire the tracking callback first
+    onOrder?.();
+
     let message = `Hi! I want to order: *${productName}* — ${currencySymbol}${price.toFixed(2)}. Please confirm availability. 🙏`;
-    
     if (variants.length > 0) {
       const variantText = Object.entries(selectedVariants)
         .map(([name, val]) => `${name}: ${val}`)
@@ -100,8 +100,8 @@ export function ProductActions({
                       key={option}
                       onClick={() => handleVariantSelect(variant.name, option)}
                       className={`min-w-[3rem] h-10 px-4 rounded-lg border flex items-center justify-center text-sm transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 ${
-                        isSelected 
-                          ? 'border-teal-600 bg-teal-50 text-teal-800 font-bold ring-1 ring-teal-600' 
+                        isSelected
+                          ? 'border-teal-600 bg-teal-50 text-teal-800 font-bold ring-1 ring-teal-600'
                           : 'border-gray-200 bg-white text-gray-700 font-medium hover:border-gray-400'
                       }`}
                     >
@@ -123,10 +123,10 @@ export function ProductActions({
         </div>
       )}
 
-      {/* Checkout Button */}
+      {/* Order Button */}
       <button
         onClick={handleOrder}
-        className="w-full flex items-center justify-center gap-2 bg-[#25D366] text-white h-14 rounded-xl text-base font-bold shadow-lg shadow-[#25D366]/20 transition-all hover:bg-[#20BE5A] hover:-translate-y-0.5 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed group focus:outline-none focus:ring-4 focus:ring-[#25D366]/30"
+        className="w-full flex items-center justify-center gap-2 bg-[#25D366] text-white h-14 rounded-xl text-base font-bold shadow-lg shadow-[#25D366]/20 transition-all hover:bg-[#20BE5A] hover:-translate-y-0.5 active:scale-95 group focus:outline-none focus:ring-4 focus:ring-[#25D366]/30"
       >
         Order on WhatsApp
         <ShoppingBag className="w-5 h-5 group-hover:animate-bounce" />

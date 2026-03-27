@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, CSSProperties } from 'react';
 import Link from 'next/link';
 import { Search, X } from 'lucide-react';
 import type { Theme } from '../../utils/themes';
@@ -35,7 +35,7 @@ export function Nav({ theme, store, storeHref, searchQuery = '', onSearchChange 
 
   const isTransparent = navStyle === 'minimal' && !scrolled;
 
-  const navStyle_css: React.CSSProperties = {
+  const navStyle_css: CSSProperties = {
     background: isTransparent ? 'transparent' : t.navBg,
     borderBottomColor: isTransparent ? 'transparent' : t.navBorder,
     color: t.navText,

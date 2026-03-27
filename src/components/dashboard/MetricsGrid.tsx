@@ -1,4 +1,3 @@
-import React from 'react';
 import { Package, Eye, MessageCircle, Percent, Clock, ShoppingCart, DollarSign, Euro, PoundSterling, IndianRupee, Banknote } from 'lucide-react';
 import { MetricCard } from './MetricCard';
 

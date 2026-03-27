@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useStore } from '../../context/StoreContext';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';

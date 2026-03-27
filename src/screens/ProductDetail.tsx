@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useMemo } from 'react';
+import { ElementType, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import {
@@ -18,7 +18,7 @@ import { ProductAccordion } from '../components/product/ProductAccordion';
 import { ProductActions } from '../components/product/ProductActions';
 import { PublicStorefrontData } from '../types';
 
-const ICON_MAP: Record<string, React.ElementType> = {
+const ICON_MAP: Record<string, ElementType> = {
   ShieldCheck, CheckCircle2, BadgeCheck, Truck, Package, Box, RotateCcw, Recycle,
   CreditCard, Lock, Award, Star, Sparkles, Flame, Zap, Clock, Headphones,
   Heart, ThumbsUp, Smile, Gift, Tag, Percent, Leaf, Globe, MapPin, Handshake,
@@ -184,6 +184,17 @@ export function ProductDetail({ storefront }: { storefront?: PublicStorefrontDat
               currencySymbol={currencySymbol}
               storeName={store.name}
               accentColor={t.accent}
+              onOrder={() => {
+                trackWhatsAppClick(product.id, resolvedStoreId);
+                // Only create a pending order when viewing a public storefront (not the merchant's own preview)
+                if (publicUser?.username) {
+                  void fetch(`/api/stores/${publicUser.username}/orders`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ productId: product.id, revenue: product.price }),
+                  });
+                }
+              }}
             />
           </div>
 

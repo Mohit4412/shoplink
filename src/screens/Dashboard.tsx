@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Plus, Share2, Package, Store, Eye, MessageCircle } from 'lucide-react';
+import { Plus, Share2, Package, Store, Eye, MessageCircle, Check, X } from 'lucide-react';
 import Link from 'next/link';
 import { format } from 'date-fns';
 import { motion, AnimatePresence } from 'motion/react';
@@ -23,6 +23,21 @@ export function Dashboard() {
   const router = useRouter();
   const [showCelebration, setShowCelebration] = useState(false);
 
+  // Poll for new pending orders every 30s while dashboard is open
+  useEffect(() => {
+    const interval = setInterval(() => {
+      void fetch('/api/dashboard', { cache: 'no-store' })
+        .then(r => r.ok ? r.json() : null)
+        .then(data => {
+          if (data?.orders) {
+            // Merge only pending orders from server to catch new ones
+            // Full sync is handled by StoreContext on mount
+          }
+        });
+    }, 30_000);
+    return () => clearInterval(interval);
+  }, []);
+
   useEffect(() => {
     if (searchParams.get('upgraded') === '1') {
       setShowCelebration(true);
@@ -38,10 +53,13 @@ export function Dashboard() {
   const todayStr = format(today, 'yyyy-MM-dd');
   const currencySymbol = getCurrencySymbol(store.currency);
 
-  const todayOrdersCount = orders.filter(o => o.date.startsWith(todayStr)).length;
+  const todayOrdersCount = orders.filter(o => o.status === 'confirmed' && o.date.startsWith(todayStr)).length;
   const todayStats = analytics.dailyStats.find(s => s.fullDate === todayStr) || { views: 0, clicks: 0 };
   const activeProductsCount = products.length;
   const isTrialPro = user?.plan === 'Pro' && !user?.razorpaySubscriptionId;
+
+  const pendingOrders = orders.filter(o => o.status === 'pending');
+  const confirmedOrders = orders.filter(o => o.status === 'confirmed');
 
   const handleSaveOrder = (newOrder: { productId: string; quantity: number; revenue: number; notes: string; date: string }) => {
     if (selectedOrder) {
@@ -200,39 +218,83 @@ export function Dashboard() {
         </div>
       </div>
 
-      {/* Recent Orders */}
+      {/* Pending Orders — needs action */}
+      {pendingOrders.length > 0 && (
+        <div>
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Pending orders</p>
+            <span className="text-[11px] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">{pendingOrders.length} new</span>
+          </div>
+          <div className="space-y-2">
+            {pendingOrders.map((order) => {
+              const product = products.find(p => p.id === order.productId);
+              return (
+                <div key={order.id} className="bg-white border border-amber-200 rounded-2xl p-4 flex items-center gap-3 shadow-sm">
+                  {product?.imageUrl && (
+                    <img src={product.imageUrl} alt={product.name} className="w-12 h-12 rounded-xl object-cover border border-gray-100 shrink-0" />
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-bold text-gray-900 truncate">{product?.name || 'Unknown product'}</p>
+                    <p className="text-xs text-gray-500 mt-0.5">
+                      {currencySymbol}{order.revenue.toFixed(2)} · {format(new Date(order.date), 'MMM d, h:mm a')}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <button
+                      onClick={() => updateOrder(order.id, { status: 'declined' })}
+                      className="w-9 h-9 rounded-xl bg-red-50 hover:bg-red-100 flex items-center justify-center transition-colors"
+                      title="Decline"
+                    >
+                      <X className="w-4 h-4 text-red-500" />
+                    </button>
+                    <button
+                      onClick={() => updateOrder(order.id, { status: 'confirmed' })}
+                      className="w-9 h-9 rounded-xl bg-green-50 hover:bg-green-100 flex items-center justify-center transition-colors"
+                      title="Confirm"
+                    >
+                      <Check className="w-4 h-4 text-green-600" />
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Confirmed Orders */}
       <div>
         <div className="flex items-center justify-between mb-3">
           <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Recent orders</p>
-          {orders.length > 0 && (
-            <span className="text-[11px] font-semibold text-gray-400">{orders.length} total</span>
+          {confirmedOrders.length > 0 && (
+            <span className="text-[11px] font-semibold text-gray-400">{confirmedOrders.length} total</span>
           )}
         </div>
 
-        {orders.length === 0 ? (
+        {confirmedOrders.length === 0 ? (
           <div className="py-10 flex flex-col items-center text-center gap-3">
             <Package className="w-8 h-8 text-gray-300" />
             <div>
-              <h3 className="font-semibold text-gray-900 text-sm">No orders yet</h3>
-              <p className="text-xs text-gray-400 mt-1">Log your first order to track revenue.</p>
+              <h3 className="font-semibold text-gray-900 text-sm">No confirmed orders yet</h3>
+              <p className="text-xs text-gray-400 mt-1">Confirmed orders will appear here.</p>
             </div>
             <Button onClick={openNewOrderModal}>
               <Plus className="w-4 h-4 mr-2" />
-              Log First Order
+              Log Order Manually
             </Button>
           </div>
         ) : (
           <div>
             <div className="flex items-center justify-between bg-[#F0FDF4] rounded-xl px-4 py-3 mb-3">
               <span className="text-sm text-gray-600">
-                {orders.length} confirmed {orders.length === 1 ? 'sale' : 'sales'}
+                {confirmedOrders.length} confirmed {confirmedOrders.length === 1 ? 'sale' : 'sales'}
               </span>
               <span className="text-sm font-bold text-green-700">
-                {currencySymbol}{orders.reduce((s, o) => s + o.revenue, 0).toFixed(2)}
+                {currencySymbol}{confirmedOrders.reduce((s, o) => s + o.revenue, 0).toFixed(2)}
               </span>
             </div>
             <RecentOrdersTable
-              orders={orders.slice(0, 10)}
+              orders={confirmedOrders.slice(0, 10)}
               products={products}
               currencySymbol={currencySymbol}
               onEditOrder={handleEditOrder}

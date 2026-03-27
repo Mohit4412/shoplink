@@ -1,6 +1,5 @@
 'use client';
 
-import React from 'react';
 import { AlertTriangle, Zap } from 'lucide-react';
 import { useStore } from '../../context/StoreContext';
 import { useUpgradeModal, UpgradeModal } from './UpgradeModal';

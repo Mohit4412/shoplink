@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, FormEvent, ChangeEvent } from 'react';
 import { Search, Bell, Plus, Edit2, Trash2, FolderPlus, Package, Zap } from 'lucide-react';
 import { format } from 'date-fns';
 import { useStore } from '../context/StoreContext';
@@ -71,7 +71,7 @@ export function Products() {
     }
   });
 
-  const handleAddSubmit = (e: React.FormEvent) => {
+  const handleAddSubmit = (e: FormEvent) => {
     e.preventDefault();
     const sanitizeName = (val: string) => val.trim().replace(/[<>"&]/g, '');
     const cleanName = sanitizeName(formData.name);
@@ -97,7 +97,7 @@ export function Products() {
     resetForm();
   };
 
-  const handleEditSubmit = (e: React.FormEvent) => {
+  const handleEditSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (!selectedProduct) return;
     const sanitizeName = (val: string) => val.trim().replace(/[<>"&]/g, '');
@@ -174,7 +174,7 @@ export function Products() {
     }
   };
 
-  const collections = React.useMemo(() => {
+  const collections = useMemo(() => {
     const colMap = new Map<string, number>();
     products.forEach(p => {
       if (p.collection && p.status === 'Active') {

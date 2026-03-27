@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Check, Loader2, Sparkles } from 'lucide-react';
 import { useStore } from '../../context/StoreContext';
 import { Modal } from '../ui/Modal';

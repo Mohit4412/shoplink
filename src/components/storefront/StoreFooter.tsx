@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { StoreSettings, LegalPages } from '../../types';
 import { Theme } from '../../utils/themes';
 import { Modal } from '../ui/Modal';

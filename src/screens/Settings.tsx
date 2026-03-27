@@ -1,6 +1,5 @@
 'use client';
 
-import React from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useStore } from '../context/StoreContext';
 import { Store, Globe, CreditCard, User, LogOut, ChevronRight, ExternalLink, FileText } from 'lucide-react';

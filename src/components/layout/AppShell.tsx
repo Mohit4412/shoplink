@@ -1,6 +1,6 @@
 'use client';
 
-import React, { ReactNode, useRef, useEffect, useState } from 'react';
+import { ReactNode, useRef, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Bell, ChevronLeft, LayoutDashboard, Package, BarChart3, User, Store, ExternalLink, CheckCheck, Trash2, X, LogOut, Settings } from 'lucide-react';
@@ -299,7 +299,7 @@ export function AppShell({
   );
 }
 
-function NavItem({ icon, label, path, isActive }: { icon: React.ReactNode; label: string; path: string; isActive: boolean }) {
+function NavItem({ icon, label, path, isActive }: { icon: ReactNode; label: string; path: string; isActive: boolean }) {
   return (
     <Link
       href={path}

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, FormEvent, ChangeEvent } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Store, Eye, EyeOff, Loader2, CheckCircle2, XCircle } from 'lucide-react';
 import Link from 'next/link';
@@ -37,13 +37,13 @@ export function Signup() {
   const [checkingUsername, setCheckingUsername] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (hydrated && user && !isSignupSuccess) {
       router.replace('/dashboard');
     }
   }, [hydrated, router, user, isSignupSuccess]);
 
-  const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleUsernameChange = (e: ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '');
     setUsername(val);
     setUsernameAvailable(null);
@@ -104,7 +104,7 @@ export function Signup() {
     return errors;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setHasSubmitted(true);
     setAuthError('');

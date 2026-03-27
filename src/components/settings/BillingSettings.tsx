@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import { useState } from 'react';
 import { CheckCircle2, CreditCard, Sparkles, Zap, AlertTriangle, X } from 'lucide-react';
 import { useStore } from '../../context/StoreContext';
 import { UpgradeModal, useUpgradeModal } from '../billing/UpgradeModal';
@@ -39,9 +39,9 @@ export function BillingSettings() {
   const isExpiredPro = isPro && (!hasValidRenewalDate || renewalDate!.getTime() < Date.now());
   const isActivePro = isPro && !isExpiredPro;
 
-  const [showCancelConfirm, setShowCancelConfirm] = React.useState(false);
-  const [cancelState, setCancelState] = React.useState<'idle' | 'loading' | 'success' | 'error'>('idle');
-  const [cancelError, setCancelError] = React.useState('');
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+  const [cancelState, setCancelState] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [cancelError, setCancelError] = useState('');
 
   const handleCancel = async () => {
     setCancelState('loading');

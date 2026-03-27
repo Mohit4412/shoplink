@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, FormEvent, ChangeEvent } from 'react';
 import { Modal } from '../ui/Modal';
 import { Input, Textarea } from '../ui/Input';
 import { Button } from '../ui/Button';
@@ -43,7 +43,7 @@ export function LogOrderModal({ isOpen, onClose, products, currencySymbol, today
     }
   }, [initialData, isOpen, todayStr]);
 
-  const handleProductSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleProductSelect = (e: ChangeEvent<HTMLSelectElement>) => {
     const pid = e.target.value;
     const prod = products.find(p => p.id === pid);
     setNewOrder(prev => ({
@@ -53,7 +53,7 @@ export function LogOrderModal({ isOpen, onClose, products, currencySymbol, today
     }));
   };
 
-  const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleQuantityChange = (e: ChangeEvent<HTMLInputElement>) => {
     const qty = parseInt(e.target.value) || 1;
     const prod = products.find(p => p.id === newOrder.productId);
     setNewOrder(prev => ({
@@ -63,7 +63,7 @@ export function LogOrderModal({ isOpen, onClose, products, currencySymbol, today
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (!newOrder.productId) return;
     

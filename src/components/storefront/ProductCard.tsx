@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+
 import Link from 'next/link';
 import type { ThemeTokens, ThemeLayout } from '../../utils/themes';
 import type { Product } from '../../types';

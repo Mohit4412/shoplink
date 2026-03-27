@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState, FormEvent } from 'react';
 import { CheckCircle2, Upload, Check } from 'lucide-react';
 import { useStore } from '../../context/StoreContext';
 import { Button } from '../ui/Button';
@@ -111,7 +111,7 @@ export function StoreSettings() {
     setSaveStatus('idle');
   }, [user, store.theme]);
 
-  const handleStoreSave = async (e: React.FormEvent) => {
+  const handleStoreSave = async (e: FormEvent) => {
     e.preventDefault();
     setSaveError('');
     if (user?.plan === 'Free' && (selectedTheme !== 'classic' || lockedThemeId)) {

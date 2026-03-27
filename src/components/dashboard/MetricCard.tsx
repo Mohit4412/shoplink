@@ -1,8 +1,8 @@
-import React from 'react';
+import { ReactNode } from 'react';
 import { Card } from '../ui/Card';
 
 interface MetricCardProps {
-  icon: React.ReactNode;
+  icon: ReactNode;
   title: string;
   value: string;
   subtitle: string;

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useRef, ReactNode, useCallback, useMemo } from 'react';
+import { createContext, useContext, useState, useRef, ReactNode, useCallback, useMemo, useEffect, FC } from 'react';
 import { AppState, Order, Product, ProductStatus, AppNotification, UserProfile } from '../types';
 import { getDefaultAppState, normalizeProduct } from '../lib/default-state';
 
@@ -102,7 +102,7 @@ const loadStoredState = (initialUser: UserProfile | null): AppState => {
   };
 };
 
-export const StoreProvider: React.FC<{ children: ReactNode; initialUser: UserProfile | null }> = ({ children, initialUser }) => {
+export const StoreProvider: FC<{ children: ReactNode; initialUser: UserProfile | null }> = ({ children, initialUser }) => {
   const [state, setState] = useState<AppState>(() => ({
     ...getInitialState(),
     user: initialUser,
@@ -190,7 +190,7 @@ export const StoreProvider: React.FC<{ children: ReactNode; initialUser: UserPro
     }
   }, [mergeDashboardData]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setState(loadStoredState(initialUser));
     setHydrated(true);
 
@@ -200,8 +200,6 @@ export const StoreProvider: React.FC<{ children: ReactNode; initialUser: UserPro
           const parsed = JSON.parse(e.newValue);
           setState(prev => {
             const currentInitialState = getInitialState();
-            // Only update if the new state looks valid and is different 
-            // from current state to prevent infinite loops
             return JSON.stringify(prev) !== e.newValue ? {
                ...currentInitialState,
                ...parsed,
@@ -220,7 +218,7 @@ export const StoreProvider: React.FC<{ children: ReactNode; initialUser: UserPro
     return () => window.removeEventListener('storage', handleStorageChange);
   }, [initialUser]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!hydrated) {
       return;
     }
@@ -232,7 +230,7 @@ export const StoreProvider: React.FC<{ children: ReactNode; initialUser: UserPro
     }
   }, [hydrated, state]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!hydrated || !state.user?.username) {
       return;
     }

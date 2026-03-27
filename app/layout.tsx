@@ -23,7 +23,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
 
   return (
     <html lang="en">
-      <body>
+      <body suppressHydrationWarning>
         <Providers initialUser={user}>{children}</Providers>
       </body>
     </html>

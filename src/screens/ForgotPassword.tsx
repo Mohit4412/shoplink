@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState, FormEvent } from 'react';
 import Link from 'next/link';
 import { Loader2, CheckCircle2 } from 'lucide-react';
 import { AppLogo } from '../components/ui/AppLogo';
@@ -11,7 +11,7 @@ export function ForgotPassword() {
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState('');
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!email.trim()) return;
     setError('');

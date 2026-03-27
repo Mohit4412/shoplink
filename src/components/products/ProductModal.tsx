@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import { useState, useRef, FormEvent, ChangeEvent, Dispatch, SetStateAction } from 'react';
 import { Image as ImageIcon, Star, Trash2, Upload } from 'lucide-react';
 import { ProductStatus } from '../../types';
 import { Modal } from '../ui/Modal';
@@ -21,8 +21,8 @@ interface ProductModalProps {
   isEditMode: boolean;
   onClose: () => void;
   formData: ProductFormData;
-  setFormData: React.Dispatch<React.SetStateAction<ProductFormData>>;
-  onSubmit: (e: React.FormEvent) => void | Promise<void>;
+  setFormData: Dispatch<SetStateAction<ProductFormData>>;
+  onSubmit: (e: FormEvent) => void | Promise<void>;
   onUpgradeRequired?: () => void;
   currencySymbol: string;
   existingCollections?: string[];
@@ -31,15 +31,15 @@ interface ProductModalProps {
 export function ProductModal({ isOpen, isEditMode, onClose, formData, setFormData, onSubmit, onUpgradeRequired, currencySymbol, existingCollections = [] }: ProductModalProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const collectionInputRef = useRef<HTMLInputElement>(null);
-  const [submitError, setSubmitError] = React.useState('');
-  const [isUploadingImages, setIsUploadingImages] = React.useState(false);
-  const [showSuggestions, setShowSuggestions] = React.useState(false);
+  const [submitError, setSubmitError] = useState('');
+  const [isUploadingImages, setIsUploadingImages] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
   const filteredCollections = existingCollections.filter(
     (c) => c.toLowerCase().includes(formData.collection.toLowerCase()) && c !== formData.collection
   );
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     try {
       setSubmitError('');
       await onSubmit(e);
@@ -53,7 +53,7 @@ export function ProductModal({ isOpen, isEditMode, onClose, formData, setFormDat
     }
   };
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files ?? []).filter((file): file is File => file instanceof File);
     if (!files.length) return;
     setSubmitError('');
