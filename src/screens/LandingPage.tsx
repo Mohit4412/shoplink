@@ -100,37 +100,49 @@ export function LandingPage() {
         </div>
         <AnimatePresence>
           {mobileMenuOpen && (
-            <motion.div
-              initial={{ opacity: 0, y: -12 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -12 }}
-              transition={{ duration: 0.18, ease: 'easeOut' }}
-              className="border-t border-gray-100 bg-white/95 px-3.5 pb-4 pt-3 shadow-sm backdrop-blur-md sm:hidden"
-            >
-              <div className="flex flex-col gap-1.5 text-[13px] font-semibold text-gray-600">
-                <a href="#features" onClick={() => setMobileMenuOpen(false)} className="rounded-lg px-3 py-2.5 transition-colors hover:bg-gray-50 hover:text-gray-900">Features</a>
-                <a href="#pricing" onClick={() => setMobileMenuOpen(false)} className="rounded-lg px-3 py-2.5 transition-colors hover:bg-gray-50 hover:text-gray-900">Pricing</a>
-                <Link href="/support" onClick={() => setMobileMenuOpen(false)} className="rounded-lg px-3 py-2.5 transition-colors hover:bg-gray-50 hover:text-gray-900">Contact</Link>
-                <a href="#" rel="nofollow" className="rounded-lg px-3 py-2.5 transition-colors hover:bg-gray-50 hover:text-gray-900">About</a>
-                <a href="#" rel="nofollow" className="rounded-lg px-3 py-2.5 transition-colors hover:bg-gray-50 hover:text-gray-900">Tools</a>
-                <a href="#" rel="nofollow" className="rounded-lg px-3 py-2.5 transition-colors hover:bg-gray-50 hover:text-gray-900">Blog</a>
-              </div>
-              <div className="mt-3 grid grid-cols-2 gap-2">
-                <button
-                  onClick={handleLogin}
-                  className="rounded-lg border border-gray-200 px-3 py-2.5 text-[13px] font-semibold text-gray-700 transition-colors hover:bg-gray-50"
-                >
-                  Log in
-                </button>
-                <button
-                  onClick={handleCTA}
-                  className="rounded-lg px-3 py-2.5 text-[13px] font-semibold text-white shadow-sm transition-all active:scale-95"
-                  style={{ background: CHARCOAL }}
-                >
-                  Start free
-                </button>
-              </div>
-            </motion.div>
+            <>
+              <motion.button
+                type="button"
+                aria-label="Close menu"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.18 }}
+                onClick={() => setMobileMenuOpen(false)}
+                className="fixed inset-0 top-12 z-40 bg-gray-900/10 backdrop-blur-[2px] sm:hidden"
+              />
+              <motion.div
+                initial={{ opacity: 0, y: -12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -12 }}
+                transition={{ duration: 0.18, ease: 'easeOut' }}
+                className="relative z-50 border-t border-gray-100 bg-white/95 px-3.5 pb-4 pt-3 shadow-sm backdrop-blur-md sm:hidden"
+              >
+                <div className="flex flex-col gap-1.5 text-[13px] font-semibold text-gray-600">
+                  <a href="#features" onClick={() => setMobileMenuOpen(false)} className="rounded-lg px-3 py-2.5 transition-colors hover:bg-gray-50 hover:text-gray-900">Features</a>
+                  <a href="#pricing" onClick={() => setMobileMenuOpen(false)} className="rounded-lg px-3 py-2.5 transition-colors hover:bg-gray-50 hover:text-gray-900">Pricing</a>
+                  <Link href="/support" onClick={() => setMobileMenuOpen(false)} className="rounded-lg px-3 py-2.5 transition-colors hover:bg-gray-50 hover:text-gray-900">Contact</Link>
+                  <a href="#" rel="nofollow" onClick={() => setMobileMenuOpen(false)} className="rounded-lg px-3 py-2.5 transition-colors hover:bg-gray-50 hover:text-gray-900">About</a>
+                  <a href="#" rel="nofollow" onClick={() => setMobileMenuOpen(false)} className="rounded-lg px-3 py-2.5 transition-colors hover:bg-gray-50 hover:text-gray-900">Tools</a>
+                  <a href="#" rel="nofollow" onClick={() => setMobileMenuOpen(false)} className="rounded-lg px-3 py-2.5 transition-colors hover:bg-gray-50 hover:text-gray-900">Blog</a>
+                </div>
+                <div className="mt-3 grid grid-cols-2 gap-2">
+                  <button
+                    onClick={handleLogin}
+                    className="rounded-lg border border-gray-200 px-3 py-2.5 text-[13px] font-semibold text-gray-700 transition-colors hover:bg-gray-50"
+                  >
+                    Log in
+                  </button>
+                  <button
+                    onClick={handleCTA}
+                    className="rounded-lg px-3 py-2.5 text-[13px] font-semibold text-white shadow-sm transition-all active:scale-95"
+                    style={{ background: CHARCOAL }}
+                  >
+                    Start free
+                  </button>
+                </div>
+              </motion.div>
+            </>
           )}
         </AnimatePresence>
       </nav>
