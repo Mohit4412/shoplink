@@ -99,7 +99,7 @@ function SnapshotCard({
 }
 
 export function Dashboard() {
-  const { products, analytics, orders, addOrder, updateOrder, deleteOrder, store, user } = useStore();
+  const { products, analytics, orders, addOrder, updateOrder, deleteOrder, store, user, syncDashboard } = useStore();
   const [isLogOrderModalOpen, setIsLogOrderModalOpen] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
@@ -109,18 +109,9 @@ export function Dashboard() {
 
   // Poll for new pending orders every 30s while dashboard is open
   useEffect(() => {
-    const interval = setInterval(() => {
-      void fetch('/api/dashboard', { cache: 'no-store' })
-        .then(r => r.ok ? r.json() : null)
-        .then(data => {
-          if (data?.orders) {
-            // Merge only pending orders from server to catch new ones
-            // Full sync is handled by StoreContext on mount
-          }
-        });
-    }, 30_000);
+    const interval = setInterval(() => { void syncDashboard(); }, 30_000);
     return () => clearInterval(interval);
-  }, []);
+  }, [syncDashboard]);
 
   useEffect(() => {
     if (searchParams.get('upgraded') === '1') {

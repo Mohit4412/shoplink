@@ -549,7 +549,7 @@ export const StoreProvider: FC<{ children: ReactNode; initialUser: UserProfile |
       return { ...base, user: { ...base.user, plan: devForcePlan, subscriptionRenewalDate: devForcePlan === 'Free' ? '' : base.user.subscriptionRenewalDate } };
     }
     return base;
-  }, [hydrated, state, refreshUser, login, logout, addProduct, updateProduct, deleteProduct, addOrder, updateOrder, deleteOrder, updateStoreSettings, updateUserProfile, trackStoreView, trackWhatsAppClick, addNotification, markNotificationRead, markAllNotificationsRead, clearAllNotifications, devForcePlan]);
+  }, [hydrated, state, refreshUser, login, logout, addProduct, updateProduct, deleteProduct, addOrder, updateOrder, deleteOrder, updateStoreSettings, updateUserProfile, trackStoreView, trackWhatsAppClick, addNotification, markNotificationRead, markAllNotificationsRead, clearAllNotifications, syncDashboardData, devForcePlan]);
 
   return (
     <StoreContext.Provider value={contextValue}>

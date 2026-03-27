@@ -371,7 +371,7 @@ export function Signup() {
                     />
                   </div>
                   <span className="text-sm font-medium text-gray-600 leading-snug">
-                    I agree to the <a href="#" className="underline hover:text-gray-900 transition-colors">Terms of Service</a> and <a href="#" className="underline hover:text-gray-900 transition-colors">Privacy Policy</a>
+                    I agree to the <a href="/terms" className="underline hover:text-gray-900 transition-colors">Terms of Service</a> and <a href="/privacy" className="underline hover:text-gray-900 transition-colors">Privacy Policy</a>
                   </span>
                 </label>
                 {errors.terms && <p className="text-xs text-red-500 mt-1 ml-8">{errors.terms}</p>}

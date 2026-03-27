@@ -2,6 +2,7 @@
 
 import { useState, Fragment } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Link as LinkIcon, MessageCircle, Palette, BarChart3,
@@ -54,9 +55,13 @@ export function LandingPage() {
       <nav className="fixed top-0 w-full z-50 border-b border-gray-100 bg-white/88 backdrop-blur-md">
         <div className="mx-auto flex h-12 w-full max-w-6xl items-center justify-between px-3.5 sm:h-14 sm:px-5">
           <AppLogo size="sm" className="sm:[&>span]:text-xl" />
-          <div className="hidden sm:flex items-center gap-6 text-[13px] font-semibold text-gray-500">
+          <div className="hidden sm:flex items-center gap-5 text-[13px] font-semibold text-gray-500">
             <a href="#features" className="hover:text-gray-900 transition-colors">Features</a>
             <a href="#pricing" className="hover:text-gray-900 transition-colors">Pricing</a>
+            <Link href="/support" className="hover:text-gray-900 transition-colors">Contact</Link>
+            <a href="#" rel="nofollow" className="hover:text-gray-900 transition-colors">About</a>
+            <a href="#" rel="nofollow" className="hover:text-gray-900 transition-colors">Tools</a>
+            <a href="#" rel="nofollow" className="hover:text-gray-900 transition-colors">Blog</a>
           </div>
           <div className="flex items-center gap-2 sm:gap-2.5">
             <button
@@ -515,8 +520,9 @@ export function LandingPage() {
               <a href="#pricing" className="hover:text-gray-900 transition-colors">Pricing</a>
               <button onClick={handleLogin} className="hover:text-gray-900 transition-colors">Login</button>
               <button onClick={handleCTA} className="hover:text-gray-900 transition-colors">Sign up</button>
-              <a href="#" className="hover:text-gray-900 transition-colors">Privacy</a>
-              <a href="#" className="hover:text-gray-900 transition-colors">Terms</a>
+              <Link href="/privacy" className="hover:text-gray-900 transition-colors">Privacy</Link>
+              <Link href="/terms" className="hover:text-gray-900 transition-colors">Terms</Link>
+              <Link href="/refund-policy" className="hover:text-gray-900 transition-colors">Refunds</Link>
             </div>
             <div className="text-[10px] font-black uppercase tracking-widest inline-flex items-center gap-2 px-3 py-1.5 rounded-full border" style={{ color: EMERALD, borderColor: `${EMERALD}30`, background: EMERALD_LIGHT }}>
               Made for Indian sellers 🇮🇳
