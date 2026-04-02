@@ -29,6 +29,9 @@ export function SparkStoreFront({
   // Collect unique categories
   const categories = ['All', ...Array.from(new Set(activeProducts.map(p => p.category).filter(Boolean)))];
   const [activeCategory, setActiveCategory] = useState('All');
+  const featuredCollections = Array.from(
+    new Set(activeProducts.map(product => product.collection).filter(Boolean))
+  ).slice(0, 3) as string[];
 
   const filtered = activeCategory === 'All'
     ? activeProducts
@@ -38,28 +41,72 @@ export function SparkStoreFront({
 
   return (
     <>
+      <section className="px-4 pt-4 pb-5 sm:px-5">
+        <div
+          className="rounded-[28px] border px-4 py-4 sm:px-5"
+          style={{ background: t.accentLight, borderColor: t.navBorder }}
+        >
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-[10px] font-bold uppercase tracking-[0.22em]" style={{ color: t.productMeta }}>
+                Curated edit
+              </p>
+              <h1 className="mt-2 text-[22px] font-black tracking-tight leading-tight" style={{ color: t.heroHeading }}>
+                {store.name || 'Store'}
+              </h1>
+              {store.tagline && (
+                <p className="mt-2 max-w-md text-[13px] leading-6" style={{ color: t.heroSub }}>
+                  {store.tagline}
+                </p>
+              )}
+            </div>
+            <div
+              className="shrink-0 rounded-2xl border px-3 py-2 text-right"
+              style={{ background: t.cardBg, borderColor: t.navBorder }}
+            >
+              <p className="text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: t.productMeta }}>
+                Live now
+              </p>
+              <p className="mt-1 text-lg font-black leading-none" style={{ color: t.productName }}>
+                {activeProducts.length}
+              </p>
+              <p className="mt-1 text-[11px] font-semibold" style={{ color: t.productMeta }}>
+                pieces
+              </p>
+            </div>
+          </div>
+
+          {featuredCollections.length > 0 && (
+            <div className="mt-4 flex flex-wrap gap-2">
+              {featuredCollections.map((collection) => (
+                <span
+                  key={collection}
+                  className="rounded-full border px-3 py-1 text-[11px] font-semibold"
+                  style={{ borderColor: t.navBorder, color: t.productName, background: 'rgba(255,255,255,0.72)' }}
+                >
+                  {collection}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+
       {/* Category filter — pill buttons, horizontally scrollable */}
       <div
-        className="sticky top-[52px] z-40 border-b overflow-x-auto no-scrollbar"
+        className="sticky top-[52px] z-40 border-y overflow-x-auto no-scrollbar backdrop-blur-md"
         style={{ background: t.navBg, borderColor: t.navBorder }}
       >
-        {store.tagline && (
-          <div className="px-3 pt-2 pb-1">
-            <p className="text-[10px] text-center" style={{ color: t.productMeta }}>
-              {store.tagline}
-            </p>
-          </div>
-        )}
-        <div className="flex gap-2 px-3 py-2.5">
+        <div className="flex gap-2 px-4 py-3 sm:px-5">
           {categories.map(cat => (
             <button
               key={cat}
               onClick={() => setActiveCategory(cat)}
-              className="shrink-0 px-4 py-1.5 rounded-full text-xs font-semibold transition-colors whitespace-nowrap min-h-[32px]"
+              className="shrink-0 rounded-full border px-4 py-2 text-[11px] font-bold uppercase tracking-[0.16em] transition-colors whitespace-nowrap"
               style={
                 activeCategory === cat
-                  ? { background: t.accent, color: t.btnText }
-                  : { background: t.accentLight, color: t.productMeta }
+                  ? { background: t.accent, color: t.btnText, borderColor: t.accent }
+                  : { background: t.cardBg, color: t.productMeta, borderColor: t.navBorder }
               }
             >
               {cat}
@@ -69,53 +116,100 @@ export function SparkStoreFront({
       </div>
 
       {/* Grid — 2 col mobile, 3 col md, 4 col lg, 5 col xl */}
-      <main className="flex-1 pb-28">
+      <main className="flex-1 px-2 pb-28 pt-3 sm:px-3">
         {filtered.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-32 px-6 text-center">
-            <p className="text-sm font-semibold" style={{ color: t.productMeta }}>
+          <div
+            className="flex flex-col items-center justify-center rounded-[28px] border py-24 px-6 text-center"
+            style={{ borderColor: t.navBorder, background: t.cardBg }}
+          >
+            <p className="text-[11px] font-bold uppercase tracking-[0.18em]" style={{ color: t.productMeta }}>
+              Nothing here yet
+            </p>
+            <p className="mt-2 text-sm font-semibold" style={{ color: t.productName }}>
               No products in this category yet.
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-[2px]">
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
             {filtered.map(product => (
-              <div key={product.id} className="group relative">
+              <div
+                key={product.id}
+                className="group relative overflow-hidden rounded-[24px] border transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_12px_30px_rgba(15,15,15,0.08)]"
+                style={{ background: t.cardBg, borderColor: t.navBorder }}
+              >
                 <Link href={productHref(product.id)} className="block">
-                  {/* Square image */}
-                  <div className="relative aspect-square overflow-hidden" style={{ background: t.cardImageBg }}>
+                  <div className="relative aspect-[4/5] overflow-hidden" style={{ background: t.cardImageBg }}>
                     <img
                       src={product.imageUrl}
                       alt={product.name}
                       className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                       loading="lazy"
                     />
+                    <div className="absolute inset-x-0 top-0 flex items-start justify-between p-2.5">
+                      {product.collection ? (
+                        <span
+                          className="rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.16em]"
+                          style={{ background: 'rgba(255,255,255,0.9)', color: t.productName }}
+                        >
+                          {product.collection}
+                        </span>
+                      ) : (
+                        <span />
+                      )}
+                      {product.stock > 0 && product.stock <= 5 && (
+                        <span
+                          className="rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.16em]"
+                          style={{ background: 'rgba(15,15,15,0.78)', color: '#fff' }}
+                        >
+                          {product.stock} left
+                        </span>
+                      )}
+                    </div>
                     {product.stock === 0 && (
                       <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
                         <span className="text-white text-[10px] font-bold px-2 py-0.5 bg-black/60 rounded">Out of Stock</span>
                       </div>
                     )}
                   </div>
-                  {/* Name + price below */}
-                  <div className="px-2 pt-2 pb-3">
-                    <p className="text-xs font-semibold line-clamp-1 leading-tight" style={{ color: t.productName }}>
+
+                  <div className="px-3 pb-3 pt-3">
+                    {product.category && (
+                      <p className="text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: t.productMeta }}>
+                        {product.category}
+                      </p>
+                    )}
+                    <p className="mt-1 text-[13px] font-bold line-clamp-2 leading-tight min-h-[34px]" style={{ color: t.productName }}>
                       {product.name}
                     </p>
-                    <p className="text-xs font-bold mt-0.5" style={{ color: t.productPrice }}>
-                      {currencySymbol}{product.price.toFixed(2)}
-                    </p>
+                    <div className="mt-2 flex items-center justify-between gap-2">
+                      <p className="text-[13px] font-black" style={{ color: t.productPrice }}>
+                        {currencySymbol}{product.price.toFixed(2)}
+                      </p>
+                      <span className="text-[11px] font-medium" style={{ color: t.productMeta }}>
+                        {product.stock > 0 ? 'Ready to order' : 'Unavailable'}
+                      </span>
+                    </div>
                   </div>
                 </Link>
-                {/* Quick order button — appears on hover/tap */}
-                {product.stock > 0 && (
-                  <button
-                    onClick={() => onOrderClick(product)}
-                    className="absolute bottom-[44px] left-2 right-2 h-8 rounded-lg text-[11px] font-bold opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1.5 min-h-[44px]"
-                    style={{ background: t.waBg, color: t.waText }}
-                  >
-                    <MessageCircle className="w-3.5 h-3.5" />
-                    Order Now
-                  </button>
-                )}
+                <div className="px-3 pb-3">
+                  {product.stock > 0 ? (
+                    <button
+                      onClick={() => onOrderClick(product)}
+                      className="flex h-10 w-full items-center justify-center gap-1.5 rounded-full text-[12px] font-bold transition-all duration-300 sm:opacity-0 sm:translate-y-1 sm:group-hover:translate-y-0 sm:group-hover:opacity-100"
+                      style={{ background: t.waBg, color: t.waText }}
+                    >
+                      <MessageCircle className="w-3.5 h-3.5" />
+                      Order on WhatsApp
+                    </button>
+                  ) : (
+                    <div
+                      className="flex h-10 w-full items-center justify-center rounded-full text-[12px] font-bold"
+                      style={{ background: t.accentLight, color: t.productMeta }}
+                    >
+                      Sold out
+                    </div>
+                  )}
+                </div>
               </div>
             ))}
           </div>
