@@ -1,6 +1,6 @@
 'use client';
 
-import { ElementType, useEffect, useMemo } from 'react';
+import { ElementType, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import {
@@ -17,6 +17,7 @@ import { FloatingWhatsApp } from '../components/product/FloatingWhatsApp';
 import { ProductAccordion } from '../components/product/ProductAccordion';
 import { ProductActions } from '../components/product/ProductActions';
 import { PublicStorefrontData, Product } from '../types';
+import { OrderRequestModal, PublicOrderRequestInput } from '../components/storefront/OrderRequestModal';
 
 const ICON_MAP: Record<string, ElementType> = {
   ShieldCheck, CheckCircle2, BadgeCheck, Truck, Package, Box, RotateCcw, Recycle,
@@ -101,10 +102,66 @@ export function ProductDetail({ storefront, productId: productIdProp }: { storef
     return { icon: <IconComp className="w-4 h-4" style={{ color: t.accent }} />, text: b.text };
   });
   const activeBadges = TRUST_BADGES.filter(b => b.text.trim() !== '');
+  const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
+
+  const buildWhatsAppUrl = (orderRequest?: PublicOrderRequestInput) => {
+    const productLink = `${typeof window !== 'undefined' ? window.location.origin : (process.env.NEXT_PUBLIC_APP_URL ?? 'https://myshoplink.site')}/p/${resolvedStoreId}--${product.id}`;
+    const customerBlock = orderRequest
+      ? `\nQuantity: ${orderRequest.quantity}` +
+        `\nCustomer: ${orderRequest.customerName}` +
+        `\nPhone: ${orderRequest.customerPhone}` +
+        (orderRequest.city ? `\nCity: ${orderRequest.city}` : '') +
+        `\nPreferred payment: ${orderRequest.paymentMethod}`
+      : '';
+    const noteBlock = orderRequest?.notes ? `\nNotes: ${orderRequest.notes}` : '';
+    const message =
+      `Hi ${store.name}! 👋\n\n` +
+      `I'd like to order:\n` +
+      `*${product.name}*\n` +
+      `Price: ${currencySymbol}${product.price.toFixed(2)}` +
+      customerBlock +
+      noteBlock +
+      `\n\n🔗 ${productLink}` +
+      `\n\nPlease confirm and let me know how to proceed. 🙏`;
+
+    return phoneNumber ? `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}` : '#';
+  };
+
+  const submitOrderRequest = async (input: PublicOrderRequestInput) => {
+    if (publicUser?.username) {
+      const response = await fetch(`/api/stores/${publicUser.username}/orders`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          productId: product.id,
+          quantity: input.quantity,
+          revenue: product.price * input.quantity,
+          customerName: input.customerName,
+          customerPhone: input.customerPhone,
+          email: input.email,
+          city: input.city,
+          address: input.address,
+          pincode: input.pincode,
+          paymentMethod: input.paymentMethod,
+          notes: input.notes,
+          source: 'website',
+        }),
+      });
+
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(payload?.error || 'Could not send your order request.');
+      }
+    }
+
+    trackWhatsAppClick(product.id, resolvedStoreId);
+    window.open(buildWhatsAppUrl(input), '_blank', 'noopener,noreferrer');
+  };
 
   return (
-    <div className="min-h-screen sm:bg-gray-100 sm:flex sm:justify-center sm:items-start font-sans">
-    <div className="w-full sm:max-w-[720px] sm:min-h-screen sm:shadow-2xl flex flex-col" style={{ background: t.pageBg, color: t.pageText }}>
+    <>
+      <div className="min-h-screen font-sans">
+      <div className="w-full min-h-screen flex flex-col" style={{ background: t.pageBg, color: t.pageText }}>
 
       {/* Nav — compact on mobile */}
       <div
@@ -143,15 +200,18 @@ export function ProductDetail({ storefront, productId: productIdProp }: { storef
 
       <main className="flex-1 pb-28">
 
-        {/* Image carousel — full width, no side padding on mobile */}
-        <div className="w-full">
+        {/* Image carousel — full width on mobile, constrained on desktop */}
+        <div className="w-full lg:hidden">
           <ProductCarousel images={images} productName={product.name} />
         </div>
 
         {/* Product info — padded content below image */}
-        <div className="px-4 pt-5 max-w-2xl mx-auto lg:max-w-7xl">
-
-          {/* Category + title */}
+        <div className="px-4 pt-5 max-w-2xl mx-auto lg:px-8 lg:max-w-7xl lg:grid lg:grid-cols-2 lg:gap-12 lg:items-start">
+          {/* Desktop-only carousel inside grid */}
+          <div className="hidden lg:block lg:sticky lg:top-[56px]">
+            <ProductCarousel images={images} productName={product.name} />
+          </div>
+          <div>
           <p className="text-xs font-semibold uppercase tracking-widest mb-1.5" style={{ color: t.productMeta }}>
             {product.category}
           </p>
@@ -174,28 +234,15 @@ export function ProductDetail({ storefront, productId: productIdProp }: { storef
           </div>
 
           {/* Price + CTA */}
-          <div onClick={() => trackWhatsAppClick(product.id, resolvedStoreId)}>
+          <div>
             <ProductActions
-              productName={product.name}
               price={product.price}
               compareAtPrice={product.price * 1.25}
               variants={[]}
               stockQuantity={product.stock}
-              whatsAppNumber={phoneNumber}
               currencySymbol={currencySymbol}
-              storeName={store.name}
               accentColor={t.accent}
-              onOrder={() => {
-                trackWhatsAppClick(product.id, resolvedStoreId);
-                // Only create a pending order when viewing a public storefront (not the merchant's own preview)
-                if (publicUser?.username) {
-                  void fetch(`/api/stores/${publicUser.username}/orders`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ productId: product.id, revenue: product.price }),
-                  });
-                }
-              }}
+              onOrder={() => setIsOrderModalOpen(true)}
             />
           </div>
 
@@ -274,10 +321,10 @@ export function ProductDetail({ storefront, productId: productIdProp }: { storef
               </div>
             </div>
           )}
+          </div>{/* end right column */}
         </div>
       </main>
 
-      {/* Floating WhatsApp — hidden on mobile since the inline CTA is already visible */}
       <div className="hidden sm:block" onClick={() => trackWhatsAppClick(product.id, resolvedStoreId)}>
         <FloatingWhatsApp phoneNumber={phoneNumber} productName={product.name} storeName={store.name} />
       </div>
@@ -296,6 +343,17 @@ export function ProductDetail({ storefront, productId: productIdProp }: { storef
         )}
       </footer>
       </div>
-    </div>
+      </div>
+
+      <OrderRequestModal
+        isOpen={isOrderModalOpen}
+        onClose={() => setIsOrderModalOpen(false)}
+        product={product}
+        storeName={store.name}
+        currencySymbol={currencySymbol}
+        onSubmit={submitOrderRequest}
+        onWhatsAppOnly={phoneNumber ? () => window.open(buildWhatsAppUrl(), '_blank', 'noopener,noreferrer') : undefined}
+      />
+    </>
   );
 }

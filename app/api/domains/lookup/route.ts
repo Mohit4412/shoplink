@@ -19,7 +19,9 @@ export async function GET(request: NextRequest) {
         limit: 1,
       });
       const username = rows[0]?.username ?? null;
-      return NextResponse.json({ username });
+      return NextResponse.json({ username }, {
+        headers: { 'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300' },
+      });
     }
 
     // SQLite fallback
@@ -27,7 +29,9 @@ export async function GET(request: NextRequest) {
       const row = db
         .prepare('SELECT username FROM stores WHERE custom_domain = ? AND custom_domain_status = ?')
         .get(domain, 'active') as { username: string } | undefined;
-      return NextResponse.json({ username: row?.username ?? null });
+      return NextResponse.json({ username: row?.username ?? null }, {
+        headers: { 'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300' },
+      });
     }
   } catch {
     // fail open — don't break the site

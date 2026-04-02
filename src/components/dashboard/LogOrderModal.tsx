@@ -3,6 +3,7 @@ import { Modal } from '../ui/Modal';
 import { Input, Textarea } from '../ui/Input';
 import { Button } from '../ui/Button';
 import { Product, Order } from '../../types';
+import { parseOrderLeadNotes } from '../../utils/orderLeads';
 
 interface LogOrderModalProps {
   isOpen: boolean;
@@ -25,11 +26,12 @@ export function LogOrderModal({ isOpen, onClose, products, currencySymbol, today
 
   useEffect(() => {
     if (initialData) {
+      const parsedNotes = parseOrderLeadNotes(initialData.notes);
       setNewOrder({
         productId: initialData.productId,
         quantity: initialData.quantity,
         revenue: initialData.revenue,
-        notes: initialData.notes || '',
+        notes: parsedNotes.buyerNotes,
         date: initialData.date.split('T')[0],
       });
     } else {

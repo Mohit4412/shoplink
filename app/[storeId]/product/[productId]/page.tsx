@@ -7,6 +7,8 @@ type Props = {
   params: Promise<{ storeId: string; productId: string }>;
 };
 
+export const dynamic = 'force-dynamic';
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const resolvedParams = await params;
   const result = await getPublicProductByStore(resolvedParams.storeId, resolvedParams.productId);

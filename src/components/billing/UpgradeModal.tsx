@@ -22,13 +22,11 @@ interface UpgradeModalProps {
 }
 
 const PRO_FEATURES = [
-  'Unlimited products',
-  'All 6 storefront themes',
-  'No MyShopLink branding',
-  'Full analytics dashboard',
-  'Order management',
-  'Custom domain support',
-  'Priority support',
+  'List your full catalog without product limits',
+  'Remove MyShopLink branding from your store',
+  'Unlock every storefront theme and custom domain support',
+  'Track views, clicks, and incoming order requests',
+  'Manage more serious sellers with priority support',
 ];
 
 declare global {
@@ -109,7 +107,7 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Unlock MyShopLink Pro" className="max-w-3xl">
+        <Modal isOpen={isOpen} onClose={onClose} title="Upgrade to MyShopLink Pro" className="max-w-3xl">
       <div className="space-y-6">
         <div className="space-y-2">
           <div className="inline-flex items-center gap-2 rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-700">
@@ -117,8 +115,8 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
             Upgrade to Pro
           </div>
           <div>
-            <h3 className="text-2xl font-semibold text-gray-900">Unlock MyShopLink Pro</h3>
-            <p className="mt-1 text-sm text-gray-500">Secure checkout via Razorpay — cancel anytime.</p>
+            <h3 className="text-2xl font-semibold text-gray-900">Turn your store into a paid selling channel</h3>
+            <p className="mt-1 text-sm text-gray-500">Upgrade when you want a cleaner brand, more products, and better visibility into every lead.</p>
           </div>
         </div>
 
@@ -127,7 +125,7 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
             <div className="flex items-center justify-between gap-3">
               <div>
                 <p className="text-sm font-semibold text-gray-900">Free</p>
-                <p className="mt-1 text-sm text-gray-500">Best for getting started</p>
+                <p className="mt-1 text-sm text-gray-500">Best for testing your first store link</p>
               </div>
               <span className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-gray-700 shadow-sm">
                 {isPro ? 'Available' : 'Current'}
@@ -137,7 +135,7 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
               <li>Up to 10 products</li>
               <li>Classic theme only</li>
               <li>MyShopLink branding</li>
-              <li>No custom domain</li>
+              <li>Basic order and store analytics</li>
             </ul>
           </div>
 
@@ -167,14 +165,25 @@ export function UpgradeModal({ isOpen, onClose }: UpgradeModalProps) {
         )}
 
         <div className="flex flex-col gap-3 border-t border-gray-100 pt-5 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-xs text-gray-500">Secured by Razorpay · Cancel anytime</p>
-          <div className="flex gap-3">
-            <Button type="button" variant="ghost" onClick={onClose} disabled={loading}>
+          <p className="text-xs text-gray-500">Secured by Razorpay · Cancel anytime · Built for sellers ready to grow</p>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={onClose}
+              disabled={loading}
+              className="whitespace-nowrap px-5"
+            >
               Maybe later
             </Button>
-            <Button type="button" onClick={handleUpgrade} disabled={isPro || loading}>
+            <Button
+              type="button"
+              onClick={handleUpgrade}
+              disabled={isPro || loading}
+              className="whitespace-nowrap px-5"
+            >
               {loading ? (
-                <span className="flex items-center gap-2"><Loader2 className="w-4 h-4 animate-spin" /> Opening checkout…</span>
+                <span className="flex items-center gap-2 whitespace-nowrap"><Loader2 className="w-4 h-4 animate-spin" /> Opening checkout…</span>
               ) : isPro ? 'You are on Pro' : 'Upgrade Now — ₹349/mo'}
             </Button>
           </div>

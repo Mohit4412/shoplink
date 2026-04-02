@@ -84,9 +84,9 @@ export function CraftStoreFront({
       {/* Editorial single-product view */}
       <main className="flex-1 pb-28">
         {currentProduct && (
-          <div className="min-h-[calc(100vh-52px)]">
+          <div className="min-h-[calc(100vh-52px)] md:flex md:items-start">
             {/* Large hero image */}
-            <div className="relative w-full aspect-[3/4] overflow-hidden" style={{ background: t.cardImageBg }}>
+            <div className="relative w-full md:w-1/2 md:sticky md:top-[52px] aspect-[3/4] overflow-hidden" style={{ background: t.cardImageBg }}>
               <Link href={productHref(currentProduct.id)}>
                 <img
                   src={currentProduct.imageUrl}
@@ -103,7 +103,7 @@ export function CraftStoreFront({
             </div>
 
             {/* Product details */}
-            <div className="px-6 py-8">
+            <div className="px-6 py-8 md:w-1/2 md:max-w-xl">
               {/* Store tagline */}
               {store.tagline && (
                 <p className="text-xs italic text-center mb-4 pb-4 border-b" style={{ color: t.productMeta, borderColor: t.navBorder }}>
@@ -211,7 +211,7 @@ export function CraftStoreFront({
                   style={{ background: t.waBg, color: t.waText }}
                 >
                   <MessageCircle className="w-5 h-5" />
-                  Order via WhatsApp
+                  Order Now
                 </button>
               )}
             </div>

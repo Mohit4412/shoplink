@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Plus, Share2, Package, Store, Eye, MessageCircle, Check, X, ArrowUpRight, ArrowDownRight, Minus } from 'lucide-react';
+import { Plus, Share2, Package, Store, Eye, MessageCircle, Check, X, ArrowUpRight } from 'lucide-react';
 import Link from 'next/link';
 import { format, subDays } from 'date-fns';
 import { motion, AnimatePresence } from 'motion/react';
@@ -13,12 +13,9 @@ import { Button } from '../components/ui/Button';
 import { LogOrderModal } from '../components/dashboard/LogOrderModal';
 import { ShareModal } from '../components/dashboard/ShareModal';
 import { RecentOrdersTable } from '../components/dashboard/RecentOrdersTable';
-
-type Trend = {
-  direction: 'up' | 'down' | 'flat';
-  percentage: string;
-  label: string;
-};
+import { SnapshotCard, Trend } from '../components/dashboard/SnapshotCard';
+import { formatPaymentMethodLabel, parseOrderLeadNotes } from '../utils/orderLeads';
+import { getStoreUrl } from '../utils/storeUrl';
 
 function getTrend(current: number, previous: number): Trend {
   if (current === previous) {
@@ -43,59 +40,6 @@ function getTrend(current: number, previous: number): Trend {
     percentage: `${Math.abs(delta).toFixed(delta >= 10 || delta <= -10 ? 0 : 1)}%`,
     label: 'vs yesterday',
   };
-}
-
-function TrendBadge({ trend }: { trend: Trend }) {
-  const styles = trend.direction === 'up'
-    ? 'text-green-600'
-    : trend.direction === 'down'
-      ? 'text-red-500'
-      : 'text-gray-400';
-
-  return (
-    <div className={`flex flex-col items-end text-right leading-none ${styles}`}>
-      <div className="flex items-center gap-1 text-[11px] font-semibold">
-        {trend.direction === 'up' ? (
-          <ArrowUpRight className="w-3.5 h-3.5" />
-        ) : trend.direction === 'down' ? (
-          <ArrowDownRight className="w-3.5 h-3.5" />
-        ) : (
-          <Minus className="w-3.5 h-3.5" />
-        )}
-        <span>{trend.percentage}</span>
-      </div>
-      <span className="mt-1 text-[10px] font-medium text-gray-400">{trend.label}</span>
-    </div>
-  );
-}
-
-function SnapshotCard({
-  icon,
-  iconWrapClassName,
-  value,
-  label,
-  trend,
-}: {
-  icon: React.ReactNode;
-  iconWrapClassName: string;
-  value: number;
-  label: string;
-  trend: Trend;
-}) {
-  return (
-    <div className="p-4 flex items-center gap-3">
-      <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${iconWrapClassName}`}>
-        {icon}
-      </div>
-      <div className="min-w-0 flex-1 flex items-center justify-between gap-3">
-        <div className="min-w-0">
-          <p className="text-[24px] font-black text-gray-900 leading-none">{value}</p>
-          <p className="text-[12px] font-semibold text-gray-500 mt-0.5">{label}</p>
-        </div>
-        <TrendBadge trend={trend} />
-      </div>
-    </div>
-  );
 }
 
 export function Dashboard() {
@@ -139,10 +83,43 @@ export function Dashboard() {
 
   const pendingOrders = orders.filter(o => o.status === 'pending');
   const confirmedOrders = orders.filter(o => o.status === 'confirmed');
+  const totalRevenue = confirmedOrders.reduce((sum, order) => sum + order.revenue, 0);
   const orderTrend = getTrend(todayOrdersCount, yesterdayOrdersCount);
   const viewsTrend = getTrend(todayStats.views, yesterdayStats.views);
   const productsTrend = getTrend(activeProductsCount, yesterdayProductsCount);
   const clicksTrend = getTrend(todayStats.clicks, yesterdayStats.clicks);
+  const pendingOrdersTrend = getTrend(
+    pendingOrders.filter((order) => order.date.startsWith(todayStr)).length,
+    orders.filter((order) => order.status === 'pending' && order.date.startsWith(yesterdayStr)).length
+  );
+  const revenueTrend = getTrend(
+    orders
+      .filter((order) => order.status === 'confirmed' && order.date.startsWith(todayStr))
+      .reduce((sum, order) => sum + order.revenue, 0),
+    orders
+      .filter((order) => order.status === 'confirmed' && order.date.startsWith(yesterdayStr))
+      .reduce((sum, order) => sum + order.revenue, 0)
+  );
+  const checklistItems = [
+    {
+      label: 'Add your first product',
+      done: activeProductsCount > 0,
+      actionLabel: 'Add product',
+      href: '/products',
+    },
+    {
+      label: 'Customize store details',
+      done: Boolean(store.logoUrl || (store.bio && store.bio.trim()) || (store.tagline && store.tagline !== 'Your WhatsApp storefront is ready to launch.')),
+      actionLabel: 'Edit store',
+      href: '/settings?view=store',
+    },
+    {
+      label: 'Share your store and get your first visit',
+      done: analytics.totalViews > 0,
+      actionLabel: 'Share store',
+    },
+  ];
+  const remainingChecklistCount = checklistItems.filter((item) => !item.done).length;
 
   const handleSaveOrder = (newOrder: { productId: string; quantity: number; revenue: number; notes: string; date: string }) => {
     if (selectedOrder) {
@@ -171,126 +148,184 @@ export function Dashboard() {
   };
 
   return (
-    <div className="space-y-3 max-w-[680px] mx-auto pb-4">
-
+    <div className="w-full space-y-4 pb-6">
       {/* Greeting */}
-      <div className="bg-[#FFFBEB] border border-[#FDE68A] rounded-2xl px-4 py-3.5">
-        <h1 className="text-[18px] font-bold text-gray-900 leading-tight">
+      <div className="bg-[#FFFBEB] border border-[#FDE68A] rounded-2xl px-5 py-4">
+        <h1 className="text-[22px] font-bold text-gray-900 leading-tight">
           Hello {user?.firstName || 'there'} <span className="inline-block animate-wave">👋</span>
         </h1>
-        <p className="text-[13px] text-gray-500 font-medium mt-0.5">Here's your store activity today.</p>
+        <p className="text-[14px] text-gray-500 font-medium mt-1">Here&apos;s your store activity today.</p>
       </div>
 
       {/* Today's Metrics */}
-      <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
-        <div className="px-4 pt-3.5 pb-2 border-b border-gray-50">
-          <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Today's snapshot</p>
-        </div>
-        <div className="grid grid-cols-2 divide-x divide-y divide-gray-50">
+      <div>
+        <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-3">Today's snapshot</p>
+        <div className="grid grid-cols-2 gap-3 sm:gap-3 xl:grid-cols-3">
           <SnapshotCard
-            icon={<Package className="w-5 h-5 text-amber-500" />}
-            iconWrapClassName="bg-amber-50"
+            icon={<Package className="w-4.5 h-4.5" style={{ color: '#f59e0b', width: 18, height: 18 }} />}
+            accentColor="#f59e0b"
+            accentBg="#fffbeb"
             value={todayOrdersCount}
-            label="Orders"
+            label="Orders today"
             trend={orderTrend}
           />
-
           <SnapshotCard
-            icon={<Eye className="w-5 h-5 text-blue-500" />}
-            iconWrapClassName="bg-blue-50"
+            icon={<Eye style={{ color: '#3b82f6', width: 18, height: 18 }} />}
+            accentColor="#3b82f6"
+            accentBg="#eff6ff"
             value={todayStats.views}
             label="Store views"
             trend={viewsTrend}
           />
-
           <SnapshotCard
-            icon={<Store className="w-5 h-5 text-[#059669]" />}
-            iconWrapClassName="bg-green-50"
-            value={activeProductsCount}
-            label="Active products"
-            trend={productsTrend}
-          />
-
-          <SnapshotCard
-            icon={<MessageCircle className="w-5 h-5 text-[#059669]" />}
-            iconWrapClassName="bg-green-50"
+            icon={<MessageCircle style={{ color: '#059669', width: 18, height: 18 }} />}
+            accentColor="#059669"
+            accentBg="#ecfdf5"
             value={todayStats.clicks}
             label="WhatsApp clicks"
             trend={clicksTrend}
           />
+          <SnapshotCard
+            icon={<Store style={{ color: '#8b5cf6', width: 18, height: 18 }} />}
+            accentColor="#8b5cf6"
+            accentBg="#f5f3ff"
+            value={activeProductsCount}
+            label="Active products"
+            trend={productsTrend}
+          />
+          <SnapshotCard
+            icon={<Check style={{ color: '#f97316', width: 18, height: 18 }} />}
+            accentColor="#f97316"
+            accentBg="#fff7ed"
+            value={pendingOrders.length}
+            label="Pending orders"
+            trend={pendingOrdersTrend}
+          />
+          <SnapshotCard
+            icon={<ArrowUpRight style={{ color: '#10b981', width: 18, height: 18 }} />}
+            accentColor="#10b981"
+            accentBg="#ecfdf5"
+            value={totalRevenue}
+            prefix={currencySymbol}
+            label="Total revenue"
+            trend={revenueTrend}
+          />
         </div>
       </div>
 
-      {/* Plan Status */}
-      {(!user?.plan || user.plan === 'Free') ? (
-        <div className="bg-[#FFFBEB] border border-amber-200 rounded-2xl px-4 py-3.5 flex items-center justify-between shadow-sm">
-          <div>
-            <h3 className="text-sm font-bold text-amber-900">Free plan</h3>
-            <p className="text-[11px] font-semibold text-amber-700 mt-0.5">
-              {activeProductsCount} products &middot; {Math.max(0, 10 - activeProductsCount)} remaining
-            </p>
-          </div>
-          <Link href="/settings?view=billing" className="text-xs font-bold bg-amber-100 text-amber-800 px-3 py-1.5 rounded-lg hover:bg-amber-200 transition-colors shrink-0">
-            Upgrade to Pro &rarr;
-          </Link>
-        </div>
-      ) : (
-        <div className="bg-[#ecfdf5] border border-[#059669]/30 rounded-2xl px-4 py-3.5 flex items-center shadow-sm">
-          <div>
-            <h3 className="text-sm font-bold text-green-900">{isTrialPro ? 'Pro trial' : 'Pro plan'}</h3>
-            <p className="text-[11px] font-semibold text-green-700 mt-0.5">
-              {isTrialPro ? 'Trial ends' : 'Active until'} {user?.subscriptionRenewalDate || 'lifetime'}
-            </p>
-          </div>
-        </div>
-      )}
+      <div className="space-y-4">
+          {/* Plan Status */}
+          {(!user?.plan || user.plan === 'Free') ? (
+            <div className="bg-[#FFFBEB] border border-amber-200 rounded-2xl px-4 py-4 flex flex-col items-start justify-between gap-3 shadow-sm sm:flex-row sm:items-center">
+              <div>
+                <h3 className="text-sm font-bold text-amber-900">Free plan</h3>
+                <p className="text-[11px] font-semibold text-amber-700 mt-0.5">
+                  {activeProductsCount} products &middot; {Math.max(0, 10 - activeProductsCount)} remaining
+                </p>
+              </div>
+              <Link href="/settings?view=billing" className="text-xs font-bold bg-amber-100 text-amber-800 px-3 py-1.5 rounded-lg hover:bg-amber-200 transition-colors shrink-0">
+                Upgrade to Pro &rarr;
+              </Link>
+            </div>
+          ) : (
+            <div className="bg-[#ecfdf5] border border-[#059669]/30 rounded-2xl px-4 py-4 flex items-center shadow-sm">
+              <div>
+                <h3 className="text-sm font-bold text-green-900">{isTrialPro ? 'Pro trial' : 'Pro plan'}</h3>
+                <p className="text-[11px] font-semibold text-green-700 mt-0.5">
+                  {isTrialPro ? 'Trial ends' : 'Active until'} {user?.subscriptionRenewalDate || 'lifetime'}
+                </p>
+              </div>
+            </div>
+          )}
 
-      {/* Product limit warning */}
-      {(!user?.plan || user.plan === 'Free') && activeProductsCount >= 8 && (
-        <div className="bg-red-50 border border-red-200 rounded-2xl px-4 py-3.5 flex items-center justify-between">
-          <div>
-            <p className="text-sm font-bold text-red-800">
-              {activeProductsCount >= 10 ? 'Product limit reached' : 'Almost at your limit'}
-            </p>
-            <p className="text-[11px] text-red-600 mt-0.5">
-              {activeProductsCount >= 10
-                ? "You've used all 10 free product slots. Upgrade to add more."
-                : `${activeProductsCount}/10 products used — only ${10 - activeProductsCount} slot${10 - activeProductsCount === 1 ? '' : 's'} left.`}
-            </p>
+          {/* Quick Actions */}
+          <div className="bg-white border border-gray-100 rounded-2xl shadow-sm px-4 py-4">
+            <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+              <div>
+                <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Quick actions</p>
+                <p className="mt-1 text-sm text-gray-500">Jump into the most common seller tasks.</p>
+              </div>
+              <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+                <button
+                  onClick={openNewOrderModal}
+                  className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-gray-50 px-4 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-100 sm:w-auto"
+                >
+                  <Plus className="w-4 h-4 text-gray-500" /> Add Order Manually
+                </button>
+                <button
+                  onClick={() => setIsShareModalOpen(true)}
+                  className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-gray-50 px-4 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-100 sm:w-auto"
+                >
+                  <Share2 className="w-4 h-4 text-gray-500" /> Share Store
+                </button>
+                <Link
+                  href={user?.username ? getStoreUrl(user.username) : '/'}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-gray-50 px-4 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-100 sm:w-auto"
+                >
+                  <Eye className="w-4 h-4 text-gray-500" /> View Store
+                </Link>
+              </div>
+            </div>
           </div>
-          <Link href="/settings?view=billing" className="text-xs font-bold bg-red-100 text-red-700 px-3 py-1.5 rounded-lg hover:bg-red-200 transition-colors shrink-0 ml-3">
-            Upgrade &rarr;
-          </Link>
-        </div>
-      )}
 
-      {/* Quick Actions */}
-      <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
-        <div className="px-4 pt-3.5 pb-2 border-b border-gray-50">
-          <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Quick actions</p>
-        </div>
-        <div className="p-3 grid grid-cols-2 gap-2 sm:flex">
-          <button
-            onClick={openNewOrderModal}
-            className="bg-gray-50 hover:bg-gray-100 text-gray-700 h-9 sm:h-11 rounded-lg sm:rounded-xl flex items-center justify-center gap-1.5 sm:gap-2 text-[12px] sm:text-sm font-semibold transition-colors sm:flex-1"
-          >
-            <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-500" /> Log Order
-          </button>
-          <button
-            onClick={() => setIsShareModalOpen(true)}
-            className="bg-gray-50 hover:bg-gray-100 text-gray-700 h-9 sm:h-11 rounded-lg sm:rounded-xl flex items-center justify-center gap-1.5 sm:gap-2 text-[12px] sm:text-sm font-semibold transition-colors sm:flex-1"
-          >
-            <Share2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-500" /> Share Store
-          </button>
-          <Link
-            href={`https://${user?.username}.myshoplink.site`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="col-span-2 bg-gray-50 hover:bg-gray-100 text-gray-700 h-9 sm:h-11 rounded-lg sm:rounded-xl flex items-center justify-center gap-1.5 sm:gap-2 text-[12px] sm:text-sm font-semibold transition-colors sm:col-span-1 sm:flex-1"
-          >
-            <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-500" /> View Store
-          </Link>
-        </div>
+          {/* Product limit warning */}
+          {(!user?.plan || user.plan === 'Free') && activeProductsCount >= 8 && (
+            <div className="bg-red-50 border border-red-200 rounded-2xl px-4 py-4 flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
+              <div>
+                <p className="text-sm font-bold text-red-800">
+                  {activeProductsCount >= 10 ? 'Product limit reached' : 'Almost at your limit'}
+                </p>
+                <p className="text-[11px] text-red-600 mt-0.5">
+                  {activeProductsCount >= 10
+                    ? "You've used all 10 free product slots. Upgrade to add more."
+                    : `${activeProductsCount}/10 products used — only ${10 - activeProductsCount} slot${10 - activeProductsCount === 1 ? '' : 's'} left.`}
+                </p>
+              </div>
+              <Link href="/settings?view=billing" className="text-xs font-bold bg-red-100 text-red-700 px-3 py-1.5 rounded-lg hover:bg-red-200 transition-colors shrink-0">
+                Upgrade &rarr;
+              </Link>
+            </div>
+          )}
+
+          {remainingChecklistCount > 0 && (
+            <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
+              <div className="px-4 pt-3.5 pb-2 border-b border-gray-50 flex items-center justify-between gap-3">
+                <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Get store ready</p>
+                <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">
+                  {checklistItems.length - remainingChecklistCount}/{checklistItems.length} done
+                </span>
+              </div>
+              <div className="p-4 space-y-3">
+                {checklistItems.map((item) => (
+                  <div key={item.label} className="flex flex-col gap-3 rounded-xl border border-gray-100 px-3 py-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="min-w-0 flex items-center gap-3">
+                      <div className={`flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold ${item.done ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-500'}`}>
+                        {item.done ? '✓' : checklistItems.findIndex((entry) => entry.label === item.label) + 1}
+                      </div>
+                      <p className={`text-sm font-medium ${item.done ? 'text-gray-400 line-through' : 'text-gray-800'}`}>{item.label}</p>
+                    </div>
+                    {!item.done && item.href ? (
+                      <Link href={item.href} className="shrink-0 text-xs font-bold text-emerald-700 hover:text-emerald-800">
+                        {item.actionLabel} →
+                      </Link>
+                    ) : !item.done ? (
+                      <button
+                        type="button"
+                        onClick={() => setIsShareModalOpen(true)}
+                        className="shrink-0 text-xs font-bold text-emerald-700 hover:text-emerald-800"
+                      >
+                        {item.actionLabel} →
+                      </button>
+                    ) : (
+                      <span className="shrink-0 text-xs font-semibold text-emerald-700">Done</span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
       </div>
 
       {/* Pending Orders — needs action */}
@@ -300,83 +335,231 @@ export function Dashboard() {
             <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Pending orders</p>
             <span className="text-[11px] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">{pendingOrders.length} new</span>
           </div>
-          <div className="space-y-2">
+          <div className="space-y-3 md:hidden">
             {pendingOrders.map((order) => {
               const product = products.find(p => p.id === order.productId);
+              const lead = parseOrderLeadNotes(order.notes);
+
               return (
-                <div key={order.id} className="bg-white border border-amber-200 rounded-2xl p-4 flex items-center gap-3 shadow-sm">
-                  {product?.imageUrl && (
-                    <img src={product.imageUrl} alt={product.name} className="w-12 h-12 rounded-xl object-cover border border-gray-100 shrink-0" />
-                  )}
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-bold text-gray-900 truncate">{product?.name || 'Unknown product'}</p>
-                    <p className="text-xs text-gray-500 mt-0.5">
-                      {currencySymbol}{order.revenue.toFixed(2)} · {format(new Date(order.date), 'MMM d, h:mm a')}
-                    </p>
+                <div key={order.id} className="rounded-2xl border border-amber-200 bg-white overflow-hidden shadow-sm">
+                  {/* Top: image + info */}
+                  <div className="flex items-start gap-3 p-3">
+                    {/* Image */}
+                    <div className="w-20 h-20 shrink-0 rounded-xl overflow-hidden bg-amber-50">
+                      {product?.imageUrl ? (
+                        <img
+                          src={product.imageUrl}
+                          alt={product?.name}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-amber-100" />
+                      )}
+                    </div>
+                    {/* Info */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between gap-2">
+                        <p className="text-sm font-semibold text-gray-900 leading-snug line-clamp-2">
+                          {product?.name || 'Unknown product'}
+                        </p>
+                        <span className="shrink-0 rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-amber-700">
+                          Pending
+                        </span>
+                      </div>
+                      <p className="mt-1 text-sm font-bold text-gray-800">
+                        {currencySymbol}{order.revenue.toFixed(2)}
+                        <span className="ml-1.5 text-xs font-normal text-gray-400">× {order.quantity}</span>
+                      </p>
+                      <p className="mt-1 text-xs font-medium text-gray-700">
+                        {lead.details.customerName || 'No name'}
+                        {lead.details.customerPhone && (
+                          <span className="font-normal text-gray-400"> · {lead.details.customerPhone}</span>
+                        )}
+                      </p>
+                      <p className="mt-0.5 text-[11px] text-gray-400">
+                        {formatPaymentMethodLabel(lead.details.paymentMethod) || 'Payment not specified'}
+                        {' · '}{format(new Date(order.date), 'MMM d, h:mm a')}
+                      </p>
+                      {(lead.details.address || lead.details.email) && (
+                        <div className="mt-1.5 space-y-0.5">
+                          {lead.details.address && (
+                            <p className="text-[11px] text-gray-500 leading-snug">
+                              📍 {lead.details.address}{lead.details.pincode ? ` — ${lead.details.pincode}` : ''}
+                            </p>
+                          )}
+                          {lead.details.email && (
+                            <p className="text-[11px] text-gray-400">✉ {lead.details.email}</p>
+                          )}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2 shrink-0">
+                  {/* Bottom: actions */}
+                  <div className="flex border-t border-amber-100">
                     <button
                       onClick={() => updateOrder(order.id, { status: 'declined' })}
-                      className="w-9 h-9 rounded-xl bg-red-50 hover:bg-red-100 flex items-center justify-center transition-colors"
-                      title="Decline"
+                      className="flex-1 flex items-center justify-center gap-1.5 py-2.5 text-xs font-bold text-red-500 hover:bg-red-50 transition-colors border-r border-amber-100"
                     >
-                      <X className="w-4 h-4 text-red-500" />
+                      <X className="w-3.5 h-3.5" />
+                      Decline
                     </button>
                     <button
                       onClick={() => updateOrder(order.id, { status: 'confirmed' })}
-                      className="w-9 h-9 rounded-xl bg-green-50 hover:bg-green-100 flex items-center justify-center transition-colors"
-                      title="Confirm"
+                      className="flex-1 flex items-center justify-center gap-1.5 py-2.5 text-xs font-bold text-green-700 hover:bg-green-50 transition-colors"
                     >
-                      <Check className="w-4 h-4 text-green-600" />
+                      <Check className="w-3.5 h-3.5" />
+                      Confirm
                     </button>
                   </div>
                 </div>
               );
             })}
           </div>
+          <div className="hidden overflow-x-auto rounded-2xl border border-amber-200 bg-white shadow-sm md:block">
+            <table className="min-w-[860px] w-full text-sm">
+              <thead>
+                <tr className="border-b border-amber-100 bg-amber-50/60">
+                  <th className="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-widest text-gray-500">Product</th>
+                  <th className="px-4 py-3 text-center text-[11px] font-bold uppercase tracking-widest text-gray-500">Qty</th>
+                  <th className="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-widest text-gray-500">Status</th>
+                  <th className="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-widest text-gray-500">Name</th>
+                  <th className="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-widest text-gray-500">Phone</th>
+                  <th className="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-widest text-gray-500">Payment</th>
+                  <th className="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-widest text-gray-500">Shipping</th>
+                  <th className="px-4 py-3 text-right text-[11px] font-bold uppercase tracking-widest text-gray-500">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {pendingOrders.map((order) => {
+                  const product = products.find(p => p.id === order.productId);
+                  const lead = parseOrderLeadNotes(order.notes);
+
+                  return (
+                    <tr key={order.id} className="border-b border-gray-100 last:border-0">
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-3 min-w-0">
+                          {product?.imageUrl ? (
+                            <img
+                              src={product.imageUrl}
+                              alt={product.name}
+                              className="w-11 h-11 rounded-xl object-cover border border-gray-100 shrink-0"
+                            />
+                          ) : (
+                            <div className="w-11 h-11 rounded-xl bg-gray-100 shrink-0" />
+                          )}
+                          <div className="min-w-0">
+                            <p className="font-semibold text-gray-900 truncate">{product?.name || 'Unknown product'}</p>
+                            <p className="text-xs text-gray-500">
+                              {currencySymbol}{order.revenue.toFixed(2)} · {format(new Date(order.date), 'MMM d, h:mm a')}
+                            </p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 text-center font-semibold text-gray-700">{order.quantity}</td>
+                      <td className="px-4 py-3">
+                        <span className="inline-flex rounded-full bg-amber-50 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-amber-700">
+                          {order.status}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 font-medium text-gray-800">
+                        {lead.details.customerName || 'Not provided'}
+                      </td>
+                      <td className="px-4 py-3 text-gray-600">
+                        <div>
+                          <p>{lead.details.customerPhone || 'Not provided'}</p>
+                          {lead.details.email && (
+                            <p className="text-[11px] text-gray-400 mt-0.5">{lead.details.email}</p>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 text-gray-600">
+                        {formatPaymentMethodLabel(lead.details.paymentMethod) || 'Not provided'}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-600 max-w-[180px]">
+                        {lead.details.address ? (
+                          <div>
+                            <p className="leading-snug">{lead.details.address}</p>
+                            {(lead.details.pincode || lead.details.city) && (
+                              <p className="text-[11px] text-gray-400 mt-0.5">
+                                {[lead.details.city, lead.details.pincode].filter(Boolean).join(' — ')}
+                              </p>
+                            )}
+                          </div>
+                        ) : (
+                          <span className="text-gray-300">—</span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex items-center justify-end gap-2">
+                          <button
+                            onClick={() => updateOrder(order.id, { status: 'declined' })}
+                            className="inline-flex items-center gap-1.5 rounded-lg bg-red-50 px-3 py-2 text-xs font-bold text-red-600 hover:bg-red-100 transition-colors"
+                            title="Decline"
+                          >
+                            <X className="w-3.5 h-3.5" />
+                            Decline
+                          </button>
+                          <button
+                            onClick={() => updateOrder(order.id, { status: 'confirmed' })}
+                            className="inline-flex items-center gap-1.5 rounded-lg bg-green-50 px-3 py-2 text-xs font-bold text-green-700 hover:bg-green-100 transition-colors"
+                            title="Confirm"
+                          >
+                            <Check className="w-3.5 h-3.5" />
+                            Confirm
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
 
       {/* Confirmed Orders */}
-      <div>
-        <div className="flex items-center justify-between mb-3">
+      <div className="bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden">
+        <div className="px-4 pt-3.5 pb-2 border-b border-gray-50 flex items-center justify-between gap-3">
           <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Recent orders</p>
           {confirmedOrders.length > 0 && (
             <span className="text-[11px] font-semibold text-gray-400">{confirmedOrders.length} total</span>
           )}
         </div>
 
-        {confirmedOrders.length === 0 ? (
-          <div className="py-10 flex flex-col items-center text-center gap-3">
-            <Package className="w-8 h-8 text-gray-300" />
+        <div className="p-4">
+          {confirmedOrders.length === 0 ? (
+            <div className="py-10 flex flex-col items-center text-center gap-3">
+              <Package className="w-8 h-8 text-gray-300" />
+              <div>
+                <h3 className="font-semibold text-gray-900 text-sm">No confirmed orders yet</h3>
+                <p className="text-xs text-gray-400 mt-1">Confirmed orders will appear here.</p>
+              </div>
+              <Button onClick={openNewOrderModal}>
+                <Plus className="w-4 h-4 mr-2" />
+                Add Order Manually
+              </Button>
+            </div>
+          ) : (
             <div>
-              <h3 className="font-semibold text-gray-900 text-sm">No confirmed orders yet</h3>
-              <p className="text-xs text-gray-400 mt-1">Confirmed orders will appear here.</p>
+              <div className="flex flex-col gap-2 rounded-xl bg-[#F0FDF4] px-4 py-3 mb-3 sm:flex-row sm:items-center sm:justify-between">
+                <span className="text-sm text-gray-600">
+                  {confirmedOrders.length} confirmed {confirmedOrders.length === 1 ? 'sale' : 'sales'}
+                </span>
+                <span className="text-sm font-bold text-green-700">
+                  {currencySymbol}{confirmedOrders.reduce((s, o) => s + o.revenue, 0).toFixed(2)}
+                </span>
+              </div>
+              <RecentOrdersTable
+                orders={confirmedOrders.slice(0, 10)}
+                products={products}
+                currencySymbol={currencySymbol}
+                onEditOrder={handleEditOrder}
+                onDeleteOrder={handleDeleteOrder}
+              />
             </div>
-            <Button onClick={openNewOrderModal}>
-              <Plus className="w-4 h-4 mr-2" />
-              Log Order Manually
-            </Button>
-          </div>
-        ) : (
-          <div>
-            <div className="flex items-center justify-between bg-[#F0FDF4] rounded-xl px-4 py-3 mb-3">
-              <span className="text-sm text-gray-600">
-                {confirmedOrders.length} confirmed {confirmedOrders.length === 1 ? 'sale' : 'sales'}
-              </span>
-              <span className="text-sm font-bold text-green-700">
-                {currencySymbol}{confirmedOrders.reduce((s, o) => s + o.revenue, 0).toFixed(2)}
-              </span>
-            </div>
-            <RecentOrdersTable
-              orders={confirmedOrders.slice(0, 10)}
-              products={products}
-              currencySymbol={currencySymbol}
-              onEditOrder={handleEditOrder}
-              onDeleteOrder={handleDeleteOrder}
-            />
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       <LogOrderModal

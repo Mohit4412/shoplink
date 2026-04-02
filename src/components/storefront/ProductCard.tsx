@@ -33,7 +33,7 @@ function OrderButton({ onOrder, tokens }: { onOrder: () => void; tokens: ThemeTo
       className="w-full inline-flex min-h-[44px] items-center justify-center rounded-full px-4 py-2.5 text-sm font-bold transition-opacity hover:opacity-90 shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
       style={{ background: tokens.waBg, color: tokens.waText }}
     >
-      Order on WhatsApp
+      Order Now
     </button>
   );
 }
@@ -109,7 +109,7 @@ export function ProductCard({ product, href, tokens: t, cardAnatomy, cardStyle, 
               className="w-full inline-flex min-h-[44px] items-center justify-center rounded-full px-4 py-2 text-sm font-bold transition-opacity hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
               style={{ background: t.waBg, color: t.waText }}
             >
-              Order on WhatsApp
+              Order Now
             </button>
           )}
         </div>
@@ -141,7 +141,7 @@ export function ProductCard({ product, href, tokens: t, cardAnatomy, cardStyle, 
             className="self-start inline-flex min-h-[44px] items-center px-4 py-1.5 rounded-full text-xs font-bold transition-opacity hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-1"
             style={{ background: t.waBg, color: t.waText }}
           >
-            Order on WhatsApp
+            Order Now
           </button>
         )}
       </div>

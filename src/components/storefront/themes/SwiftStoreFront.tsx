@@ -83,7 +83,8 @@ export function SwiftStoreFront({
             </p>
           </div>
         ) : (
-          <div className="divide-y" style={{ borderColor: t.cardBorder }}>
+          <div className="max-w-7xl mx-auto w-full">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 divide-y sm:divide-y-0 sm:gap-px" style={{ borderColor: t.cardBorder }}>
             {sortedProducts.map(product => {
               const soldCount = getSoldCount(product.id);
 
@@ -162,11 +163,12 @@ export function SwiftStoreFront({
               );
             })}
           </div>
+          </div>
         )}
 
         {/* Quick stats banner */}
         {sortedProducts.length > 0 && (
-          <div className="px-4 py-6 mt-6">
+          <div className="px-4 py-6 mt-6 max-w-7xl mx-auto w-full">
             <div className="rounded-2xl p-6 text-center" style={{ background: t.accentLight }}>
               <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: t.accent }}>
                 Fast Delivery

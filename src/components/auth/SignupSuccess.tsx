@@ -2,6 +2,7 @@
 
 import { CheckCircle2, Mail, ExternalLink } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { getStoreUrl } from '../../utils/storeUrl';
 
 interface SignupSuccessProps {
   firstName: string;
@@ -12,7 +13,7 @@ interface SignupSuccessProps {
 export function SignupSuccess({ firstName, username, email }: SignupSuccessProps) {
   const router = useRouter();
   
-  const storeUrl = `https://${username}.myshoplink.site`;
+  const storeUrl = getStoreUrl(username);
 
   return (
     <div className="flex flex-col items-center text-center animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -24,7 +25,7 @@ export function SignupSuccess({ firstName, username, email }: SignupSuccessProps
       <h1 className="text-3xl font-black text-gray-900 tracking-tight mb-2">Store created!</h1>
       <p className="text-base text-gray-500 mb-8 max-w-sm">
         Welcome, {firstName || 'there'}.<br />
-        Your store is ready at <span className="font-semibold text-gray-700">{username}.myshoplink.site</span>
+        Your store is ready at <span className="font-semibold text-gray-700">{storeUrl.replace(/^https?:\/\//, '')}</span>
       </p>
 
       <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 w-full mb-8 text-left flex gap-3">

@@ -1,6 +1,11 @@
 export type ProductStatus = 'Active' | 'Draft';
 
 
+export interface ProductVariant {
+  name: string;    // e.g. "Size", "Color"
+  options: string[]; // e.g. ["S", "M", "L"] or ["Red", "Blue"]
+}
+
 export interface Product {
   id: string;
   imageUrl: string;
@@ -13,7 +18,9 @@ export interface Product {
   category: string;
   stock: number;
   collection?: string;
+  collections?: string[];
   highlights?: string[];
+  variants?: ProductVariant[];
   reviews?: ProductReview[];
 }
 
@@ -34,7 +41,7 @@ export interface Order {
   revenue: number;
   date: string;
   notes?: string;
-  status: 'pending' | 'confirmed' | 'declined';
+  status: 'pending' | 'confirmed' | 'declined' | 'payment_pending_verification';
 }
 
 export interface AppNotification {
@@ -63,6 +70,7 @@ export interface StoreSettings {
   customDomain?: string;
   customDomainStatus?: 'pending' | 'active' | 'failed';
   legalPages?: LegalPages;
+  paymentSettings?: PaymentSettings;
 }
 
 export interface LegalPages {
@@ -70,6 +78,14 @@ export interface LegalPages {
   returns?: string;
   privacy?: string;
   terms?: string;
+}
+
+export interface PaymentSettings {
+  upiId?: string;
+  bankAccountName?: string;
+  bankAccountNumber?: string;
+  bankIfsc?: string;
+  bankBranch?: string;
 }
 
 export type Store = StoreSettings;

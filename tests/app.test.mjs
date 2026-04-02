@@ -179,7 +179,8 @@ test('signup, rename, and ownership enforcement work end to end', async () => {
   assert.equal(renamedStorefront.status, 200);
 
   const oldStorefront = await fetch(`${baseUrl}/${merchantA.username}`);
-  assert.equal(oldStorefront.status, 404);
+  const oldStorefrontHtml = await oldStorefront.text();
+  assert.match(oldStorefrontHtml, /could not be found/i);
 
   const productAfterRename = await fetch(`${baseUrl}/${renamedUsername}/product/${createdProductId}`);
   assert.equal(productAfterRename.status, 200);
@@ -266,7 +267,13 @@ test('declined or confirmed orders stay updated and only new shopper actions cre
 
   const firstPendingResponse = await fetch(`${baseUrl}/api/stores/${merchant.username}/orders`, jsonRequest('POST', {
     productId,
-    revenue: 79,
+    quantity: 2,
+    revenue: 158,
+    customerName: 'Riya Sharma',
+    customerPhone: '+919999999999',
+    city: 'Surat',
+    paymentMethod: 'upi',
+    notes: 'Need fast delivery if possible',
   }));
   const firstPendingBody = await firstPendingResponse.text();
   assert.equal(firstPendingResponse.status, 200, firstPendingBody);
@@ -278,6 +285,8 @@ test('declined or confirmed orders stay updated and only new shopper actions cre
   const firstDashboard = await firstDashboardResponse.json();
   assert.equal(firstDashboard.orders.length, 1);
   assert.equal(firstDashboard.orders[0].status, 'pending');
+  assert.equal(firstDashboard.orders[0].quantity, 2);
+  assert.match(firstDashboard.orders[0].notes, /\[\[myshoplink-order-lead\]\]/);
   const firstOrderId = firstDashboard.orders[0].id;
 
   const declineResponse = await fetch(`${baseUrl}/api/orders/${firstOrderId}`, jsonRequest('PATCH', {
@@ -297,7 +306,13 @@ test('declined or confirmed orders stay updated and only new shopper actions cre
 
   const secondPendingResponse = await fetch(`${baseUrl}/api/stores/${merchant.username}/orders`, jsonRequest('POST', {
     productId,
+    quantity: 1,
     revenue: 79,
+    customerName: 'Aman Verma',
+    customerPhone: '+918888888888',
+    city: 'Delhi',
+    paymentMethod: 'cod',
+    notes: 'Please confirm COD availability',
   }));
   const secondPendingBody = await secondPendingResponse.text();
   assert.equal(secondPendingResponse.status, 200, secondPendingBody);

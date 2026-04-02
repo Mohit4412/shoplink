@@ -18,6 +18,7 @@ import { FreshStoreFront } from '../components/storefront/themes/FreshStoreFront
 import { SwiftStoreFront } from '../components/storefront/themes/SwiftStoreFront';
 import { NoirStoreFront } from '../components/storefront/themes/NoirStoreFront';
 import { StoreFooter } from '../components/storefront/StoreFooter';
+import { OrderRequestModal, PublicOrderRequestInput } from '../components/storefront/OrderRequestModal';
 
 // ─── Grid layout helper ───────────────────────────────────────────────────────
 
@@ -93,7 +94,7 @@ function ClassicLayout({
     : remainingProducts;
 
   return (
-    <main className="flex-1 mx-auto w-full pt-10 pb-32 px-2 sm:px-0">
+    <main className="flex-1 w-full pt-10 pb-32 px-2 sm:px-0">
       {activeProducts.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 px-6 text-center">
           <div className="w-20 h-20 rounded-full flex items-center justify-center mb-6" style={{ backgroundColor: t.accentLight }}>
@@ -108,7 +109,7 @@ function ClassicLayout({
         <>
           {/* Featured section — only when >4 products */}
           {featuredProducts.length > 0 && (
-            <section id="products" className={`${spacingClass} px-4 sm:px-6 lg:px-8`}>
+            <section id="products" className={`${spacingClass} px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full`}>
               <h2 className={`${typography.sectionHeading} mb-6 md:text-center`} style={{ color: t.sectionHeading }}>
                 Featured Highlights
               </h2>
@@ -132,7 +133,7 @@ function ClassicLayout({
           )}
 
           {/* All products */}
-          <section id="all-products" className={`${spacingClass} px-4 sm:px-6 lg:px-8`}>
+          <section id="all-products" className={`${spacingClass} px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full`}>
             <h2 className={`${typography.sectionHeading} mb-6 md:text-center`} style={{ color: t.sectionHeading }}>
               All Products
             </h2>
@@ -163,7 +164,7 @@ function ClassicLayout({
 
           {/* About — only when bio is set */}
           {store.bio && (
-            <section className={`${spacingClass} px-4 sm:px-6 lg:px-8`}>
+            <section className={`${spacingClass} px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full`}>
               <div
                 className="rounded-3xl p-10 md:p-16 text-center max-w-3xl mx-auto"
                 style={{ background: t.accentLight, border: `1px solid ${t.cardBorder}` }}
@@ -179,7 +180,7 @@ function ClassicLayout({
           )}
 
           {/* WhatsApp CTA */}
-          <section className={`${spacingClass} px-4 sm:px-6 lg:px-8`}>
+          <section className={`${spacingClass} px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full`}>
             <div
               className="rounded-3xl p-10 md:p-12 flex flex-col md:flex-row items-center justify-between gap-6"
               style={{ background: '#25D36615', border: '1px solid #25D36630' }}
@@ -248,20 +249,30 @@ export function StoreFront({ storefront }: { storefront?: PublicStorefrontData }
 
   const currencySymbol = getCurrencySymbol(store.currency);
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   useEffect(() => { trackStoreView(resolvedStoreId); }, [resolvedStoreId, trackStoreView]);
 
-  const buildWhatsAppUrl = (product?: Product) => {
+  const buildWhatsAppUrl = (product?: Product, orderRequest?: PublicOrderRequestInput) => {
     const phone = activeUser?.whatsappNumber.replace(/\D/g, '') || '';
     if (product) {
-      const productLink = getProductUrl(resolvedStoreId, product.id);
+      const productLink = `${typeof window !== 'undefined' ? window.location.origin : (process.env.NEXT_PUBLIC_APP_URL ?? 'https://myshoplink.site')}/p/${resolvedStoreId}--${product.id}`;
       const inStock = product.stock > 0 ? '' : '\n⚠️ Please confirm availability.';
+      const customerBlock = orderRequest
+        ? `\nQuantity: ${orderRequest.quantity}` +
+          `\nCustomer: ${orderRequest.customerName}` +
+          `\nPhone: ${orderRequest.customerPhone}` +
+          (orderRequest.city ? `\nCity: ${orderRequest.city}` : '') +
+          `\nPreferred payment: ${orderRequest.paymentMethod}`
+        : '';
+      const noteBlock = orderRequest?.notes ? `\nNotes: ${orderRequest.notes}` : '';
       const message =
         `Hi ${store.name}! 👋\n\n` +
         `I'd like to order:\n` +
         `*${product.name}*\n` +
         `Price: ${currencySymbol}${product.price.toFixed(2)}` +
-        (product.category ? `\nCategory: ${product.category}` : '') +
+        customerBlock +
+        noteBlock +
         `\n\n🔗 ${productLink}` +
         inStock +
         `\n\nPlease confirm and let me know how to proceed. 🙏`;
@@ -276,23 +287,49 @@ export function StoreFront({ storefront }: { storefront?: PublicStorefrontData }
     window.open(buildWhatsAppUrl(product), '_blank', 'noopener,noreferrer');
   };
 
-  // Order button on product cards — tracks as a pending order
-  const handleOrderClick = (product: Product) => {
-    trackWhatsAppClick(product.id, resolvedStoreId);
+  const openOrderRequest = (product: Product) => {
+    setSelectedProduct(product);
+  };
+
+  const submitOrderRequest = async (input: PublicOrderRequestInput) => {
+    if (!selectedProduct) {
+      return;
+    }
+
     if (publicUser?.username) {
-      void fetch(`/api/stores/${publicUser.username}/orders`, {
+      const response = await fetch(`/api/stores/${publicUser.username}/orders`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ productId: product.id, revenue: product.price }),
+        body: JSON.stringify({
+          productId: selectedProduct.id,
+          quantity: input.quantity,
+          revenue: selectedProduct.price * input.quantity,
+          customerName: input.customerName,
+          customerPhone: input.customerPhone,
+          email: input.email,
+          city: input.city,
+          address: input.address,
+          pincode: input.pincode,
+          paymentMethod: input.paymentMethod,
+          notes: input.notes,
+          source: 'website',
+        }),
       });
+
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(payload?.error || 'Could not send your order request.');
+      }
     }
-    window.open(buildWhatsAppUrl(product), '_blank', 'noopener,noreferrer');
+
+    trackWhatsAppClick(selectedProduct.id, resolvedStoreId);
+    window.open(buildWhatsAppUrl(selectedProduct, input), '_blank', 'noopener,noreferrer');
   };
 
   return (
-    <div className="min-h-screen sm:bg-gray-100 sm:flex sm:justify-center sm:items-start font-sans">
+    <div className="min-h-screen font-sans">
       <div
-        className="w-full sm:max-w-[568px] sm:min-h-screen sm:shadow-2xl flex flex-col transition-colors duration-300 relative"
+        className="w-full min-h-screen flex flex-col transition-colors duration-300 relative"
         style={{ background: t.pageBg, color: t.pageText }}
       >
         {/* Demo banner */}
@@ -320,7 +357,7 @@ export function StoreFront({ storefront }: { storefront?: PublicStorefrontData }
             resolvedStoreId={resolvedStoreId}
             isSubdomain={isSubdomain}
             onContactClick={handleContactClick}
-            onOrderClick={handleOrderClick}
+            onOrderClick={openOrderRequest}
             isFreePlan={activeUser?.plan === 'Free'}
           />
         ) : theme.layout.variant === 'craft' ? (
@@ -331,7 +368,7 @@ export function StoreFront({ storefront }: { storefront?: PublicStorefrontData }
             resolvedStoreId={resolvedStoreId}
             isSubdomain={isSubdomain}
             onContactClick={handleContactClick}
-            onOrderClick={handleOrderClick}
+            onOrderClick={openOrderRequest}
             isFreePlan={activeUser?.plan === 'Free'}
           />
         ) : theme.layout.variant === 'fresh' ? (
@@ -342,7 +379,7 @@ export function StoreFront({ storefront }: { storefront?: PublicStorefrontData }
             resolvedStoreId={resolvedStoreId}
             isSubdomain={isSubdomain}
             onContactClick={handleContactClick}
-            onOrderClick={handleOrderClick}
+            onOrderClick={openOrderRequest}
             isFreePlan={activeUser?.plan === 'Free'}
           />
         ) : theme.layout.variant === 'swift' ? (
@@ -353,7 +390,7 @@ export function StoreFront({ storefront }: { storefront?: PublicStorefrontData }
             resolvedStoreId={resolvedStoreId}
             isSubdomain={isSubdomain}
             onContactClick={handleContactClick}
-            onOrderClick={handleOrderClick}
+            onOrderClick={openOrderRequest}
             isFreePlan={activeUser?.plan === 'Free'}
           />
         ) : theme.layout.variant === 'noir' ? (
@@ -364,7 +401,7 @@ export function StoreFront({ storefront }: { storefront?: PublicStorefrontData }
             resolvedStoreId={resolvedStoreId}
             isSubdomain={isSubdomain}
             onContactClick={handleContactClick}
-            onOrderClick={handleOrderClick}
+            onOrderClick={openOrderRequest}
             isFreePlan={activeUser?.plan === 'Free'}
           />
         ) : (
@@ -377,7 +414,7 @@ export function StoreFront({ storefront }: { storefront?: PublicStorefrontData }
               resolvedStoreId={resolvedStoreId}
               isSubdomain={isSubdomain}
               onContactClick={handleContactClick}
-              onOrderClick={handleOrderClick}
+              onOrderClick={openOrderRequest}
               searchQuery={searchQuery}
             />
 
@@ -386,14 +423,25 @@ export function StoreFront({ storefront }: { storefront?: PublicStorefrontData }
             {/* Floating WhatsApp — always visible */}
             <button
               onClick={() => handleContactClick()}
-              className="fixed bottom-[max(1rem,env(safe-area-inset-bottom))] right-4 sm:right-[max(1rem,calc(50%-284px))] z-50 flex items-center gap-3 px-4 py-3 rounded-full shadow-2xl hover:-translate-y-1 transition-all duration-300"
+              className="fixed bottom-[max(1rem,env(safe-area-inset-bottom))] right-4 z-50 flex items-center gap-3 px-4 py-3 rounded-full shadow-2xl hover:-translate-y-1 transition-all duration-300"
               style={{ background: '#25D366', color: '#FFFFFF' }}
               aria-label="Chat to Order on WhatsApp"
             >
               <MessageCircle className="w-6 h-6" />
             </button>
+
           </>
         )}
+
+        <OrderRequestModal
+          isOpen={Boolean(selectedProduct)}
+          onClose={() => setSelectedProduct(null)}
+          product={selectedProduct}
+          storeName={store.name}
+          currencySymbol={currencySymbol}
+          onSubmit={submitOrderRequest}
+          onWhatsAppOnly={selectedProduct ? () => handleContactClick(selectedProduct) : undefined}
+        />
       </div>
     </div>
   );

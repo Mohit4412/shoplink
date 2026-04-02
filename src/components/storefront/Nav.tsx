@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, CSSProperties } from 'react';
+import { useState, useEffect, useRef, CSSProperties, FormEvent } from 'react';
 import Link from 'next/link';
 import { Search, X } from 'lucide-react';
 import type { Theme } from '../../utils/themes';
@@ -40,6 +40,10 @@ export function Nav({ theme, store, storeHref, searchQuery = '', onSearchChange 
     borderBottomColor: isTransparent ? 'transparent' : t.navBorder,
     color: t.navText,
     transition: 'background 0.25s ease, border-color 0.25s ease',
+  };
+  const submitSearch = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    (event.currentTarget.querySelector('input') as HTMLInputElement | null)?.blur();
   };
 
   const LogoBlock = (
@@ -93,7 +97,7 @@ export function Nav({ theme, store, storeHref, searchQuery = '', onSearchChange 
         </Link>
 
         {/* Desktop: inline input */}
-        <div className="hidden sm:flex items-center gap-2 flex-1 max-w-[200px]">
+        <form onSubmit={submitSearch} className="hidden sm:flex items-center gap-2 flex-1 max-w-[260px]">
           <div className="relative w-full">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
             <input
@@ -109,29 +113,44 @@ export function Nav({ theme, store, storeHref, searchQuery = '', onSearchChange 
               }}
             />
           </div>
-        </div>
+          <button
+            type="submit"
+            className="h-8 shrink-0 rounded-lg border px-2.5 text-[11px] font-semibold"
+            style={{ borderColor: t.navBorder, background: t.cardBg, color: t.pageText }}
+          >
+            Enter
+          </button>
+        </form>
 
         {/* Mobile: icon that expands */}
         <div className="sm:hidden flex items-center">
           {searchOpen ? (
-            <div className="flex items-center gap-2">
+            <form onSubmit={submitSearch} className="flex items-center gap-2">
               <input
                 ref={searchRef}
                 type="search"
                 placeholder="Search…"
                 value={searchQuery}
                 onChange={e => onSearchChange?.(e.target.value)}
-                className="h-8 w-36 px-2.5 text-xs rounded-lg border focus:outline-none focus:ring-2"
+                className="h-8 w-28 px-2.5 text-xs rounded-lg border focus:outline-none focus:ring-2"
                 style={{ borderColor: t.navBorder, background: t.cardBg, color: t.pageText }}
               />
               <button
+                type="submit"
+                className="h-8 shrink-0 rounded-lg border px-2 text-[10px] font-semibold"
+                style={{ borderColor: t.navBorder, background: t.cardBg, color: t.pageText }}
+              >
+                Enter
+              </button>
+              <button
+                type="button"
                 onClick={() => { setSearchOpen(false); onSearchChange?.(''); }}
                 className="p-1.5 min-h-[44px] min-w-[44px] flex items-center justify-center"
                 aria-label="Close search"
               >
                 <X className="w-4 h-4" style={{ color: t.navText }} />
               </button>
-            </div>
+            </form>
           ) : (
             <button
               onClick={() => setSearchOpen(true)}
@@ -156,24 +175,32 @@ export function Nav({ theme, store, storeHref, searchQuery = '', onSearchChange 
         {LogoBlock}
       </Link>
       {searchOpen ? (
-        <div className="flex items-center gap-2 shrink-0">
+        <form onSubmit={submitSearch} className="flex items-center gap-2 shrink-0">
           <input
             ref={searchRef}
             type="search"
             placeholder="Search…"
             value={searchQuery}
             onChange={e => onSearchChange?.(e.target.value)}
-            className="h-8 w-32 sm:w-40 px-2.5 text-xs rounded-lg border focus:outline-none focus:ring-2"
+            className="h-8 w-24 sm:w-40 px-2.5 text-xs rounded-lg border focus:outline-none focus:ring-2"
             style={{ borderColor: t.navBorder, background: t.cardBg, color: t.pageText }}
           />
           <button
+            type="submit"
+            className="h-8 shrink-0 rounded-lg border px-2 text-[10px] font-semibold"
+            style={{ borderColor: t.navBorder, background: t.cardBg, color: t.pageText }}
+          >
+            Enter
+          </button>
+          <button
+            type="button"
             onClick={() => { setSearchOpen(false); onSearchChange?.(''); }}
             className="p-1.5 min-h-[44px] min-w-[44px] flex items-center justify-center"
             aria-label="Close search"
           >
             <X className="w-4 h-4" style={{ color: t.navText }} />
           </button>
-        </div>
+        </form>
       ) : (
         <button
           onClick={() => setSearchOpen(true)}

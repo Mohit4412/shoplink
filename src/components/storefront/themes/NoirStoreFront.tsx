@@ -66,7 +66,7 @@ export function NoirStoreFront({
       </div>
 
       {/* The Edit section */}
-      <main className="flex-1 pb-32 px-4 pt-8">
+      <main className="flex-1 pb-32 px-4 pt-8 max-w-7xl mx-auto w-full">
         <div className="mb-8">
           <div className="flex items-baseline justify-between mb-6">
             <h2 className="text-2xl font-bold tracking-tight" style={{ color: t.sectionHeading }}>
@@ -88,7 +88,7 @@ export function NoirStoreFront({
               </p>
             </div>
           ) : (
-            <div className="space-y-12">
+            <div className="space-y-12 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-8 md:space-y-0">
               {featuredProducts.map(product => (
                 <div
                   key={product.id}
@@ -224,7 +224,7 @@ export function NoirStoreFront({
               style={{ background: t.accentLight, color: t.accent, border: `1px solid ${t.cardBorder}` }}
             >
               <MessageCircle className="w-4 h-4" />
-              Chat to Order on WhatsApp
+              Chat with Seller
             </button>
           </div>
         )}

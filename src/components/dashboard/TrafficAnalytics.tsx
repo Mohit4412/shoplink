@@ -34,7 +34,7 @@ function arcPath(cx: number, cy: number, r: number, startAngle: number, endAngle
 function DonutChart({ data }: { data: Analytics['countrySummary'] }) {
   const [activeIndex, setActiveIndex] = useState(0);
   const total = data.reduce((s, d) => s + d.views, 0);
-  if (data.length === 0) return <p className="text-sm text-gray-400 py-4">No country data yet.</p>;
+  if (data.length === 0) return <p className="py-4 text-sm text-slate-500">No country data yet.</p>;
 
   const cx = 110;
   const cy = 110;
@@ -56,9 +56,9 @@ function DonutChart({ data }: { data: Analytics['countrySummary'] }) {
   const activePercent = total > 0 ? Math.round((active.item.views / total) * 100) : 0;
 
   return (
-    <div>
-      <div className="flex justify-center">
-        <svg width={220} height={220} viewBox="0 0 220 220">
+    <div className="grid grid-cols-1 items-start gap-4 divide-y divide-slate-200 sm:grid-cols-2 sm:gap-0 sm:divide-x sm:divide-y-0 sm:divide-slate-200">
+      <div className="flex justify-center items-center self-start pb-4 sm:self-center sm:pb-0 sm:pr-6">
+        <svg width={220} height={220} viewBox="0 0 220 220" className="shrink-0">
           {segments.map((seg, i) => {
             const isActive = i === activeIndex;
             const r = isActive ? outerR + 5 : outerR;
@@ -105,17 +105,17 @@ function DonutChart({ data }: { data: Analytics['countrySummary'] }) {
       </div>
 
       {/* Legend */}
-      <div className="mt-1">
+      <div className="min-w-0 self-start max-h-[min(22rem,55vh)] overflow-y-auto pt-4 sm:max-h-[14rem] sm:pt-0 sm:pl-6 sm:pr-1">
         {data.map((item, index) => (
           <div
             key={item.country}
-            className={`flex items-center gap-3 py-2 border-b border-gray-50 last:border-0 cursor-pointer transition-opacity ${activeIndex === index ? 'opacity-100' : 'opacity-50 hover:opacity-80'}`}
+            className={`flex cursor-pointer items-center gap-2 border-b border-slate-100 py-2.5 last:border-0 transition-colors sm:gap-3 ${activeIndex === index ? 'bg-sky-50/50 opacity-100' : 'opacity-60 hover:bg-slate-50 hover:opacity-100'}`}
             onMouseEnter={() => setActiveIndex(index)}
           >
             <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: GEO_COLORS[index % GEO_COLORS.length] }} />
-            <span className="flex-1 text-sm font-medium text-gray-900">{item.country}</span>
-            <span className="text-xs text-gray-400">{item.views} views</span>
-            <span className="text-xs font-semibold text-gray-700 w-10 text-right">{getSharePercent(item.views, total)}%</span>
+            <span className="min-w-0 flex-1 truncate text-sm font-medium text-slate-900">{item.country}</span>
+            <span className="hidden shrink-0 text-xs text-slate-500 sm:inline">{item.views} views</span>
+            <span className="w-9 shrink-0 text-right text-xs font-semibold tabular-nums text-slate-800 sm:w-10">{getSharePercent(item.views, total)}%</span>
           </div>
         ))}
       </div>
@@ -125,51 +125,55 @@ function DonutChart({ data }: { data: Analytics['countrySummary'] }) {
 
 export function TrafficAnalytics({ sourceSummary, countrySummary }: TrafficAnalyticsProps) {
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-5">
 
       {/* Traffic Sources */}
-      <div>
-        <div className="mb-3 flex items-center gap-2">
-          <LinkIcon className="h-4 w-4 text-gray-400" />
-          <h3 className="text-sm font-semibold text-gray-900">Traffic Sources</h3>
+      <div className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+        <div className="flex items-center gap-2 border-b border-slate-200 bg-slate-50/90 px-3 py-2.5 sm:px-4">
+          <LinkIcon className="h-4 w-4 shrink-0 text-slate-500" />
+          <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-600">Traffic sources</h3>
         </div>
 
-        {sourceSummary.length > 0 && (
-          <div className="flex items-center gap-2 pb-2 mb-1 border-b border-gray-100">
-            <span className="w-5 shrink-0" />
-            <span className="flex-1 text-[11px] font-semibold text-gray-400 uppercase tracking-wide">Source</span>
-            <span className="w-16 text-right text-[11px] font-semibold text-gray-400 uppercase tracking-wide">Clicks</span>
-            <span className="w-16 text-right text-[11px] font-semibold text-gray-400 uppercase tracking-wide">Views</span>
-            <span className="w-14 text-right text-[11px] font-semibold text-gray-400 uppercase tracking-wide">CTR</span>
-          </div>
-        )}
-
-        {sourceSummary.length > 0 ? sourceSummary.map((source, index) => {
-          const ctr = source.views > 0 ? ((source.clicks / source.views) * 100).toFixed(0) : '0';
-          return (
-            <div key={source.source} className="flex items-center gap-2 border-b border-gray-50 last:border-0 py-2.5">
-              <span className="text-xs text-gray-400 w-5 shrink-0">{index + 1}.</span>
-              <span className="flex-1 font-medium capitalize text-gray-900 text-sm truncate">{source.source}</span>
-              <span className="w-16 text-right text-sm text-gray-700">{source.clicks}</span>
-              <span className="w-16 text-right text-sm text-gray-700">{source.views}</span>
-              <span className="w-14 text-right text-sm font-semibold text-gray-900">{ctr}%</span>
+        <div className="px-1 sm:px-2">
+          {sourceSummary.length > 0 && (
+            <div className="flex items-center gap-2 border-b border-slate-100 px-2 pb-2 pt-3">
+              <span className="w-5 shrink-0" />
+              <span className="flex-1 text-[11px] font-semibold uppercase tracking-wide text-slate-500">Source</span>
+              <span className="w-16 text-right text-[11px] font-semibold uppercase tracking-wide text-slate-500">Clicks</span>
+              <span className="w-16 text-right text-[11px] font-semibold uppercase tracking-wide text-slate-500">Views</span>
+              <span className="w-14 text-right text-[11px] font-semibold uppercase tracking-wide text-slate-500">CTR</span>
             </div>
-          );
-        }) : (
-          <p className="text-sm text-gray-400 py-4">No source data yet.</p>
-        )}
+          )}
+
+          {sourceSummary.length > 0 ? sourceSummary.map((source, index) => {
+            const ctr = source.views > 0 ? ((source.clicks / source.views) * 100).toFixed(0) : '0';
+            return (
+              <div
+                key={source.source}
+                className="flex items-center gap-2 border-b border-slate-100 px-2 py-2.5 last:border-0 hover:bg-slate-50/80"
+              >
+                <span className="w-5 shrink-0 text-xs tabular-nums text-slate-400">{index + 1}.</span>
+                <span className="flex-1 truncate text-sm font-medium capitalize text-slate-900">{source.source}</span>
+                <span className="w-16 text-right text-sm tabular-nums text-slate-700">{source.clicks}</span>
+                <span className="w-16 text-right text-sm tabular-nums text-slate-700">{source.views}</span>
+                <span className="w-14 text-right text-sm font-semibold tabular-nums text-slate-900">{ctr}%</span>
+              </div>
+            );
+          }) : (
+            <p className="px-3 py-6 text-sm text-slate-500">No source data yet.</p>
+          )}
+        </div>
       </div>
 
-      {/* Divider */}
-      <div className="border-t border-gray-100" />
-
       {/* Audience Geography */}
-      <div>
-        <div className="mb-3 flex items-center gap-2">
-          <Globe className="h-4 w-4 text-gray-400" />
-          <h3 className="text-sm font-semibold text-gray-900">Audience Geography</h3>
+      <div className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+        <div className="flex items-center gap-2 border-b border-slate-200 bg-slate-50/90 px-3 py-2.5 sm:px-4">
+          <Globe className="h-4 w-4 shrink-0 text-slate-500" />
+          <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-600">Audience geography</h3>
         </div>
-        <DonutChart data={countrySummary} />
+        <div className="p-3 sm:p-4">
+          <DonutChart data={countrySummary} />
+        </div>
       </div>
 
     </div>

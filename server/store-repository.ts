@@ -31,6 +31,7 @@ interface StoreRow {
   trust_badges_json: string | null | unknown;
   banners_json: string | null | unknown;
   legal_json: string | null | unknown;
+  payment_json: string | null | unknown;
   custom_domain: string | null;
   custom_domain_status: StoreSettings['customDomainStatus'] | null;
 }
@@ -48,7 +49,9 @@ interface ProductRow {
   category: string;
   stock: number;
   collection_name: string | null;
+  collections_json?: string | null | unknown;
   highlights_json: string | null | unknown;
+  variants_json: string | null | unknown;
   reviews_json: string | null | unknown;
   is_demo: number | boolean | null;
 }
@@ -108,6 +111,7 @@ export function ensureStoreSchema() {
       category TEXT NOT NULL,
       stock INTEGER NOT NULL,
       collection_name TEXT,
+      collections_json TEXT,
       highlights_json TEXT,
       reviews_json TEXT,
       is_demo INTEGER NOT NULL DEFAULT 0,
@@ -118,6 +122,9 @@ export function ensureStoreSchema() {
   // Migrate existing DBs
   try { db.exec(`ALTER TABLE products ADD COLUMN is_demo INTEGER NOT NULL DEFAULT 0`); } catch { /* already exists */ }
   try { db.exec(`ALTER TABLE stores ADD COLUMN legal_json TEXT`); } catch { /* already exists */ }
+  try { db.exec(`ALTER TABLE products ADD COLUMN collections_json TEXT`); } catch { /* already exists */ }
+  try { db.exec(`ALTER TABLE stores ADD COLUMN payment_json TEXT`); } catch { /* already exists */ }
+  try { db.exec(`ALTER TABLE products ADD COLUMN variants_json TEXT`); } catch { /* already exists */ }
 }
 
 function serializeStore(bundle: MerchantStorefrontBundle) {
@@ -142,12 +149,18 @@ function serializeStore(bundle: MerchantStorefrontBundle) {
     trust_badges_json: store.trustBadges ? JSON.stringify(store.trustBadges) : null,
     banners_json: store.banners ? JSON.stringify(store.banners) : null,
     legal_json: store.legalPages ? JSON.stringify(store.legalPages) : null,
+    payment_json: store.paymentSettings ? JSON.stringify(store.paymentSettings) : null,
     custom_domain: store.customDomain ?? null,
     custom_domain_status: store.customDomainStatus ?? null,
   };
 }
 
 function serializeProduct(username: string, product: Product) {
+  const normalizedCollections = product.collections?.length
+    ? product.collections
+    : product.collection
+      ? [product.collection]
+      : [];
   return {
     store_username: username,
     product_id: product.id,
@@ -160,8 +173,10 @@ function serializeProduct(username: string, product: Product) {
     created_at: product.createdAt,
     category: product.category,
     stock: product.stock,
-    collection_name: product.collection ?? null,
+    collection_name: normalizedCollections[0] ?? null,
+    collections_json: JSON.stringify(normalizedCollections),
     highlights_json: JSON.stringify(product.highlights ?? []),
+    variants_json: JSON.stringify(product.variants ?? []),
     reviews_json: JSON.stringify(product.reviews ?? []),
   };
 }
@@ -190,6 +205,7 @@ function hydrateStore(row: StoreRow): { user: UserProfile; store: StoreSettings 
       theme: row.theme ?? undefined,
       banners: parseJson(row.banners_json, undefined),
       legalPages: parseJson(row.legal_json, undefined),
+      paymentSettings: parseJson(row.payment_json, undefined),
       customDomain: row.custom_domain ?? undefined,
       customDomainStatus: row.custom_domain_status ?? undefined,
     },
@@ -208,8 +224,10 @@ function hydrateProduct(row: ProductRow): Product {
     createdAt: row.created_at,
     category: row.category,
     stock: row.stock,
-    collection: row.collection_name ?? undefined,
+    collection: (parseJson<string[]>(row.collections_json, row.collection_name ? [row.collection_name] : [])?.[0]) ?? undefined,
+    collections: parseJson<string[]>(row.collections_json, row.collection_name ? [row.collection_name] : []),
     highlights: parseJson(row.highlights_json, []),
+    variants: parseJson(row.variants_json, []),
     reviews: parseJson(row.reviews_json, []),
   });
 }
@@ -264,10 +282,10 @@ if (db) {
   replaceProductStmt = db.prepare(`
   INSERT INTO products (
     store_username, product_id, image_url, images_json, name, price, description, status, created_at,
-    category, stock, collection_name, highlights_json, reviews_json
+    category, stock, collection_name, collections_json, highlights_json, variants_json, reviews_json
   ) VALUES (
     @store_username, @product_id, @image_url, @images_json, @name, @price, @description, @status, @created_at,
-    @category, @stock, @collection_name, @highlights_json, @reviews_json
+    @category, @stock, @collection_name, @collections_json, @highlights_json, @variants_json, @reviews_json
   )
   ON CONFLICT(store_username, product_id) DO UPDATE SET
     image_url = excluded.image_url,
@@ -280,7 +298,9 @@ if (db) {
     category = excluded.category,
     stock = excluded.stock,
     collection_name = excluded.collection_name,
+    collections_json = excluded.collections_json,
     highlights_json = excluded.highlights_json,
+    variants_json = excluded.variants_json,
     reviews_json = excluded.reviews_json
 `);
 

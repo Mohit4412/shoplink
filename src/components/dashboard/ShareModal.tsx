@@ -3,6 +3,7 @@ import { Modal } from '../ui/Modal';
 import { Button } from '../ui/Button';
 import { QRCodeSVG } from 'qrcode.react';
 import { Copy, Check } from 'lucide-react';
+import { getStoreUrl } from '../../utils/storeUrl';
 
 interface ShareModalProps {
   isOpen: boolean;
@@ -13,12 +14,9 @@ interface ShareModalProps {
 export function ShareModal({ isOpen, onClose, username }: ShareModalProps) {
   const [copied, setCopied] = useState(false);
 
-  const primaryUrl = process.env.NODE_ENV === 'development' 
-    ? `http://localhost:3000/${username}`
-    : `https://${username}.myshoplink.site`;
-    
-  const secondaryUrl = process.env.NODE_ENV === 'development' 
-    ? `http://localhost:3000/${username}`
+  const primaryUrl = getStoreUrl(username);
+  const secondaryUrl = typeof window !== 'undefined'
+    ? `${window.location.origin}/${username}`
     : `https://myshoplink.site/${username}`;
 
   const handleCopyLink = () => {

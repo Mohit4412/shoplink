@@ -9,25 +9,20 @@ interface Variant {
 }
 
 interface ProductActionsProps {
-  productName: string;
   price: number;
   compareAtPrice?: number;
   variants?: Variant[];
   stockQuantity?: number;
-  whatsAppNumber: string;
   currencySymbol?: string;
-  storeName?: string;
   accentColor?: string;
   onOrder?: () => void;
 }
 
 export function ProductActions({
-  productName,
   price,
   compareAtPrice,
   variants = [],
   stockQuantity,
-  whatsAppNumber,
   currencySymbol = '₹',
   accentColor = '#0d9488',
   onOrder,
@@ -46,18 +41,7 @@ export function ProductActions({
       return;
     }
 
-    // Fire the tracking callback first
     onOrder?.();
-
-    let message = `Hi! I want to order: *${productName}* — ${currencySymbol}${price.toFixed(2)}. Please confirm availability. 🙏`;
-    if (variants.length > 0) {
-      const variantText = Object.entries(selectedVariants)
-        .map(([name, val]) => `${name}: ${val}`)
-        .join(', ');
-      message += `\nOptions: ${variantText}`;
-    }
-
-    window.open(`https://wa.me/${whatsAppNumber}?text=${encodeURIComponent(message)}`, '_blank', 'noopener,noreferrer');
   };
 
   const discountRatio = compareAtPrice ? Math.round((1 - price / compareAtPrice) * 100) : 0;
@@ -81,7 +65,7 @@ export function ProductActions({
             </>
           )}
         </div>
-        <p className="text-xs text-gray-400 mt-1">Chat on WhatsApp to confirm price &amp; delivery</p>
+        <p className="text-xs text-gray-400 mt-1">Send a quick order request and the seller can confirm delivery or payment.</p>
       </div>
 
       {/* Variants */}
@@ -128,7 +112,7 @@ export function ProductActions({
         onClick={handleOrder}
         className="w-full flex items-center justify-center gap-2 bg-[#25D366] text-white h-14 rounded-xl text-base font-bold shadow-lg shadow-[#25D366]/20 transition-all hover:bg-[#20BE5A] hover:-translate-y-0.5 active:scale-95 group focus:outline-none focus:ring-4 focus:ring-[#25D366]/30"
       >
-        Order on WhatsApp
+        Order Now
         <ShoppingBag className="w-5 h-5 group-hover:animate-bounce" />
       </button>
     </div>

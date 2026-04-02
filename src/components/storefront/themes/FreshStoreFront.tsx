@@ -98,7 +98,7 @@ export function FreshStoreFront({
       </div>
 
       {/* Product list */}
-      <main className="flex-1 pb-28 px-4 pt-4">
+      <main className="flex-1 pb-28 px-4 pt-4 max-w-7xl mx-auto w-full">
         {filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-32 px-6 text-center">
             <p className="text-sm font-semibold" style={{ color: t.productMeta }}>
@@ -106,7 +106,7 @@ export function FreshStoreFront({
             </p>
           </div>
         ) : (
-          <div className="space-y-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
             {filtered.map(product => {
               const qty = quantities[product.id] || 1;
               const totalPrice = product.price * qty;
@@ -203,7 +203,7 @@ export function FreshStoreFront({
                       }}
                     >
                       <MessageCircle className="w-4 h-4" />
-                      Order via WhatsApp — {currencySymbol}{totalPrice.toFixed(2)}
+                      Order Now — {currencySymbol}{totalPrice.toFixed(2)}
                     </button>
                   )}
                 </div>

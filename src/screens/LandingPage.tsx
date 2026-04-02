@@ -52,10 +52,10 @@ export function LandingPage() {
 
   const faqs = [
     { q: "Do my customers need to download an app?", a: "No. They just click your link and browse in their browser — no app, no signup, no friction." },
-    { q: "How does WhatsApp ordering work?", a: "Every product has an 'Order via WhatsApp' button. When tapped, WhatsApp opens with a pre-filled message including the product name and price. They just hit send." },
+    { q: "How does ordering work?", a: "Customers can place an order request right from your store. You receive the lead instantly and can confirm payment or delivery on WhatsApp." },
     { q: "Do I need technical knowledge?", a: "None at all. If you can use Instagram, you can use MyShopLink. Your store is live in under 5 minutes." },
     { q: "Can I use my own domain name?", a: "Yes — custom domain is a Pro feature. Your store can be at yourname.com instead of yourname.myshoplink.site." },
-    { q: "Is my store link safe to share on Instagram?", a: "Completely. It's a regular website URL — safe to put in your Instagram bio, WhatsApp status, Facebook, anywhere." },
+    { q: "Is this built only for Instagram sellers?", a: "No. It works great for Instagram, WhatsApp, repeat customers, and anyone who wants a simple store link without Shopify or WordPress complexity." },
   ];
 
   return (
@@ -69,9 +69,6 @@ export function LandingPage() {
             <a href="#features" className="hover:text-gray-900 transition-colors">Features</a>
             <a href="#pricing" className="hover:text-gray-900 transition-colors">Pricing</a>
             <Link href="/support" className="hover:text-gray-900 transition-colors">Contact</Link>
-            <a href="#" rel="nofollow" className="hover:text-gray-900 transition-colors">About</a>
-            <a href="#" rel="nofollow" className="hover:text-gray-900 transition-colors">Tools</a>
-            <a href="#" rel="nofollow" className="hover:text-gray-900 transition-colors">Blog</a>
           </div>
           <div className="hidden sm:flex items-center gap-2.5">
             <button
@@ -122,9 +119,6 @@ export function LandingPage() {
                   <a href="#features" onClick={() => setMobileMenuOpen(false)} className="rounded-lg px-3 py-2.5 transition-colors hover:bg-gray-50 hover:text-gray-900">Features</a>
                   <a href="#pricing" onClick={() => setMobileMenuOpen(false)} className="rounded-lg px-3 py-2.5 transition-colors hover:bg-gray-50 hover:text-gray-900">Pricing</a>
                   <Link href="/support" onClick={() => setMobileMenuOpen(false)} className="rounded-lg px-3 py-2.5 transition-colors hover:bg-gray-50 hover:text-gray-900">Contact</Link>
-                  <a href="#" rel="nofollow" onClick={() => setMobileMenuOpen(false)} className="rounded-lg px-3 py-2.5 transition-colors hover:bg-gray-50 hover:text-gray-900">About</a>
-                  <a href="#" rel="nofollow" onClick={() => setMobileMenuOpen(false)} className="rounded-lg px-3 py-2.5 transition-colors hover:bg-gray-50 hover:text-gray-900">Tools</a>
-                  <a href="#" rel="nofollow" onClick={() => setMobileMenuOpen(false)} className="rounded-lg px-3 py-2.5 transition-colors hover:bg-gray-50 hover:text-gray-900">Blog</a>
                 </div>
                 <div className="mt-3 grid grid-cols-2 gap-2">
                   <button
@@ -176,7 +170,7 @@ export function LandingPage() {
                 transition={{ delay: 0.3, duration: 0.6 }}
                 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-heading font-black tracking-tight leading-[1.08] mb-4 sm:mb-6 text-gray-900"
               >
-                Your catalogue link<br />for Instagram sellers.
+                Create your online store<br />for Instagram and WhatsApp sales.
               </motion.h1>
 
               <motion.p 
@@ -185,7 +179,7 @@ export function LandingPage() {
                 transition={{ delay: 0.4, duration: 0.6 }}
                 className="text-base sm:text-lg text-gray-500 max-w-lg mx-auto lg:mx-0 mb-6 sm:mb-8 leading-relaxed font-medium px-2 sm:px-0"
               >
-                Share one link. Customers browse your products and order directly on WhatsApp — no app, no website, no hassle.
+                Build a simple store, share one link, and let customers place order requests in minutes. No Shopify bloat. No WordPress setup. No technical headache.
               </motion.p>
 
               <motion.div 
@@ -210,7 +204,7 @@ export function LandingPage() {
               >
                 <span className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5" style={{ color: EMERALD }} /> Free plan available</span>
                 <span className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5" style={{ color: EMERALD }} /> Works on any phone</span>
-                <span className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5" style={{ color: EMERALD }} /> Live in 5 minutes</span>
+                <span className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5" style={{ color: EMERALD }} /> Collect order requests</span>
               </motion.div>
             </motion.div>
 
@@ -231,7 +225,7 @@ export function LandingPage() {
           <div className="max-w-4xl mx-auto px-5 flex flex-col sm:flex-row justify-center items-center gap-8 sm:gap-16 text-center">
             {[
               { icon: <CheckCircle2 className="w-5 h-5" />, label: 'Free forever plan' },
-              { icon: <CheckCircle2 className="w-5 h-5" />, label: 'Live in 5 minutes' },
+              { icon: <CheckCircle2 className="w-5 h-5" />, label: 'Order requests built in' },
               { icon: <CheckCircle2 className="w-5 h-5" />, label: 'No credit card needed' },
             ].map((s, i) => (
               <Fragment key={s.label}>
@@ -298,14 +292,14 @@ export function LandingPage() {
               className="text-center mb-10 sm:mb-14"
             >
               <span className="text-xs font-black tracking-[0.2em] uppercase mb-3 block" style={{ color: EMERALD }}>How it works</span>
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-heading font-black tracking-tight text-gray-900 px-4">One link. All your products. Orders on WhatsApp.</h2>
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-heading font-black tracking-tight text-gray-900 px-4">One link. All your products. Order requests in minutes.</h2>
             </motion.div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6 max-w-5xl mx-auto">
               {[
                 { step: '1', title: 'Create your store', desc: 'Sign up free, add your store name and logo' },
                 { step: '2', title: 'Add your products', desc: 'Photos, prices, descriptions — done in minutes' },
                 { step: '3', title: 'Share your link', desc: 'Put it in your Instagram bio, WhatsApp status, anywhere' },
-                { step: '4', title: 'Get orders', desc: 'Customers browse, tap Order, WhatsApp opens with pre-filled request' },
+                { step: '4', title: 'Get order requests', desc: 'Customers place an order request and you confirm payment or delivery on WhatsApp' },
               ].map((s, i) => (
                 <motion.div 
                   key={s.step}
@@ -431,7 +425,7 @@ export function LandingPage() {
                 ₹0<span className="text-sm font-bold text-gray-400 ml-1">/month</span>
               </div>
               <ul className="space-y-2.5 sm:space-y-3 mb-6 sm:mb-8 flex-1">
-                {['Up to 10 products', '1 store theme', 'WhatsApp order button', 'Basic analytics', 'MyShopLink branding'].map(item => (
+                {['Up to 10 products', '1 store theme', 'Order request button', 'Basic analytics', 'MyShopLink branding'].map(item => (
                   <li key={item} className="flex items-center gap-2.5 text-sm font-semibold text-gray-600">
                     <CheckCircle2 className="w-4 h-4 shrink-0" style={{ color: EMERALD }} /> {item}
                   </li>

@@ -68,7 +68,7 @@ export function SparkStoreFront({
         </div>
       </div>
 
-      {/* Instagram-style 2-col grid — no padding between cells */}
+      {/* Grid — 2 col mobile, 3 col md, 4 col lg, 5 col xl */}
       <main className="flex-1 pb-28">
         {filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-32 px-6 text-center">
@@ -77,7 +77,7 @@ export function SparkStoreFront({
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-[2px]">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-[2px]">
             {filtered.map(product => (
               <div key={product.id} className="group relative">
                 <Link href={productHref(product.id)} className="block">
@@ -113,7 +113,7 @@ export function SparkStoreFront({
                     style={{ background: t.waBg, color: t.waText }}
                   >
                     <MessageCircle className="w-3.5 h-3.5" />
-                    Order
+                    Order Now
                   </button>
                 )}
               </div>

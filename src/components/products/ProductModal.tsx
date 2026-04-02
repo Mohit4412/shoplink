@@ -1,10 +1,11 @@
 import { useState, useRef, FormEvent, ChangeEvent, Dispatch, SetStateAction } from 'react';
 import { Image as ImageIcon, Star, Trash2, Upload } from 'lucide-react';
-import { ProductStatus } from '../../types';
+import { ProductStatus, ProductVariant } from '../../types';
 import { Modal } from '../ui/Modal';
 import { Input, Textarea } from '../ui/Input';
 import { Button } from '../ui/Button';
 import { uploadImage } from '../../utils/upload';
+import { VariantEditor } from './VariantEditor';
 
 interface ProductFormData {
   name: string;
@@ -14,6 +15,7 @@ interface ProductFormData {
   images: string[];
   highlights: string;
   collection: string;
+  variants: ProductVariant[];
 }
 
 interface ProductModalProps {
@@ -249,6 +251,11 @@ export function ProductModal({ isOpen, isEditMode, onClose, formData, setFormDat
           value={formData.highlights}
           onChange={(e) => setFormData({ ...formData, highlights: e.target.value })}
           placeholder="One highlight per line"
+        />
+
+        <VariantEditor
+          variants={formData.variants}
+          onChange={(variants) => setFormData({ ...formData, variants })}
         />
 
         {submitError ? <p className="text-sm text-red-600">{submitError}</p> : null}

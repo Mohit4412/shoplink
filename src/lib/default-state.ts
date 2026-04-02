@@ -2,6 +2,16 @@ import { AppState, Product, PublicStorefrontData, StoreSettings, UserProfile } f
 
 export const normalizeProduct = (product: Product): Product => ({
   ...product,
+  collections: Array.from(new Set(
+    (product.collections?.length ? product.collections : product.collection ? [product.collection] : [])
+      .map((collection) => collection.trim())
+      .filter(Boolean)
+  )),
+  collection: Array.from(new Set(
+    (product.collections?.length ? product.collections : product.collection ? [product.collection] : [])
+      .map((collection) => collection.trim())
+      .filter(Boolean)
+  ))[0],
   images: product.images?.length ? product.images : [product.imageUrl],
   highlights: product.highlights ?? [],
   reviews: product.reviews ?? [],
