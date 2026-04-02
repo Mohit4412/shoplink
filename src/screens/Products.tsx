@@ -909,7 +909,7 @@ export function Products() {
       {activeTab === 'sales' && (
         <div className="pt-1">
           <RecentOrdersTable
-            orders={orders.filter(o => o.status === 'confirmed')}
+            orders={orders.filter(o => o.status === 'confirmed' || o.status === 'paid')}
             products={products}
             currencySymbol={currencySymbol}
             onEditOrder={handleEditOrder}

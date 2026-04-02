@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import { Modal } from '../ui/Modal';
-import { Product } from '../../types';
+import { PaymentSettings, Product } from '../../types';
 import { OrderPaymentMethod } from '../../utils/orderLeads';
 import { OrderForm, OrderFormValues } from './OrderForm';
+import { getAvailableOrderPaymentMethods } from '../../utils/orderLeads';
 
 // Re-export so existing callers don't need to change their imports
 export type PublicOrderRequestInput = OrderFormValues;
@@ -16,6 +17,7 @@ interface OrderRequestModalProps {
   product: Product | null;
   storeName: string;
   currencySymbol: string;
+  paymentSettings?: PaymentSettings;
   onSubmit: (input: PublicOrderRequestInput) => Promise<void>;
   onWhatsAppOnly?: () => void;
 }
@@ -26,6 +28,7 @@ export function OrderRequestModal({
   product,
   storeName,
   currencySymbol,
+  paymentSettings,
   onSubmit,
   onWhatsAppOnly,
 }: OrderRequestModalProps) {
@@ -50,6 +53,7 @@ export function OrderRequestModal({
         product={product}
         storeName={storeName}
         currencySymbol={currencySymbol}
+        paymentMethods={getAvailableOrderPaymentMethods(paymentSettings)}
         onSubmit={handleSubmit}
         onWhatsAppOnly={onWhatsAppOnly}
         onCancel={onClose}

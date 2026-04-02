@@ -173,12 +173,12 @@ if (db) {
   INSERT INTO stores (
     user_id, username, email, first_name, last_name, user_bio, whatsapp_number, avatar_url, plan,
     subscription_renewal_date, logo_url, store_name, tagline, store_bio, currency, theme,
-    sections_json, trust_badges_json, banners_json, custom_domain, custom_domain_status
+    sections_json, trust_badges_json, banners_json, legal_json, payment_json, custom_domain, custom_domain_status
   )
   SELECT
     user_id, @next_username, email, @first_name, @last_name, @bio, @whatsapp_number, @avatar_url, plan,
     subscription_renewal_date, @logo_url, store_name, tagline, store_bio, currency, theme,
-    sections_json, trust_badges_json, @banners_json, custom_domain, custom_domain_status
+    sections_json, trust_badges_json, @banners_json, legal_json, payment_json, custom_domain, custom_domain_status
   FROM stores
   WHERE username = @previous_username
 `);

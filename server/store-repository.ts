@@ -174,6 +174,7 @@ export function ensureStoreSchema() {
       trust_badges_json TEXT,
       banners_json TEXT,
       legal_json TEXT,
+      payment_json TEXT,
       custom_domain TEXT,
       custom_domain_status TEXT
     );
@@ -330,11 +331,11 @@ if (db) {
   INSERT INTO stores (
     user_id, username, email, first_name, last_name, user_bio, whatsapp_number, avatar_url, plan,
     subscription_renewal_date, logo_url, store_name, tagline, store_bio, currency, theme,
-    trust_badges_json, banners_json, legal_json, custom_domain, custom_domain_status
+    trust_badges_json, banners_json, legal_json, payment_json, custom_domain, custom_domain_status
   ) VALUES (
     @user_id, @username, @email, @first_name, @last_name, @user_bio, @whatsapp_number, @avatar_url, @plan,
     @subscription_renewal_date, @logo_url, @store_name, @tagline, @store_bio, @currency, @theme,
-    @trust_badges_json, @banners_json, @legal_json, @custom_domain, @custom_domain_status
+    @trust_badges_json, @banners_json, @legal_json, @payment_json, @custom_domain, @custom_domain_status
   )
   ON CONFLICT(username) DO UPDATE SET
     user_id = excluded.user_id,
@@ -355,6 +356,7 @@ if (db) {
     trust_badges_json = excluded.trust_badges_json,
     banners_json = excluded.banners_json,
     legal_json = excluded.legal_json,
+    payment_json = excluded.payment_json,
     custom_domain = excluded.custom_domain,
     custom_domain_status = excluded.custom_domain_status
 `);

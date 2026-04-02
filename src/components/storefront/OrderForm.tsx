@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Loader2, MessageCircle, ShoppingBag } from 'lucide-react';
 import { Input, Textarea } from '../ui/Input';
@@ -41,9 +41,9 @@ export interface OrderFormProps {
   onWhatsAppOnly?: () => void;
   /** Optional: called when Cancel is clicked */
   onCancel?: () => void;
+  /** Optional: limit which payment methods are shown */
+  paymentMethods?: OrderPaymentMethod[];
 }
-
-const PAYMENT_METHODS: OrderPaymentMethod[] = ['whatsapp', 'upi', 'cod', 'bank_transfer'];
 
 /** Accepts Indian numbers: 10 digits, optionally prefixed with +91 or 0 */
 const INDIAN_PHONE_RE = /^(?:\+91|91|0)?[6-9]\d{9}$/;
@@ -112,6 +112,7 @@ export function OrderForm({
   onSubmit,
   onWhatsAppOnly,
   onCancel,
+  paymentMethods = ['whatsapp', 'upi', 'cod', 'bank_transfer'],
 }: OrderFormProps) {
   const searchParams = useSearchParams();
 
@@ -124,7 +125,7 @@ export function OrderForm({
     city: param(searchParams, 'city'),
     address: '',
     pincode: '',
-    paymentMethod: 'whatsapp',
+    paymentMethod: paymentMethods[0] ?? 'whatsapp',
     notes: '',
     selectedVariants: {},
   }));
@@ -133,6 +134,15 @@ export function OrderForm({
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [submitting, setSubmitting] = useState(false);
   const [pincodeLoading, setPincodeLoading] = useState(false);
+
+  useEffect(() => {
+    if (!paymentMethods.includes(form.paymentMethod)) {
+      setForm((prev) => ({
+        ...prev,
+        paymentMethod: paymentMethods[0] ?? 'whatsapp',
+      }));
+    }
+  }, [form.paymentMethod, paymentMethods]);
 
   const total = useMemo(
     () => product.price * Math.max(1, form.quantity),
@@ -365,7 +375,7 @@ export function OrderForm({
         <div>
           <label className="mb-1 block text-sm font-medium text-gray-700">Preferred payment</label>
           <div className="grid grid-cols-2 gap-2">
-            {PAYMENT_METHODS.map((method) => {
+            {paymentMethods.map((method) => {
               const active = form.paymentMethod === method;
               return (
                 <button
@@ -395,7 +405,9 @@ export function OrderForm({
 
         {/* Total summary */}
         <div className="rounded-xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
-          Seller will confirm your order on WhatsApp.
+          {form.paymentMethod === 'stripe'
+            ? 'You will continue to a secure checkout after placing the order.'
+            : 'Seller will confirm your order on WhatsApp.'}
           <span className="ml-1 font-semibold">
             Estimated total: {currencySymbol}{total.toFixed(2)}
           </span>

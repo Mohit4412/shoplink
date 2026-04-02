@@ -3,13 +3,14 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useStore } from '../context/StoreContext';
 import { getStoreUrl } from '../utils/storeUrl';
-import { Store, Globe, CreditCard, User, ExternalLink, FileText, ChevronLeft } from 'lucide-react';
+import { Store, Globe, CreditCard, User, ExternalLink, FileText, ChevronLeft, Wallet } from 'lucide-react';
 
 import { AccountSettings } from '../components/settings/AccountSettings';
 import { StoreSettings } from '../components/settings/StoreSettings';
 import { CustomDomainSettings } from '../components/settings/CustomDomainSettings';
 import { BillingSettings } from '../components/settings/BillingSettings';
 import { LegalPagesSettings } from '../components/settings/LegalPagesSettings';
+import { PaymentsSettings } from '../components/settings/PaymentsSettings';
 
 const SECTIONS = [
   {
@@ -40,6 +41,15 @@ const SECTIONS = [
     iconBg: 'bg-teal-50',
   },
   {
+    id: 'payments',
+    title: 'Payments',
+    subtitle: 'Stripe checkout, UPI, bank transfer',
+    group: 'Storefront',
+    icon: Wallet,
+    iconColor: 'text-emerald-600',
+    iconBg: 'bg-emerald-50',
+  },
+  {
     id: 'billing',
     title: 'Plans & Billing',
     subtitle: 'Subscription, upgrade',
@@ -64,6 +74,7 @@ type SectionId = typeof SECTIONS[number]['id'];
 function SectionContent({ view }: { view: SectionId }) {
   if (view === 'store') return <StoreSettings />;
   if (view === 'domain') return <CustomDomainSettings />;
+  if (view === 'payments') return <PaymentsSettings />;
   if (view === 'billing') return <BillingSettings />;
   if (view === 'legal') return <LegalPagesSettings />;
   if (view === 'account') return <AccountSettings />;

@@ -1,8 +1,10 @@
 'use client';
 
 import { useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { CheckCircle2, MessageCircle, Copy, Check } from 'lucide-react';
 import { OrderForm, OrderFormValues, OrderFormProduct } from '@/src/components/storefront/OrderForm';
+import { getAvailableOrderPaymentMethods } from '@/src/utils/orderLeads';
 import { buildOrderWhatsAppUrl } from '@/src/utils/whatsapp';
 import { Product, PaymentSettings } from '@/src/types';
 
@@ -139,8 +141,12 @@ export function ProductOrderSection({
   whatsappNumber,
   paymentSettings,
 }: ProductOrderSectionProps) {
+  const searchParams = useSearchParams();
   const [submitted, setSubmitted] = useState<SubmittedState | null>(null);
   const [paymentDone, setPaymentDone] = useState(false);
+  const checkoutState = searchParams?.get('checkout');
+  const checkoutOrderId = searchParams?.get('order');
+  const paymentMethods = getAvailableOrderPaymentMethods(paymentSettings);
 
   const formProduct: OrderFormProduct = {
     id: product.id,
@@ -173,6 +179,14 @@ export function ProductOrderSection({
 
     const payload = await response.json().catch(() => ({}));
     if (!response.ok) throw new Error(payload?.error || 'Could not send your order request.');
+
+    if (payload?.paymentProvider === 'stripe') {
+      if (!payload?.checkoutUrl) {
+        throw new Error('Unable to start secure checkout right now.');
+      }
+      window.location.assign(payload.checkoutUrl);
+      return;
+    }
 
     const baseText = [
       'Hi, I just placed an order.',
@@ -306,12 +320,25 @@ export function ProductOrderSection({
   }
 
   return (
-    <OrderForm
-      product={formProduct}
-      storeName={storeName}
-      currencySymbol={currencySymbol}
-      onSubmit={handleSubmit}
-      onWhatsAppOnly={handleWhatsAppOnly}
-    />
+    <div className="space-y-4">
+      {checkoutState === 'success' ? (
+        <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+          Payment received. We saved your order{checkoutOrderId ? ` (${checkoutOrderId})` : ''} and the seller can now process it.
+        </div>
+      ) : null}
+      {checkoutState === 'cancel' ? (
+        <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+          Checkout was cancelled. Your order request is still saved, so you can retry payment or choose another payment method below.
+        </div>
+      ) : null}
+      <OrderForm
+        product={formProduct}
+        storeName={storeName}
+        currencySymbol={currencySymbol}
+        paymentMethods={paymentMethods}
+        onSubmit={handleSubmit}
+        onWhatsAppOnly={handleWhatsAppOnly}
+      />
+    </div>
   );
 }

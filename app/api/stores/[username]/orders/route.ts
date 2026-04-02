@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { randomUUID } from 'crypto';
-import { createOrder } from '@/server/dashboard-repository';
+import { createOrder, updateOrderById } from '@/server/dashboard-repository';
 import { getPublicStorefrontByUsername } from '@/server/store-repository';
+import { createStripeCheckoutSession, isStripeConnectEnabled } from '@/server/stripe-connect';
 import { serializeOrderLeadNotes } from '@/src/utils/orderLeads';
 import { generateOrderToken } from '@/src/utils/orderToken';
 
@@ -52,6 +53,22 @@ export async function POST(request: NextRequest, { params }: RouteContext) {
 
     const orderId = `o_${randomUUID()}`;
 
+    const isStripeCheckout = paymentMethod === 'stripe';
+
+    if (isStripeCheckout) {
+      const paymentSettings = storefront.store.paymentSettings;
+      const stripeAccountId = paymentSettings?.stripe?.accountId;
+      const onlineCheckoutEnabled =
+        paymentSettings?.enableOnlineCheckout &&
+        paymentSettings.checkoutProvider === 'stripe' &&
+        paymentSettings.stripe?.onboardingComplete &&
+        paymentSettings.stripe?.chargesEnabled;
+
+      if (!isStripeConnectEnabled() || !stripeAccountId || !onlineCheckoutEnabled) {
+        return NextResponse.json({ error: 'Online checkout is not available for this store yet.' }, { status: 400 });
+      }
+    }
+
     await createOrder(username, {
       id: orderId,
       productId,
@@ -72,7 +89,9 @@ export async function POST(request: NextRequest, { params }: RouteContext) {
         },
         notes
       ),
-      status: 'pending',
+      status: isStripeCheckout ? 'checkout_pending' : 'pending',
+      paymentProvider: isStripeCheckout ? 'stripe' : 'manual',
+      paymentStatus: isStripeCheckout ? 'pending' : 'unpaid',
     });
 
     // Generate one-click action tokens for the WhatsApp message
@@ -84,7 +103,49 @@ export async function POST(request: NextRequest, { params }: RouteContext) {
     const confirmUrl = `${APP_URL}/api/orders/${orderId}/confirm?token=${confirmToken}`;
     const declineUrl = `${APP_URL}/api/orders/${orderId}/decline?token=${declineToken}`;
 
-    return NextResponse.json({ ok: true, orderId, confirmUrl, declineUrl });
+    if (isStripeCheckout) {
+      try {
+        const checkoutSession = await createStripeCheckoutSession({
+          accountId: storefront.store.paymentSettings!.stripe!.accountId,
+          productName: product.name,
+          productDescription: product.description,
+          imageUrl: product.imageUrl,
+          amount: revenue / Math.max(Number(quantity) > 0 ? Number(quantity) : 1, 1),
+          currency: storefront.store.currency,
+          quantity: Number(quantity) > 0 ? Number(quantity) : 1,
+          successUrl: `${APP_URL}/p/${username}--${product.id}?checkout=success&order=${orderId}`,
+          cancelUrl: `${APP_URL}/p/${username}--${product.id}?checkout=cancel&order=${orderId}`,
+          customerEmail: typeof email === 'string' ? email : undefined,
+          metadata: {
+            order_id: orderId,
+            username,
+            product_id: product.id,
+          },
+        });
+
+        await updateOrderById(username, orderId, {
+          paymentProvider: 'stripe',
+          paymentStatus: 'pending',
+          paymentReference: checkoutSession.id,
+        });
+
+        return NextResponse.json({
+          ok: true,
+          orderId,
+          checkoutUrl: checkoutSession.url,
+          paymentProvider: 'stripe',
+        });
+      } catch (error) {
+        await updateOrderById(username, orderId, {
+          status: 'payment_failed',
+          paymentProvider: 'stripe',
+          paymentStatus: 'failed',
+        });
+        throw error;
+      }
+    }
+
+    return NextResponse.json({ ok: true, orderId, confirmUrl, declineUrl, paymentProvider: 'manual' });
   } catch (err) {
     console.error('[POST /api/stores/[username]/orders]', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

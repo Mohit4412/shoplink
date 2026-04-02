@@ -312,6 +312,7 @@ export function StoreFront({ storefront }: { storefront?: PublicStorefrontData }
           pincode: input.pincode,
           paymentMethod: input.paymentMethod,
           notes: input.notes,
+          selectedVariants: input.selectedVariants,
           source: 'website',
         }),
       });
@@ -319,6 +320,11 @@ export function StoreFront({ storefront }: { storefront?: PublicStorefrontData }
       const payload = await response.json().catch(() => ({}));
       if (!response.ok) {
         throw new Error(payload?.error || 'Could not send your order request.');
+      }
+
+      if (payload?.paymentProvider === 'stripe' && payload?.checkoutUrl) {
+        window.location.assign(payload.checkoutUrl);
+        return;
       }
     }
 
@@ -439,6 +445,7 @@ export function StoreFront({ storefront }: { storefront?: PublicStorefrontData }
           product={selectedProduct}
           storeName={store.name}
           currencySymbol={currencySymbol}
+          paymentSettings={store.paymentSettings}
           onSubmit={submitOrderRequest}
           onWhatsAppOnly={selectedProduct ? () => handleContactClick(selectedProduct) : undefined}
         />

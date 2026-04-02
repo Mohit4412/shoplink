@@ -1,4 +1,14 @@
 export type ProductStatus = 'Active' | 'Draft';
+export type PaymentProvider = 'manual' | 'stripe';
+export type OrderPaymentStatus = 'unpaid' | 'pending' | 'paid' | 'failed' | 'refunded';
+export type OrderStatus =
+  | 'pending'
+  | 'confirmed'
+  | 'declined'
+  | 'payment_pending_verification'
+  | 'checkout_pending'
+  | 'paid'
+  | 'payment_failed';
 
 
 export interface ProductVariant {
@@ -41,7 +51,10 @@ export interface Order {
   revenue: number;
   date: string;
   notes?: string;
-  status: 'pending' | 'confirmed' | 'declined' | 'payment_pending_verification';
+  status: OrderStatus;
+  paymentProvider?: PaymentProvider;
+  paymentStatus?: OrderPaymentStatus;
+  paymentReference?: string;
 }
 
 export interface AppNotification {
@@ -86,6 +99,20 @@ export interface PaymentSettings {
   bankAccountNumber?: string;
   bankIfsc?: string;
   bankBranch?: string;
+  checkoutProvider?: PaymentProvider;
+  enableOnlineCheckout?: boolean;
+  stripe?: StripePaymentAccount;
+}
+
+export interface StripePaymentAccount {
+  accountId: string;
+  accountEmail?: string;
+  accountDisplayName?: string;
+  onboardingComplete: boolean;
+  detailsSubmitted: boolean;
+  chargesEnabled: boolean;
+  payoutsEnabled: boolean;
+  lastSyncedAt?: string;
 }
 
 export type Store = StoreSettings;

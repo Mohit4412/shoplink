@@ -4,7 +4,7 @@ import { format, parseISO, subDays } from 'date-fns';
 import { ensureStoreSchema } from '@/server/store-repository';
 import { getDefaultAppState } from '@/src/lib/default-state';
 import { isSupabaseEnabled, supabaseCount, supabaseDelete, supabaseInsert, supabasePatch, supabaseSelect } from '@/server/supabase';
-import { Analytics, Order } from '@/src/types';
+import { Analytics, Order, OrderPaymentStatus, PaymentProvider } from '@/src/types';
 
 interface OrderRow {
   id: string;
@@ -15,6 +15,9 @@ interface OrderRow {
   date: string;
   notes: string | null;
   status: Order['status'];
+  payment_provider: PaymentProvider | null;
+  payment_status: OrderPaymentStatus | null;
+  payment_reference: string | null;
 }
 
 interface AnalyticsRow {
@@ -46,6 +49,9 @@ export function ensureDashboardSchema() {
       date TEXT NOT NULL,
       notes TEXT,
       status TEXT NOT NULL,
+      payment_provider TEXT,
+      payment_status TEXT,
+      payment_reference TEXT,
       FOREIGN KEY (store_username) REFERENCES stores (username) ON DELETE CASCADE
     );
 
@@ -75,6 +81,16 @@ export function ensureDashboardSchema() {
   const eventColumns = db.prepare(`PRAGMA table_info(analytics_events)`).all() as Array<{ name: string }>;
   if (!eventColumns.some((column) => column.name === 'country_code')) {
     db.exec(`ALTER TABLE analytics_events ADD COLUMN country_code TEXT`);
+  }
+  const orderColumns = db.prepare(`PRAGMA table_info(orders)`).all() as Array<{ name: string }>;
+  if (!orderColumns.some((column) => column.name === 'payment_provider')) {
+    db.exec(`ALTER TABLE orders ADD COLUMN payment_provider TEXT`);
+  }
+  if (!orderColumns.some((column) => column.name === 'payment_status')) {
+    db.exec(`ALTER TABLE orders ADD COLUMN payment_status TEXT`);
+  }
+  if (!orderColumns.some((column) => column.name === 'payment_reference')) {
+    db.exec(`ALTER TABLE orders ADD COLUMN payment_reference TEXT`);
   }
 }
 
@@ -109,8 +125,12 @@ if (db) {
 `);
 
   insertOrderStmt = db.prepare(`
-  INSERT INTO orders (id, store_username, product_id, quantity, revenue, date, notes, status)
-  VALUES (@id, @store_username, @product_id, @quantity, @revenue, @date, @notes, @status)
+  INSERT INTO orders (
+    id, store_username, product_id, quantity, revenue, date, notes, status, payment_provider, payment_status, payment_reference
+  )
+  VALUES (
+    @id, @store_username, @product_id, @quantity, @revenue, @date, @notes, @status, @payment_provider, @payment_status, @payment_reference
+  )
 `);
 
   updateOrderStmt = db.prepare(`
@@ -120,7 +140,10 @@ if (db) {
       revenue = @revenue,
       date = @date,
       notes = @notes,
-      status = @status
+      status = @status,
+      payment_provider = @payment_provider,
+      payment_status = @payment_status,
+      payment_reference = @payment_reference
   WHERE store_username = @store_username AND id = @id
 `);
 
@@ -206,6 +229,9 @@ function toOrder(row: OrderRow): Order {
     date: row.date,
     notes: row.notes ?? '',
     status: row.status,
+    paymentProvider: row.payment_provider ?? undefined,
+    paymentStatus: row.payment_status ?? undefined,
+    paymentReference: row.payment_reference ?? undefined,
   };
 }
 
@@ -277,6 +303,21 @@ export async function getOrdersByStore(username: string) {
   return (selectOrdersStmt.all(username) as OrderRow[]).map(toOrder);
 }
 
+export async function getOrderById(orderId: string) {
+  if (isSupabaseEnabled()) {
+    const row = (await supabaseSelect<OrderRow>('orders', {
+      id: `eq.${orderId}`,
+      select: '*',
+      limit: 1,
+    }))[0];
+    return row ? { order: toOrder(row), username: row.store_username } : null;
+  }
+
+  requireDb();
+  const row = db!.prepare('SELECT * FROM orders WHERE id = ?').get(orderId) as OrderRow | undefined;
+  return row ? { order: toOrder(row), username: row.store_username } : null;
+}
+
 export async function getAnalyticsByStore(username: string): Promise<Analytics> {
   const rows = isSupabaseEnabled()
     ? await supabaseSelect<AnalyticsRow>('analytics_daily', {
@@ -297,7 +338,7 @@ export async function getAnalyticsByStore(username: string): Promise<Analytics> 
   const orderCounts = new Map<string, number>();
   for (const order of orders) {
     const day = format(parseISO(order.date), 'yyyy-MM-dd');
-    orderCounts.set(day, (orderCounts.get(day) ?? 0) + (order.status === 'confirmed' ? 1 : 0));
+    orderCounts.set(day, (orderCounts.get(day) ?? 0) + (order.status === 'confirmed' || order.status === 'paid' ? 1 : 0));
   }
   analytics.dailyStats = analytics.dailyStats.map((stat) => ({
     ...stat,
@@ -323,6 +364,9 @@ export async function createOrder(username: string, order: Order) {
     date: order.date,
     notes: order.notes ?? null,
     status: order.status,
+    payment_provider: order.paymentProvider ?? null,
+    payment_status: order.paymentStatus ?? null,
+    payment_reference: order.paymentReference ?? null,
   };
   if (isSupabaseEnabled()) {
     await supabaseInsert('orders', payload);
@@ -353,6 +397,9 @@ export async function updateOrderById(username: string, id: string, updates: Par
     date: updates.date ?? existing.date,
     notes: updates.notes ?? existing.notes,
     status: updates.status ?? existing.status,
+    payment_provider: updates.paymentProvider ?? existing.payment_provider,
+    payment_status: updates.paymentStatus ?? existing.payment_status,
+    payment_reference: updates.paymentReference ?? existing.payment_reference,
   };
   if (isSupabaseEnabled()) {
     await supabasePatch('orders', payload, {
@@ -491,6 +538,9 @@ export async function seedDashboardDataIfEmpty(username: string) {
       date: order.date,
       notes: order.notes ?? null,
       status: order.status,
+      payment_provider: order.paymentProvider ?? null,
+      payment_status: order.paymentStatus ?? null,
+      payment_reference: order.paymentReference ?? null,
     };
     if (isSupabaseEnabled()) {
       await supabaseInsert('orders', payload);

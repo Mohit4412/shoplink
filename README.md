@@ -22,8 +22,8 @@ Prerequisites: Node.js 20+
 ## Deploy on Supabase + Vercel
 
 1. Create a Supabase project.
-2. Run [supabase/schema.sql](/Users/mohit/SAAS_Project/myshoplink/supabase/schema.sql) in the Supabase SQL editor.
-3. Create the env vars from [.env.example](/Users/mohit/SAAS_Project/myshoplink/.env.example) in Vercel:
+2. Run [supabase/schema.sql](/Users/mohit/SAAS_Project/micro-store-builder-nextjs/supabase/schema.sql) in the Supabase SQL editor.
+3. Create the env vars from [.env.example](/Users/mohit/SAAS_Project/micro-store-builder-nextjs/.env.example) in Vercel:
    - `SUPABASE_URL`
    - `NEXT_PUBLIC_SUPABASE_URL`
    - `SUPABASE_ANON_KEY`
@@ -31,10 +31,37 @@ Prerequisites: Node.js 20+
    - `SUPABASE_SERVICE_ROLE_KEY`
    - `SUPABASE_STORAGE_BUCKET`
    - `APP_URL`
+   - `NEXT_PUBLIC_APP_URL`
 4. Deploy the app to Vercel.
 5. Add your custom domain in Vercel and point DNS there.
 
 When `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` are set, the app switches to Supabase-backed persistence automatically. Without them, it keeps using the local SQLite + filesystem setup.
+
+## Stripe Connect checkout
+
+ShopLink can now let each merchant connect their own Stripe account and accept payments directly on their checkout page.
+
+Required env vars:
+
+- `STRIPE_SECRET_KEY`
+- `STRIPE_CONNECT_WEBHOOK_SECRET`
+- `STRIPE_CONNECT_APPLICATION_FEE_BPS` optional, defaults to `0`
+- `STRIPE_CONNECT_COUNTRY` optional, defaults to `IN`
+
+Webhook endpoint:
+
+- `/api/payments/stripe/webhook`
+
+Recommended live schema updates for older Supabase projects:
+
+```sql
+alter table public.orders add column if not exists payment_provider text;
+alter table public.orders add column if not exists payment_status text;
+alter table public.orders add column if not exists payment_reference text;
+alter table public.stores add column if not exists payment_json jsonb;
+alter table public.products add column if not exists collections_json jsonb;
+alter table public.products add column if not exists variants_json jsonb;
+```
 
 ## Available scripts
 

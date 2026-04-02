@@ -1,4 +1,6 @@
-export type OrderPaymentMethod = 'whatsapp' | 'upi' | 'cod' | 'bank_transfer';
+import { PaymentSettings } from '../types';
+
+export type OrderPaymentMethod = 'whatsapp' | 'upi' | 'cod' | 'bank_transfer' | 'stripe';
 export type OrderSource = 'link' | 'website';
 
 export interface OrderLeadDetails {
@@ -71,6 +73,8 @@ export function parseOrderLeadNotes(notes?: string | null): ParsedOrderLead {
 
 export function formatPaymentMethodLabel(method?: OrderPaymentMethod) {
   switch (method) {
+    case 'stripe':
+      return 'Pay online';
     case 'upi':
       return 'UPI';
     case 'cod':
@@ -82,4 +86,29 @@ export function formatPaymentMethodLabel(method?: OrderPaymentMethod) {
     default:
       return '';
   }
+}
+
+export function getAvailableOrderPaymentMethods(paymentSettings?: PaymentSettings) {
+  const methods: OrderPaymentMethod[] = [];
+  const stripeEnabled =
+    paymentSettings?.enableOnlineCheckout &&
+    paymentSettings.checkoutProvider === 'stripe' &&
+    paymentSettings.stripe?.accountId &&
+    paymentSettings.stripe?.onboardingComplete &&
+    paymentSettings.stripe?.chargesEnabled;
+
+  if (stripeEnabled) {
+    methods.push('stripe');
+  }
+  methods.push('cod');
+
+  if (paymentSettings?.upiId) {
+    methods.push('upi');
+  }
+  if (paymentSettings?.bankAccountNumber) {
+    methods.push('bank_transfer');
+  }
+
+  methods.push('whatsapp');
+  return Array.from(new Set(methods));
 }

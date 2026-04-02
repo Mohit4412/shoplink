@@ -18,15 +18,25 @@ interface RecentOrdersTableProps {
 
 function StatusBadge({ status }: { status: string }) {
   const styles =
-    status === 'confirmed'
+    status === 'confirmed' || status === 'paid'
       ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
       : status === 'declined'
         ? 'bg-red-50 text-red-600 border border-red-200'
+        : status === 'payment_failed'
+        ? 'bg-red-50 text-red-600 border border-red-200'
         : status === 'payment_pending_verification'
           ? 'bg-violet-50 text-violet-700 border border-violet-200'
+          : status === 'checkout_pending'
+            ? 'bg-sky-50 text-sky-700 border border-sky-200'
           : 'bg-amber-50 text-amber-700 border border-amber-200';
   const label =
-    status === 'payment_pending_verification' ? 'Payment sent' : status;
+    status === 'payment_pending_verification'
+      ? 'Payment sent'
+      : status === 'checkout_pending'
+        ? 'Checkout started'
+        : status === 'payment_failed'
+          ? 'Payment failed'
+          : status;
   return (
     <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-semibold capitalize ${styles}`}>
       {label}

@@ -83,7 +83,10 @@ create table if not exists public.orders (
   revenue numeric not null,
   date timestamptz not null,
   notes text,
-  status text not null
+  status text not null,
+  payment_provider text,
+  payment_status text,
+  payment_reference text
 );
 
 create index if not exists orders_store_username_date_idx on public.orders (store_username, date desc);

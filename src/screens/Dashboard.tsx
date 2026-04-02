@@ -72,9 +72,10 @@ export function Dashboard() {
   const todayStr = format(today, 'yyyy-MM-dd');
   const yesterdayStr = format(subDays(today, 1), 'yyyy-MM-dd');
   const currencySymbol = getCurrencySymbol(store.currency);
+  const isRealSale = (status: string) => status === 'confirmed' || status === 'paid';
 
-  const todayOrdersCount = orders.filter(o => o.status === 'confirmed' && o.date.startsWith(todayStr)).length;
-  const yesterdayOrdersCount = orders.filter(o => o.status === 'confirmed' && o.date.startsWith(yesterdayStr)).length;
+  const todayOrdersCount = orders.filter(o => isRealSale(o.status) && o.date.startsWith(todayStr)).length;
+  const yesterdayOrdersCount = orders.filter(o => isRealSale(o.status) && o.date.startsWith(yesterdayStr)).length;
   const todayStats = analytics.dailyStats.find(s => s.fullDate === todayStr) || { views: 0, clicks: 0, orders: 0 };
   const yesterdayStats = analytics.dailyStats.find(s => s.fullDate === yesterdayStr) || { views: 0, clicks: 0, orders: 0 };
   const activeProductsCount = products.length;
@@ -82,7 +83,7 @@ export function Dashboard() {
   const isTrialPro = user?.plan === 'Pro' && !user?.razorpaySubscriptionId;
 
   const pendingOrders = orders.filter(o => o.status === 'pending');
-  const confirmedOrders = orders.filter(o => o.status === 'confirmed');
+  const confirmedOrders = orders.filter(o => isRealSale(o.status));
   const totalRevenue = confirmedOrders.reduce((sum, order) => sum + order.revenue, 0);
   const orderTrend = getTrend(todayOrdersCount, yesterdayOrdersCount);
   const viewsTrend = getTrend(todayStats.views, yesterdayStats.views);
@@ -94,10 +95,10 @@ export function Dashboard() {
   );
   const revenueTrend = getTrend(
     orders
-      .filter((order) => order.status === 'confirmed' && order.date.startsWith(todayStr))
+      .filter((order) => isRealSale(order.status) && order.date.startsWith(todayStr))
       .reduce((sum, order) => sum + order.revenue, 0),
     orders
-      .filter((order) => order.status === 'confirmed' && order.date.startsWith(yesterdayStr))
+      .filter((order) => isRealSale(order.status) && order.date.startsWith(yesterdayStr))
       .reduce((sum, order) => sum + order.revenue, 0)
   );
   const checklistItems = [

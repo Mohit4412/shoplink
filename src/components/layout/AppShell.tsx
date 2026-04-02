@@ -46,6 +46,7 @@ const NAV_ITEMS = [
     exact: false,
     children: [
       { label: 'Store', path: '/settings?view=store', view: 'store' },
+      { label: 'Payments', path: '/settings?view=payments', view: 'payments' },
       { label: 'Custom Domain', path: '/settings?view=domain', view: 'domain' },
       { label: 'Legal Pages', path: '/settings?view=legal', view: 'legal' },
       { label: 'Plans & Billing', path: '/settings?view=billing', view: 'billing' },
