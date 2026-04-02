@@ -2,6 +2,7 @@ import { createHmac, timingSafeEqual } from 'crypto';
 import type { StripePaymentAccount } from '@/src/types';
 
 const STRIPE_API_BASE = 'https://api.stripe.com/v1';
+const STRIPE_CONNECT_BASE = 'https://connect.stripe.com';
 
 type Primitive = string | number | boolean | null | undefined;
 
@@ -24,6 +25,10 @@ export function getStripeSecretKey() {
   return getEnv('STRIPE_SECRET_KEY');
 }
 
+export function getStripeConnectClientId() {
+  return getEnv('STRIPE_CONNECT_CLIENT_ID');
+}
+
 export function getStripeWebhookSecret() {
   return getEnv('STRIPE_CONNECT_WEBHOOK_SECRET') || getEnv('STRIPE_WEBHOOK_SECRET');
 }
@@ -34,6 +39,10 @@ export function getStripeConnectDefaultCountry() {
 
 export function isStripeConnectEnabled() {
   return Boolean(getStripeSecretKey());
+}
+
+export function isStripeOAuthEnabled() {
+  return Boolean(getStripeSecretKey() && getStripeConnectClientId());
 }
 
 export function getStripeApplicationFeeBps() {
@@ -131,38 +140,48 @@ export function mapStripeAccount(account: StripeConnectAccountResponse): StripeP
   };
 }
 
-export async function createStripeConnectedAccount(input: { email?: string; country?: string }) {
-  const account = await stripeRequest<StripeConnectAccountResponse>('POST', '/accounts', {
-    type: 'express',
-    country: input.country || getStripeConnectDefaultCountry(),
-    email: input.email,
-    capabilities: {
-      card_payments: { requested: true },
-      transfers: { requested: true },
-    },
-  });
-
-  return mapStripeAccount(account);
-}
-
 export async function getStripeConnectedAccount(accountId: string) {
   const account = await stripeRequest<StripeConnectAccountResponse>('GET', `/accounts/${accountId}`);
   return mapStripeAccount(account);
 }
 
-export async function createStripeAccountLink(input: {
-  accountId: string;
-  refreshUrl: string;
-  returnUrl: string;
+export function createStripeOAuthAuthorizeUrl(input: {
+  state: string;
+  redirectUri: string;
 }) {
-  const response = await stripeRequest<{ url: string }>('POST', '/account_links', {
-    account: input.accountId,
-    refresh_url: input.refreshUrl,
-    return_url: input.returnUrl,
-    type: 'account_onboarding',
+  const clientId = getStripeConnectClientId();
+  if (!clientId) {
+    throw new Error('Stripe Connect client ID is not configured.');
+  }
+
+  const url = new URL('/oauth/authorize', STRIPE_CONNECT_BASE);
+  url.searchParams.set('response_type', 'code');
+  url.searchParams.set('client_id', clientId);
+  url.searchParams.set('scope', 'read_write');
+  url.searchParams.set('redirect_uri', input.redirectUri);
+  url.searchParams.set('state', input.state);
+  return url.toString();
+}
+
+export async function exchangeStripeOAuthCode(input: {
+  code: string;
+  redirectUri: string;
+}) {
+  const clientId = getStripeConnectClientId();
+  if (!clientId) {
+    throw new Error('Stripe Connect client ID is not configured.');
+  }
+
+  const response = await stripeRequest<{
+    stripe_user_id: string;
+  }>('POST', 'https://connect.stripe.com/oauth/token', {
+    grant_type: 'authorization_code',
+    code: input.code,
+    client_id: clientId,
+    redirect_uri: input.redirectUri,
   });
 
-  return response.url;
+  return response;
 }
 
 export async function createStripeCheckoutSession(input: {

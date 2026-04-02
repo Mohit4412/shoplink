@@ -249,13 +249,13 @@ export function PaymentsSettings() {
               <div className="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-slate-50 p-4 sm:flex-row sm:items-start sm:justify-between">
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <p className="text-sm font-semibold text-slate-900">Stripe Connect</p>
+                    <p className="text-sm font-semibold text-slate-900">Stripe Standard</p>
                     <span className={`inline-flex rounded-full px-2 py-0.5 text-[11px] font-semibold ${stripeReady ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-800'}`}>
                       {stripeStatusLabel}
                     </span>
                   </div>
                   <p className="text-sm text-slate-600">
-                    Let customers pay online on your store checkout page. Stripe sends funds to your connected seller account.
+                    Let customers pay online on your store checkout page. Sellers connect their own Stripe account and receive funds there directly.
                   </p>
                   {stripeAccount?.accountId ? (
                     <div className="space-y-1 text-xs text-slate-500">
@@ -267,13 +267,13 @@ export function PaymentsSettings() {
                     </div>
                   ) : (
                     <p className="text-xs font-medium text-slate-500">
-                      Connect your Stripe account first. Once onboarding is complete, you can turn on “Pay online”.
+                      Connect your Stripe account first. Stripe will ask the seller to sign in and approve ShopLink access.
                     </p>
                   )}
                 </div>
                 <div className="flex shrink-0 flex-col gap-2 sm:items-end">
                   <Button type="button" onClick={handleStripeConnect}>
-                    {stripeAccount?.accountId ? 'Continue onboarding' : 'Connect Stripe'}
+                    {stripeAccount?.accountId ? 'Reconnect Stripe' : 'Connect Stripe'}
                   </Button>
                   {stripeAccount?.accountId ? (
                     <button
@@ -302,7 +302,7 @@ export function PaymentsSettings() {
                   <p className="text-xs font-medium text-slate-500">
                     {stripeReady
                       ? 'Adds a secure online checkout option alongside your current manual payment methods.'
-                      : 'Finish Stripe onboarding first, then come back here to enable checkout.'}
+                      : 'Finish connecting the Stripe account first, then come back here to enable checkout.'}
                   </p>
                 </div>
               </label>
@@ -337,7 +337,7 @@ export function PaymentsSettings() {
             <div className="flex flex-col gap-2 sm:flex-row">
               {stripeAccount?.accountId ? (
                 <a
-                  href="https://dashboard.stripe.com/express"
+                  href="https://dashboard.stripe.com"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center justify-center gap-2 rounded-md border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 shadow-sm transition-colors hover:bg-slate-50"
@@ -471,6 +471,7 @@ export function PaymentsSettings() {
             <ProviderCard
               title="Stripe"
               subtitle="Accept card and online payments directly on your store checkout page."
+              
               badge={stripeStatusLabel}
               badgeTone={stripeReady ? 'live' : 'coming'}
               icon={CreditCard}

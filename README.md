@@ -44,6 +44,7 @@ ShopLink can now let each merchant connect their own Stripe account and accept p
 Required env vars:
 
 - `STRIPE_SECRET_KEY`
+- `STRIPE_CONNECT_CLIENT_ID`
 - `STRIPE_CONNECT_WEBHOOK_SECRET`
 - `STRIPE_CONNECT_APPLICATION_FEE_BPS` optional, defaults to `0`
 - `STRIPE_CONNECT_COUNTRY` optional, defaults to `IN`
@@ -51,6 +52,10 @@ Required env vars:
 Webhook endpoint:
 
 - `/api/payments/stripe/webhook`
+
+OAuth callback:
+
+- `/api/payments/stripe/callback`
 
 Recommended live schema updates for older Supabase projects:
 
