@@ -56,6 +56,9 @@ interface ProductRow {
   is_demo: number | boolean | null;
 }
 
+const OPTIONAL_STORE_COLUMNS = ['legal_json', 'payment_json'] as const;
+const OPTIONAL_PRODUCT_COLUMNS = ['collections_json', 'variants_json'] as const;
+
 function parseJson<T>(value: string | null | unknown, fallback: T): T {
   if (value === null || value === undefined) return fallback;
   if (typeof value === 'object') return value as T;
@@ -64,6 +67,83 @@ function parseJson<T>(value: string | null | unknown, fallback: T): T {
     return JSON.parse(value) as T;
   } catch {
     return fallback;
+  }
+}
+
+function stripKeys<T extends Record<string, unknown>>(payload: T, keys: readonly string[]) {
+  const next = { ...payload } as Record<string, unknown>;
+  for (const key of keys) {
+    delete next[key];
+  }
+  return next as T;
+}
+
+function getMissingSchemaColumn(error: unknown) {
+  if (!(error instanceof Error)) {
+    return null;
+  }
+  const match = error.message.match(/Could not find the '([^']+)' column/);
+  return match?.[1] ?? null;
+}
+
+async function upsertStoreSupabase(storeSerialized: ReturnType<typeof serializeStore>) {
+  let payload = storeSerialized as Record<string, unknown>;
+  const optionalColumns = new Set<string>(OPTIONAL_STORE_COLUMNS);
+
+  while (true) {
+    try {
+      await supabaseInsert<StoreRow>('stores', payload, { on_conflict: 'username' }, { upsert: true });
+      return;
+    } catch (error) {
+      const missingColumn = getMissingSchemaColumn(error);
+      if (!missingColumn || !optionalColumns.has(missingColumn)) {
+        throw error;
+      }
+      optionalColumns.delete(missingColumn);
+      payload = stripKeys(payload, [missingColumn]);
+    }
+  }
+}
+
+async function insertProductSupabase(payload: ReturnType<typeof serializeProduct>) {
+  let nextPayload = payload as Record<string, unknown>;
+  const optionalColumns = new Set<string>(OPTIONAL_PRODUCT_COLUMNS);
+
+  while (true) {
+    try {
+      await supabaseInsert<ProductRow>('products', nextPayload);
+      return;
+    } catch (error) {
+      const missingColumn = getMissingSchemaColumn(error);
+      if (!missingColumn || !optionalColumns.has(missingColumn)) {
+        throw error;
+      }
+      optionalColumns.delete(missingColumn);
+      nextPayload = stripKeys(nextPayload, [missingColumn]);
+    }
+  }
+}
+
+async function patchProductSupabase(username: string, productId: string, payload: ReturnType<typeof serializeProduct>) {
+  let nextPayload = payload as Record<string, unknown>;
+  const optionalColumns = new Set<string>(OPTIONAL_PRODUCT_COLUMNS);
+
+  while (true) {
+    try {
+      await supabasePatch<ProductRow>(
+        'products',
+        nextPayload,
+        { store_username: `eq.${username}`, product_id: `eq.${productId}` }
+      );
+      return;
+    } catch (error) {
+      const missingColumn = getMissingSchemaColumn(error);
+      if (!missingColumn || !optionalColumns.has(missingColumn)) {
+        throw error;
+      }
+      optionalColumns.delete(missingColumn);
+      nextPayload = stripKeys(nextPayload, [missingColumn]);
+    }
   }
 }
 
@@ -414,17 +494,13 @@ export async function replaceMerchantBundle(bundle: MerchantStorefrontBundle) {
   if (isSupabaseEnabled()) {
     const normalizedProducts = bundle.products.map(normalizeProduct);
     const storeSerialized = serializeStore(bundle);
-    try {
-      await supabaseInsert<StoreRow>('stores', storeSerialized, { on_conflict: 'username' }, { upsert: true });
-    } catch {
-      // Retry without legal_json in case column doesn't exist yet in Supabase
-      const { legal_json: _, ...withoutLegal } = storeSerialized;
-      await supabaseInsert<StoreRow>('stores', withoutLegal, { on_conflict: 'username' }, { upsert: true });
-    }
+    await upsertStoreSupabase(storeSerialized);
     await supabaseDelete('products', { store_username: `eq.${bundle.user.username}` });
     if (normalizedProducts.length > 0) {
-      const serialized = normalizedProducts.map((product) => serializeProduct(bundle.user.username, product));
-      await supabaseInsert<ProductRow>('products', serialized, undefined, {});
+      for (const product of normalizedProducts) {
+        const serialized = serializeProduct(bundle.user.username, product);
+        await insertProductSupabase(serialized);
+      }
     }
     return getMerchantBundleByUsername(bundle.user.username);
   }
@@ -460,7 +536,7 @@ export async function createProduct(username: string, product: Product) {
 
   if (isSupabaseEnabled()) {
     const serialized = serializeProduct(username, normalizeProduct(product));
-    await supabaseInsert<ProductRow>('products', serialized);
+    await insertProductSupabase(serialized);
     return getMerchantBundleByUsername(username);
   }
 
@@ -495,11 +571,7 @@ export async function updateProductById(username: string, productId: string, upd
 
   if (isSupabaseEnabled()) {
     const serialized = serializeProduct(username, nextProduct);
-    await supabasePatch<ProductRow>(
-      'products',
-      serialized,
-      { store_username: `eq.${username}`, product_id: `eq.${productId}` }
-    );
+    await patchProductSupabase(username, productId, serialized);
   } else {
     requireDb();
     replaceProductStmt.run(serializeProduct(username, nextProduct));

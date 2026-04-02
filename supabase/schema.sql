@@ -37,6 +37,7 @@ create table if not exists public.stores (
   trust_badges_json jsonb,
   banners_json jsonb,
   legal_json jsonb,
+  payment_json jsonb,
   custom_domain text,
   custom_domain_status text
 );
@@ -54,7 +55,9 @@ create table if not exists public.products (
   category text not null,
   stock integer not null,
   collection_name text,
+  collections_json jsonb,
   highlights_json jsonb,
+  variants_json jsonb,
   reviews_json jsonb,
   is_demo boolean not null default false,
   primary key (store_username, product_id)
