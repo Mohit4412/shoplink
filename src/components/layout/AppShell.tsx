@@ -556,7 +556,7 @@ export function AppShell({
         })()}
 
         {/* CONTENT */}
-        <main className="flex-1 overflow-y-auto overflow-x-hidden pb-[72px] md:pb-6">
+        <main className="flex-1 overflow-y-auto overflow-x-hidden pb-[52px] md:pb-6">
           <RenewalBanner />
           <div className={`px-4 pt-4 md:px-6 md:pt-6 min-w-0 ${isFullWidthPage ? 'w-full max-w-none' : 'max-w-[1200px]'}`}>
             {children}
@@ -564,7 +564,7 @@ export function AppShell({
         </main>
 
         {/* MOBILE BOTTOM NAV */}
-        <nav className="md:hidden h-[64px] bg-zinc-900 border-t border-zinc-800 fixed bottom-0 left-0 right-0 z-30 flex items-center justify-between px-1">
+        <nav className="md:hidden h-[52px] bg-zinc-900 border-t border-zinc-800 fixed bottom-0 left-0 right-0 z-30 flex items-center justify-between px-1">
           {NAV_ITEMS.map(item => {
             const active = isActive(item);
             const href = item.children && !active ? item.children[0].path : item.path;
