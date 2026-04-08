@@ -564,21 +564,23 @@ export function AppShell({
         </main>
 
         {/* MOBILE BOTTOM NAV */}
-        <nav className="md:hidden h-[64px] bg-white border-t border-zinc-200 fixed bottom-0 left-0 right-0 z-30 flex items-center justify-between px-2">
+        <nav className="md:hidden h-[64px] bg-zinc-900 border-t border-zinc-800 fixed bottom-0 left-0 right-0 z-30 flex items-center justify-between px-1">
           {NAV_ITEMS.map(item => {
             const active = isActive(item);
-            // For items with children, link to first child when not already on that route
             const href = item.children && !active ? item.children[0].path : item.path;
             return (
               <Link
                 key={item.path}
                 href={href}
-                className={`flex-1 flex flex-col items-center justify-center gap-1 h-full transition-colors ${
-                  active ? 'text-zinc-900' : 'text-zinc-400 hover:text-zinc-600'
+                className={`flex-1 flex flex-col items-center justify-center gap-1 h-full transition-colors relative ${
+                  active ? 'text-white' : 'text-zinc-500 hover:text-zinc-300'
                 }`}
               >
-                <item.icon className="w-6 h-6" />
-                <span className="text-[11px] font-semibold">{item.label}</span>
+                {active && (
+                  <span className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-0.5 rounded-full bg-white" />
+                )}
+                <item.icon className="w-5 h-5" />
+                <span className="text-[10px] font-semibold">{item.label}</span>
               </Link>
             );
           })}
