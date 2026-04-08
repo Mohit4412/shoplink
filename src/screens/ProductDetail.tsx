@@ -12,7 +12,7 @@ import {
 import { useStore } from '../context/StoreContext';
 import { getCurrencySymbol } from '../utils/currency';
 import { getTheme } from '../utils/themes';
-import { getStoreSubdomain, isStoreSubdomainHost } from '../utils/storeUrl';
+import { getStoreSubdomain, isStoreHostedAtRoot } from '../utils/storeUrl';
 import { ProductCarousel } from '../components/product/ProductCarousel';
 import { FloatingWhatsApp } from '../components/product/FloatingWhatsApp';
 import { ProductAccordion } from '../components/product/ProductAccordion';
@@ -41,12 +41,12 @@ export function ProductDetail({ storefront, productId: productIdProp }: { storef
     ? getStoreSubdomain(window.location.hostname)
     : null;
   const resolvedStoreId = storeId || runtimeSubdomain || publicUser?.username || localUser?.username || 'store';
-  const isSubdomain = typeof window !== 'undefined'
-    ? !storeId && isStoreSubdomainHost(window.location.hostname)
+  const isStoreRootHost = typeof window !== 'undefined'
+    ? !storeId && isStoreHostedAtRoot(window.location.hostname)
     : Boolean(publicUser?.username && !storeId);
 
-  const storeHref = isSubdomain ? '/' : `/${resolvedStoreId}`;
-  const productHref = (id: string) => isSubdomain ? `/product/${id}` : `/${resolvedStoreId}/product/${id}`;
+  const storeHref = isStoreRootHost ? '/' : `/${resolvedStoreId}`;
+  const productHref = (id: string) => isStoreRootHost ? `/product/${id}` : `/${resolvedStoreId}/product/${id}`;
 
   const activeUser = publicUser ?? (
     localUser ? { username: localUser.username, whatsappNumber: localUser.whatsappNumber, plan: localUser.plan } : null

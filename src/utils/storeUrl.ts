@@ -33,7 +33,7 @@ function getConfiguredAppHostname(): string | null {
   }
 }
 
-export function isStoreSubdomainHost(hostname: string): boolean {
+function isAppHost(hostname: string): boolean {
   const normalizedHost = normalizeHostname(hostname);
 
   if (
@@ -41,18 +41,32 @@ export function isStoreSubdomainHost(hostname: string): boolean {
     normalizedHost === '127.0.0.1' ||
     normalizedHost.endsWith('.vercel.app')
   ) {
-    return false;
+    return true;
   }
 
   const configuredHost = getConfiguredAppHostname();
   if (configuredHost) {
-    if (normalizedHost === configuredHost) return false;
-    if (normalizedHost === `www.${configuredHost}`) return false;
-    if (configuredHost.startsWith('www.') && normalizedHost === configuredHost.slice(4)) return false;
+    if (normalizedHost === configuredHost) return true;
+    if (normalizedHost === `www.${configuredHost}`) return true;
+    if (configuredHost.startsWith('www.') && normalizedHost === configuredHost.slice(4)) return true;
+  }
+
+  return false;
+}
+
+export function isStoreSubdomainHost(hostname: string): boolean {
+  const normalizedHost = normalizeHostname(hostname);
+
+  if (isAppHost(normalizedHost)) {
+    return false;
   }
 
   const parts = normalizedHost.split('.');
   return parts.length >= 3 && parts[0] !== 'www';
+}
+
+export function isStoreHostedAtRoot(hostname: string): boolean {
+  return !isAppHost(hostname);
 }
 
 export function getStoreSubdomain(hostname: string): string | null {

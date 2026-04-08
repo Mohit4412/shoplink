@@ -10,7 +10,7 @@ import { StoreSettings, Product, PublicStorefrontData } from '../types';
 import { Nav } from '../components/storefront/Nav';
 import { ProductCard } from '../components/storefront/ProductCard';
 import { ThemeLayout } from '../utils/themes';
-import { getProductUrl, getStoreSubdomain, isStoreSubdomainHost } from '../utils/storeUrl';
+import { getProductUrl, getStoreSubdomain, isStoreHostedAtRoot } from '../utils/storeUrl';
 import { getTypographyClasses, getSectionSpacingClass } from '../utils/themeHelpers';
 import { SparkStoreFront } from '../components/storefront/themes/SparkStoreFront';
 import { CraftStoreFront } from '../components/storefront/themes/CraftStoreFront';
@@ -223,8 +223,8 @@ export function StoreFront({ storefront }: { storefront?: PublicStorefrontData }
     ? getStoreSubdomain(window.location.hostname)
     : null;
   const resolvedStoreId = storeId || runtimeSubdomain || publicUser?.username || localUser?.username || 'store';
-  const isSubdomain = typeof window !== 'undefined'
-    ? !storeId && isStoreSubdomainHost(window.location.hostname)
+  const isStoreRootHost = typeof window !== 'undefined'
+    ? !storeId && isStoreHostedAtRoot(window.location.hostname)
     : Boolean(publicUser?.username && !storeId);
   const activeUser = publicUser ?? (
     localUser
@@ -343,7 +343,7 @@ export function StoreFront({ storefront }: { storefront?: PublicStorefrontData }
         <Nav
           theme={theme}
           store={store}
-          storeHref={isSubdomain ? '/' : `/${resolvedStoreId}`}
+          storeHref={isStoreRootHost ? '/' : `/${resolvedStoreId}`}
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
         />
@@ -355,7 +355,7 @@ export function StoreFront({ storefront }: { storefront?: PublicStorefrontData }
             store={store}
             products={products}
             resolvedStoreId={resolvedStoreId}
-            isSubdomain={isSubdomain}
+            isSubdomain={isStoreRootHost}
             onContactClick={handleContactClick}
             onOrderClick={openOrderRequest}
             isFreePlan={activeUser?.plan === 'Free'}
@@ -366,7 +366,7 @@ export function StoreFront({ storefront }: { storefront?: PublicStorefrontData }
             store={store}
             products={products}
             resolvedStoreId={resolvedStoreId}
-            isSubdomain={isSubdomain}
+            isSubdomain={isStoreRootHost}
             onContactClick={handleContactClick}
             onOrderClick={openOrderRequest}
             isFreePlan={activeUser?.plan === 'Free'}
@@ -377,7 +377,7 @@ export function StoreFront({ storefront }: { storefront?: PublicStorefrontData }
             store={store}
             products={products}
             resolvedStoreId={resolvedStoreId}
-            isSubdomain={isSubdomain}
+            isSubdomain={isStoreRootHost}
             onContactClick={handleContactClick}
             onOrderClick={openOrderRequest}
             isFreePlan={activeUser?.plan === 'Free'}
@@ -388,7 +388,7 @@ export function StoreFront({ storefront }: { storefront?: PublicStorefrontData }
             store={store}
             products={products}
             resolvedStoreId={resolvedStoreId}
-            isSubdomain={isSubdomain}
+            isSubdomain={isStoreRootHost}
             onContactClick={handleContactClick}
             onOrderClick={openOrderRequest}
             isFreePlan={activeUser?.plan === 'Free'}
@@ -399,7 +399,7 @@ export function StoreFront({ storefront }: { storefront?: PublicStorefrontData }
             store={store}
             products={products}
             resolvedStoreId={resolvedStoreId}
-            isSubdomain={isSubdomain}
+            isSubdomain={isStoreRootHost}
             onContactClick={handleContactClick}
             onOrderClick={openOrderRequest}
             isFreePlan={activeUser?.plan === 'Free'}
@@ -412,7 +412,7 @@ export function StoreFront({ storefront }: { storefront?: PublicStorefrontData }
               activeProducts={activeProducts}
               currencySymbol={currencySymbol}
               resolvedStoreId={resolvedStoreId}
-              isSubdomain={isSubdomain}
+              isSubdomain={isStoreRootHost}
               onContactClick={handleContactClick}
               onOrderClick={openOrderRequest}
               searchQuery={searchQuery}
