@@ -92,7 +92,7 @@ export function Analytics() {
           <p className="mt-0.5 text-sm text-zinc-500">Historical performance by date range</p>
         </div>
         <div className="px-5 py-4 bg-zinc-50/50">
-          <div className="flex flex-col gap-3 max-w-sm">
+          <div className="flex flex-col gap-3">
             <div className="flex flex-wrap gap-2">
               {presets.map(({ label, start, end, active }) => (
                 <button key={label} type="button" onClick={() => setDateRange({ start, end })}

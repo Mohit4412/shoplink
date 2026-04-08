@@ -322,7 +322,7 @@ export function AppShell({
       </aside>
 
       {/* ── MAIN AREA ────────────────────────────────────────────────────── */}
-      <div className="flex-1 flex flex-col min-h-screen md:ml-[220px]">
+      <div className="flex-1 flex flex-col min-h-screen min-w-0 md:ml-[220px]">
 
         {/* TOP BAR */}
         <header className="h-14 bg-white border-b border-zinc-200 sticky top-0 z-30 flex items-center justify-between px-4 shrink-0">
@@ -556,9 +556,9 @@ export function AppShell({
         })()}
 
         {/* CONTENT */}
-        <main className="flex-1 overflow-y-auto pb-[72px] md:pb-6">
+        <main className="flex-1 overflow-y-auto overflow-x-hidden pb-[72px] md:pb-6">
           <RenewalBanner />
-          <div className={`px-4 pt-4 md:px-6 md:pt-6 ${isFullWidthPage ? 'w-full max-w-none' : 'max-w-[1200px]'}`}>
+          <div className={`px-4 pt-4 md:px-6 md:pt-6 min-w-0 ${isFullWidthPage ? 'w-full max-w-none' : 'max-w-[1200px]'}`}>
             {children}
           </div>
         </main>

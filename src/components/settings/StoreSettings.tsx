@@ -243,7 +243,7 @@ export function StoreSettings() {
           />
           <div className="border-t border-zinc-100 pt-4">
             <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-zinc-400">Bank transfer</p>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4">
               <Input
                 label="Account holder name"
                 value={paymentForm.bankAccountName}
