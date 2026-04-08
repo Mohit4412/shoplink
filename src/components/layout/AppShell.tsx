@@ -572,13 +572,10 @@ export function AppShell({
               <Link
                 key={item.path}
                 href={href}
-                className={`flex-1 flex flex-col items-center justify-center gap-1 h-full transition-colors relative ${
+                className={`flex-1 flex flex-col items-center justify-center gap-1 h-full transition-colors ${
                   active ? 'text-white' : 'text-zinc-500 hover:text-zinc-300'
                 }`}
               >
-                {active && (
-                  <span className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-0.5 rounded-full bg-white" />
-                )}
                 <item.icon className="w-5 h-5" />
                 <span className="text-[10px] font-semibold">{item.label}</span>
               </Link>
