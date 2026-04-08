@@ -416,13 +416,13 @@ export function Products() {
       {/* Row 1: Title + conditional action button */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">{currentSection.title}</h1>
-          <p className="text-sm text-gray-400 mt-0.5">{currentSection.subtitle}</p>
+          <h1 className="text-2xl font-bold text-zinc-900">{currentSection.title}</h1>
+          <p className="text-sm text-zinc-400 mt-0.5">{currentSection.subtitle}</p>
         </div>
         {activeTab === 'sales' && (
           <button
             onClick={() => { setSelectedOrder(null); setIsLogOrderModalOpen(true); }}
-            className="h-9 px-3 bg-gray-900 text-white text-xs font-medium rounded-xl flex items-center gap-1.5 hover:bg-gray-700 transition-colors shrink-0 mt-1"
+            className="h-9 px-3 bg-zinc-900 text-white text-xs font-medium rounded-lg flex items-center gap-1.5 hover:bg-zinc-700 transition-colors shrink-0 mt-1"
           >
             <Plus className="w-3.5 h-3.5" /> Add Order Manually
           </button>
@@ -431,7 +431,7 @@ export function Products() {
 
       {/* Row 2: Search + Sort + Add */}
       {activeTab === 'products' && (
-        <div className="rounded-2xl border border-gray-200 bg-white p-3 shadow-sm">
+        <div className="rounded-xl border border-zinc-200 bg-white p-3">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
             <form
             className="flex flex-1 flex-row items-center gap-2"
@@ -441,26 +441,26 @@ export function Products() {
             }}
           >
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
                 <input
                   type="text"
                   placeholder="Search products..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full h-10 pl-9 pr-3 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-gray-400"
+                  className="w-full h-10 pl-9 pr-3 bg-white border border-zinc-200 rounded-lg text-sm focus:outline-none focus:border-zinc-400 focus:ring-2 focus:ring-zinc-900/10"
                 />
               </div>
               <div className="flex items-center gap-2 shrink-0">
                 <button
                   type="submit"
-                  className="h-10 px-4 rounded-xl border border-gray-200 bg-gray-50 text-xs font-semibold text-gray-700 hover:bg-gray-100 transition-colors"
+                  className="h-10 px-4 rounded-lg border border-zinc-200 bg-white text-xs font-semibold text-zinc-700 hover:bg-zinc-50 transition-colors"
                 >
                   Search
                 </button>
                 <select
                   value={sortOption}
                   onChange={(e) => setSortOption(e.target.value as 'name' | 'price')}
-                  className="h-10 min-w-[120px] px-3 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-gray-400"
+                  className="h-10 min-w-[120px] px-3 bg-white border border-zinc-200 rounded-lg text-sm focus:outline-none focus:border-zinc-400"
                 >
                   <option value="name">Sort: Name</option>
                   <option value="price">Sort: Price</option>
@@ -474,7 +474,7 @@ export function Products() {
                 resetForm();
                 setIsAddModalOpen(true);
               }}
-              className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-gray-900 px-4 text-sm font-semibold text-white transition-colors hover:bg-gray-700 lg:h-10 lg:w-auto lg:px-3.5 lg:text-xs"
+              className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-zinc-900 px-4 text-sm font-semibold text-white transition-colors hover:bg-zinc-700 lg:h-10 lg:w-auto lg:px-3.5 lg:text-xs"
             >
               <Plus className="w-4 h-4" />
               Add Product
@@ -485,7 +485,7 @@ export function Products() {
 
       {/* Limit banner */}
       {showLimitBanner && (
-        <div className="flex items-center justify-between bg-amber-50 border border-amber-200 rounded-2xl px-4 py-3">
+        <div className="flex items-center justify-between bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
           <div className="flex items-center gap-3">
             <Package className="w-4 h-4 text-amber-600 shrink-0" />
             <div>
@@ -495,7 +495,7 @@ export function Products() {
           </div>
           <button
             onClick={() => { setShowLimitBanner(false); upgradeModal.open(); }}
-            className="shrink-0 ml-3 h-8 px-3 rounded-xl bg-gray-900 text-white text-xs font-bold flex items-center gap-1.5 hover:bg-gray-800 transition-colors"
+            className="shrink-0 ml-3 h-8 px-3 rounded-lg bg-zinc-900 text-white text-xs font-bold flex items-center gap-1.5 hover:bg-zinc-800 transition-colors"
           >
             <Zap className="w-3.5 h-3.5" /> Upgrade
           </button>
@@ -505,12 +505,12 @@ export function Products() {
       {activeTab === 'products' && (
         <>
           {products.length === 0 ? (
-            <div className="text-center py-20 bg-white border border-dashed border-gray-200 rounded-2xl">
-              <div className="w-14 h-14 rounded-full bg-gray-50 flex items-center justify-center mx-auto mb-4">
-                <Plus className="w-7 h-7 text-gray-400" />
+            <div className="text-center py-20 bg-white border border-dashed border-zinc-200 rounded-xl">
+              <div className="w-14 h-14 rounded-full bg-zinc-50 flex items-center justify-center mx-auto mb-4">
+                <Plus className="w-7 h-7 text-zinc-400" />
               </div>
-              <h3 className="text-lg font-bold text-gray-900 mb-2">No products yet</h3>
-              <p className="text-gray-500 max-w-xs mx-auto mb-6">Add your first product and start selling on WhatsApp in minutes.</p>
+              <h3 className="text-lg font-bold text-zinc-900 mb-2">No products yet</h3>
+              <p className="text-zinc-500 max-w-xs mx-auto mb-6">Add your first product and start selling on WhatsApp in minutes.</p>
               <Button onClick={() => setIsAddModalOpen(true)}>
                 <Plus className="w-4 h-4 mr-2" />
                 Add First Product
@@ -534,22 +534,22 @@ export function Products() {
 
       {activeTab === 'collections' && (
         <div className="space-y-4 pt-1">
-          <div className="rounded-2xl border border-gray-200 bg-white shadow-sm">
-            <div className="flex flex-col gap-4 border-b border-gray-100 px-5 py-4 lg:flex-row lg:items-center lg:justify-between">
+          <div className="rounded-xl border border-zinc-200 bg-white">
+            <div className="flex flex-col gap-4 border-b border-zinc-100 px-5 py-4 lg:flex-row lg:items-center lg:justify-between">
               <div>
-                <h2 className="text-base font-semibold text-gray-900">Collections</h2>
-                <p className="mt-1 text-sm text-gray-500">Organize products into groups that are easy to manage and show on your storefront.</p>
+                <h2 className="text-base font-semibold text-zinc-900">Collections</h2>
+                <p className="mt-1 text-sm text-zinc-500">Organize products into groups that are easy to manage and show on your storefront.</p>
               </div>
               <div className="flex flex-wrap items-center gap-2">
-                <div className="rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-600">
+                <div className="rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm text-zinc-600">
                   {collections.length} {collections.length === 1 ? 'collection' : 'collections'}
                 </div>
-                <div className="rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-600">
+                <div className="rounded-xl border border-zinc-200 bg-zinc-50 px-3 py-2 text-sm text-zinc-600">
                   {products.filter((product) => getProductCollections(product).length > 0).length} assigned
                 </div>
                 <button
                   onClick={promptNewCollection}
-                  className="inline-flex h-10 items-center gap-2 rounded-xl bg-gray-900 px-4 text-sm font-semibold text-white transition-colors hover:bg-gray-700"
+                  className="inline-flex h-10 items-center gap-2 rounded-lg bg-zinc-900 px-4 text-sm font-semibold text-white transition-colors hover:bg-zinc-700"
                 >
                   <FolderPlus className="h-4 w-4" />
                   Create Collection
@@ -559,21 +559,21 @@ export function Products() {
 
             {collections.length === 0 ? (
               <div className="px-6 py-16 text-center">
-                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gray-50">
-                  <FolderPlus className="h-7 w-7 text-gray-300" />
+                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-xl bg-zinc-50">
+                  <FolderPlus className="h-7 w-7 text-zinc-300" />
                 </div>
-                <h3 className="mt-4 text-lg font-semibold text-gray-900">No collections yet</h3>
-                <p className="mx-auto mt-2 max-w-md text-sm text-gray-500">
+                <h3 className="mt-4 text-lg font-semibold text-zinc-900">No collections yet</h3>
+                <p className="mx-auto mt-2 max-w-md text-sm text-zinc-500">
                   Create collections for categories like New Arrivals, Best Sellers, or Festive Specials.
                 </p>
               </div>
             ) : (
               <div className="grid gap-0 md:grid-cols-[280px_minmax(0,1fr)] xl:grid-cols-[320px_minmax(0,1fr)]">
-                <div className="border-b border-gray-100 md:border-b-0 md:border-r">
-                  <div className="px-5 py-3 text-xs font-semibold uppercase tracking-[0.16em] text-gray-400">
+                <div className="border-b border-zinc-100 md:border-b-0 md:border-r">
+                  <div className="px-5 py-3 text-xs font-semibold uppercase tracking-[0.16em] text-zinc-400">
                     All Collections
                   </div>
-                  <div className="divide-y divide-gray-100">
+                  <div className="divide-y divide-zinc-100">
                     {collections.map((col) => {
                       const isActive = selectedCol === col.name;
                       return (
@@ -581,17 +581,17 @@ export function Products() {
                           key={col.name}
                           onClick={() => setSelectedCol(col.name)}
                           className={`flex w-full items-center justify-between gap-3 px-5 py-4 text-left transition-colors ${
-                            isActive ? 'bg-gray-50' : 'bg-white hover:bg-gray-50'
+                            isActive ? 'bg-zinc-50' : 'bg-white hover:bg-zinc-50'
                           }`}
                         >
                           <div className="min-w-0">
-                            <p className="truncate text-sm font-semibold text-gray-900">{col.name}</p>
-                            <p className="mt-1 text-xs text-gray-500">
+                            <p className="truncate text-sm font-semibold text-zinc-900">{col.name}</p>
+                            <p className="mt-1 text-xs text-zinc-500">
                               {col.count} {col.count === 1 ? 'product' : 'products'}
                             </p>
                           </div>
                           <span className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-semibold ${
-                            isActive ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-600'
+                            isActive ? 'bg-zinc-900 text-white' : 'bg-zinc-100 text-zinc-600'
                           }`}>
                             {col.count}
                           </span>
@@ -604,15 +604,15 @@ export function Products() {
                 <div className="min-w-0 px-5 py-5">
                   {selectedCol ? (
                     <>
-                      <div className="flex flex-col gap-4 border-b border-gray-100 pb-4 xl:flex-row xl:items-start xl:justify-between">
+                      <div className="flex flex-col gap-4 border-b border-zinc-100 pb-4 xl:flex-row xl:items-start xl:justify-between">
                         <div>
-                          <h3 className="text-xl font-semibold text-gray-900">{selectedCol}</h3>
-                          <p className="mt-1 text-sm text-gray-500">Products grouped under this collection.</p>
+                          <h3 className="text-xl font-semibold text-zinc-900">{selectedCol}</h3>
+                          <p className="mt-1 text-sm text-zinc-500">Products grouped under this collection.</p>
                         </div>
                         <div className="flex flex-wrap items-center gap-2">
                           <button
                             onClick={() => setAttachProductsModalOpen(true)}
-                            className="inline-flex h-9 items-center gap-2 rounded-xl border border-gray-200 px-3.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+                            className="inline-flex h-9 items-center gap-2 rounded-lg border border-zinc-200 px-3.5 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50"
                           >
                             <Package className="h-4 w-4" />
                             Add Existing
@@ -623,21 +623,21 @@ export function Products() {
                               setFormData(prev => ({ ...prev, collection: selectedCol }));
                               setIsAddModalOpen(true);
                             }}
-                            className="inline-flex h-9 items-center gap-2 rounded-xl bg-gray-900 px-3.5 text-sm font-semibold text-white transition-colors hover:bg-gray-700"
+                            className="inline-flex h-9 items-center gap-2 rounded-lg bg-zinc-900 px-3.5 text-sm font-semibold text-white transition-colors hover:bg-zinc-700"
                           >
                             <Plus className="h-4 w-4" />
                             Add Product
                           </button>
                           <button
                             onClick={() => handleRenameCollection(selectedCol)}
-                            className="inline-flex h-9 items-center gap-2 rounded-xl border border-gray-200 px-3.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+                            className="inline-flex h-9 items-center gap-2 rounded-lg border border-zinc-200 px-3.5 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50"
                           >
                             <Edit2 className="h-4 w-4" />
                             Rename
                           </button>
                           <button
                             onClick={() => handleDeleteCollection(selectedCol)}
-                            className="inline-flex h-9 items-center gap-2 rounded-xl border border-red-200 px-3.5 text-sm font-medium text-red-600 transition-colors hover:bg-red-50"
+                            className="inline-flex h-9 items-center gap-2 rounded-lg border border-red-200 px-3.5 text-sm font-medium text-red-600 transition-colors hover:bg-red-50"
                           >
                             <Trash2 className="h-4 w-4" />
                             Delete
@@ -646,69 +646,69 @@ export function Products() {
                       </div>
 
                       <div className="mt-4 grid gap-3 md:grid-cols-3">
-                        <div className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3">
-                          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-gray-400">Total Products</p>
-                          <p className="mt-2 text-xl font-semibold text-gray-900">{selectedCollectionProducts.length}</p>
+                        <div className="rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-3">
+                          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-zinc-400">Total Products</p>
+                          <p className="mt-2 text-xl font-semibold text-zinc-900">{selectedCollectionProducts.length}</p>
                         </div>
-                        <div className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3">
-                          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-gray-400">Active</p>
-                          <p className="mt-2 text-xl font-semibold text-gray-900">
+                        <div className="rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-3">
+                          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-zinc-400">Active</p>
+                          <p className="mt-2 text-xl font-semibold text-zinc-900">
                             {selectedCollectionProducts.filter((p) => p.status === 'Active').length}
                           </p>
                         </div>
-                        <div className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3">
-                          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-gray-400">Inactive</p>
-                          <p className="mt-2 text-xl font-semibold text-gray-900">
+                        <div className="rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-3">
+                          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-zinc-400">Inactive</p>
+                          <p className="mt-2 text-xl font-semibold text-zinc-900">
                             {selectedCollectionProducts.filter((p) => p.status !== 'Active').length}
                           </p>
                         </div>
                       </div>
 
-                      <div className="mt-5 overflow-hidden rounded-2xl border border-gray-200">
+                      <div className="mt-5 overflow-hidden rounded-xl border border-zinc-200">
                         {selectedCollectionProducts.length === 0 ? (
-                          <div className="bg-gray-50 px-5 py-12 text-center">
-                            <Package className="mx-auto h-9 w-9 text-gray-300" />
-                            <p className="mt-3 text-sm font-medium text-gray-700">No products in this collection</p>
-                            <p className="mt-1 text-sm text-gray-500">Add products to make this collection visible and useful.</p>
+                          <div className="bg-zinc-50 px-5 py-12 text-center">
+                            <Package className="mx-auto h-9 w-9 text-zinc-300" />
+                            <p className="mt-3 text-sm font-medium text-zinc-700">No products in this collection</p>
+                            <p className="mt-1 text-sm text-zinc-500">Add products to make this collection visible and useful.</p>
                           </div>
                         ) : (
                           <div className="flex h-[420px] flex-col">
                             <div className="flex-1 overflow-x-auto overflow-y-auto">
                               <table className="min-w-[720px] w-full text-sm">
-                              <thead className="bg-gray-50">
-                                <tr className="border-b border-gray-200">
-                                  <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">Product</th>
-                                  <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">Status</th>
-                                  <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">Price</th>
-                                  <th className="px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">Action</th>
+                              <thead className="bg-zinc-50">
+                                <tr className="border-b border-zinc-200">
+                                  <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500">Product</th>
+                                  <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500">Status</th>
+                                  <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500">Price</th>
+                                  <th className="px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500">Action</th>
                                 </tr>
                               </thead>
-                              <tbody className="divide-y divide-gray-100 bg-white">
+                              <tbody className="divide-y divide-zinc-100 bg-white">
                                 {paginatedCollectionProducts.map((p) => (
-                                  <tr key={p.id} className="hover:bg-gray-50">
+                                  <tr key={p.id} className="hover:bg-zinc-50">
                                     <td className="px-4 py-3">
                                       <div className="flex items-center gap-3 min-w-0">
                                         <img
                                           src={p.imageUrl}
                                           alt={p.name}
-                                          className="h-12 w-12 rounded-xl border border-gray-100 object-cover"
+                                          className="h-12 w-12 rounded-xl border border-zinc-100 object-cover"
                                         />
                                         <div className="min-w-0">
-                                          <p className="truncate font-medium text-gray-900">{p.name}</p>
-                                          <p className="mt-0.5 line-clamp-1 text-xs text-gray-500">
+                                          <p className="truncate font-medium text-zinc-900">{p.name}</p>
+                                          <p className="mt-0.5 line-clamp-1 text-xs text-zinc-500">
                                             {p.description || 'No description added'}
                                           </p>
                                         </div>
                                       </div>
                                     </td>
                                     <td className="px-4 py-3">
-                                      <span className={`inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold ${
-                                        p.status === 'Active' ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-600'
+                                      <span className={`inline-flex rounded-md px-2.5 py-1 text-[11px] font-semibold border ${
+                                        p.status === 'Active' ? 'bg-emerald-50 border-emerald-200 text-emerald-700' : 'bg-zinc-100 border-zinc-200 text-zinc-600'
                                       }`}>
                                         {p.status}
                                       </span>
                                     </td>
-                                    <td className="px-4 py-3 font-medium text-gray-700">{currencySymbol}{p.price.toFixed(2)}</td>
+                                    <td className="px-4 py-3 font-medium text-zinc-700">{currencySymbol}{p.price.toFixed(2)}</td>
                                     <td className="px-4 py-3 text-right">
                                       <button
                                         onClick={() => handleRemoveFromCollection(p.id)}
@@ -724,8 +724,8 @@ export function Products() {
                             </table>
                             </div>
 
-                            <div className="mt-auto flex items-center justify-between border-t border-gray-200 bg-gray-50 px-4 py-3">
-                              <span className="text-xs text-gray-500">
+                            <div className="mt-auto flex items-center justify-between border-t border-zinc-200 bg-zinc-50 px-4 py-3">
+                              <span className="text-xs text-zinc-500">
                                 {(currentCollectionProductsPage - 1) * COLLECTION_PRODUCTS_PAGE_SIZE + 1}
                                 –
                                 {Math.min(currentCollectionProductsPage * COLLECTION_PRODUCTS_PAGE_SIZE, selectedCollectionProducts.length)} of {selectedCollectionProducts.length}
@@ -735,7 +735,7 @@ export function Products() {
                                   type="button"
                                   onClick={() => setCollectionProductsPage((page) => Math.max(1, page - 1))}
                                   disabled={currentCollectionProductsPage === 1}
-                                  className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-600 transition-colors hover:bg-gray-100 disabled:opacity-40"
+                                  className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-zinc-200 bg-white text-zinc-600 transition-colors hover:bg-zinc-100 disabled:opacity-40"
                                 >
                                   <ChevronLeft className="h-4 w-4" />
                                 </button>
@@ -743,7 +743,7 @@ export function Products() {
                                   type="button"
                                   onClick={() => setCollectionProductsPage((page) => Math.min(collectionProductsTotalPages, page + 1))}
                                   disabled={currentCollectionProductsPage === collectionProductsTotalPages}
-                                  className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-600 transition-colors hover:bg-gray-100 disabled:opacity-40"
+                                  className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-zinc-200 bg-white text-zinc-600 transition-colors hover:bg-zinc-100 disabled:opacity-40"
                                 >
                                   <ChevronRight className="h-4 w-4" />
                                 </button>
@@ -754,11 +754,11 @@ export function Products() {
                       </div>
                     </>
                   ) : (
-                    <div className="flex min-h-[300px] items-center justify-center rounded-2xl border border-dashed border-gray-200 bg-gray-50 text-center">
+                    <div className="flex min-h-[300px] items-center justify-center rounded-xl border border-dashed border-zinc-200 bg-zinc-50 text-center">
                       <div>
-                        <FolderPlus className="mx-auto h-9 w-9 text-gray-300" />
-                        <p className="mt-3 text-sm font-semibold text-gray-700">Select a collection</p>
-                        <p className="mt-1 text-sm text-gray-500">Choose a collection from the left to manage it.</p>
+                        <FolderPlus className="mx-auto h-9 w-9 text-zinc-300" />
+                        <p className="mt-3 text-sm font-semibold text-zinc-700">Select a collection</p>
+                        <p className="mt-1 text-sm text-zinc-500">Choose a collection from the left to manage it.</p>
                       </div>
                     </div>
                   )}
@@ -773,18 +773,18 @@ export function Products() {
         <div className="pt-2">
           <div className="flex justify-between items-center mb-6">
             <div>
-              <h2 className="text-xl font-bold text-gray-900">Pending Order Requests</h2>
-              <p className="text-sm text-gray-500">When customers place an order request from your store, it appears here for you to confirm.</p>
+              <h2 className="text-xl font-bold text-zinc-900">Pending Order Requests</h2>
+              <p className="text-sm text-zinc-500">When customers place an order request from your store, it appears here for you to confirm.</p>
             </div>
           </div>
 
           {orders.filter(o => o.status === 'pending').length === 0 ? (
-            <div className="text-center py-12 bg-white border border-gray-100 rounded-xl">
-              <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Bell className="w-8 h-8 text-gray-300" />
+            <div className="text-center py-12 bg-white border border-zinc-100 rounded-xl">
+              <div className="w-16 h-16 bg-zinc-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Bell className="w-8 h-8 text-zinc-300" />
               </div>
-              <p className="text-gray-500 text-lg font-medium">No pending orders</p>
-              <p className="text-gray-400 mt-1 max-w-sm mx-auto">Orders will automatically show up here when customers submit a request from your store.</p>
+              <p className="text-zinc-500 text-lg font-medium">No pending orders</p>
+              <p className="text-zinc-400 mt-1 max-w-sm mx-auto">Orders will automatically show up here when customers submit a request from your store.</p>
             </div>
           ) : (
             <>
@@ -794,7 +794,7 @@ export function Products() {
                   const product = products.find(p => p.id === order.productId);
                   const lead = parseOrderLeadNotes(order.notes);
                   return (
-                    <div key={order.id} className="rounded-2xl border border-orange-200 bg-white overflow-hidden shadow-sm">
+                    <div key={order.id} className="rounded-xl border border-orange-200 bg-white overflow-hidden">
                       <div className="flex items-start gap-3 p-3">
                         <div className="w-20 h-20 shrink-0 rounded-xl overflow-hidden bg-orange-50">
                           {product?.imageUrl ? (
@@ -805,36 +805,36 @@ export function Products() {
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-start justify-between gap-2">
-                            <p className="text-sm font-semibold text-gray-900 line-clamp-2 leading-snug">
+                            <p className="text-sm font-semibold text-zinc-900 line-clamp-2 leading-snug">
                               {product?.name || 'Unknown product'}
                             </p>
-                            <span className="shrink-0 rounded-full bg-orange-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-orange-700">
+                            <span className="shrink-0 rounded-md bg-orange-100 border border-orange-200 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-orange-700">
                               Pending
                             </span>
                           </div>
-                          <p className="mt-1 text-sm font-bold text-gray-800">
+                          <p className="mt-1 text-sm font-bold text-zinc-800">
                             {currencySymbol}{order.revenue.toFixed(2)}
-                            <span className="ml-1.5 text-xs font-normal text-gray-400">× {order.quantity}</span>
+                            <span className="ml-1.5 text-xs font-normal text-zinc-400">× {order.quantity}</span>
                           </p>
-                          <p className="mt-1 text-xs font-medium text-gray-700">
+                          <p className="mt-1 text-xs font-medium text-zinc-700">
                             {lead.details.customerName || 'No name'}
                             {lead.details.customerPhone && (
-                              <span className="font-normal text-gray-400"> · {lead.details.customerPhone}</span>
+                              <span className="font-normal text-zinc-400"> · {lead.details.customerPhone}</span>
                             )}
                           </p>
-                          <p className="mt-0.5 text-[11px] text-gray-400">
+                          <p className="mt-0.5 text-[11px] text-zinc-400">
                             {formatPaymentMethodLabel(lead.details.paymentMethod) || 'Payment not specified'}
                             {' · '}{format(new Date(order.date), 'MMM d, h:mm a')}
                           </p>
                           {(lead.details.address || lead.details.email) && (
                             <div className="mt-1.5 space-y-0.5">
                               {lead.details.address && (
-                                <p className="text-[11px] text-gray-500 leading-snug">
+                                <p className="text-[11px] text-zinc-500 leading-snug">
                                   📍 {lead.details.address}{lead.details.pincode ? ` — ${lead.details.pincode}` : ''}
                                 </p>
                               )}
                               {lead.details.email && (
-                                <p className="text-[11px] text-gray-400">✉ {lead.details.email}</p>
+                                <p className="text-[11px] text-zinc-400">✉ {lead.details.email}</p>
                               )}
                             </div>
                           )}
@@ -860,18 +860,18 @@ export function Products() {
               </div>
 
               {/* Desktop table */}
-              <div className="hidden md:block overflow-x-auto rounded-xl border border-orange-200 bg-white shadow-sm">
+              <div className="hidden md:block overflow-x-auto rounded-xl border border-orange-200 bg-white">
                 <table className="min-w-[920px] w-full text-sm">
                   <thead>
                     <tr className="border-b border-orange-100 bg-orange-50/60">
-                      <th className="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-widest text-gray-500">Product</th>
-                      <th className="px-4 py-3 text-center text-[11px] font-bold uppercase tracking-widest text-gray-500">Quantity</th>
-                      <th className="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-widest text-gray-500">Status</th>
-                      <th className="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-widest text-gray-500">Name</th>
-                      <th className="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-widest text-gray-500">Phone Number</th>
-                      <th className="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-widest text-gray-500">Preferred Payment</th>
-                      <th className="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-widest text-gray-500">Shipping</th>
-                      <th className="px-4 py-3 text-right text-[11px] font-bold uppercase tracking-widest text-gray-500">Actions</th>
+                      <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-widest text-zinc-500">Product</th>
+                      <th className="px-4 py-3 text-center text-[11px] font-semibold uppercase tracking-widest text-zinc-500">Quantity</th>
+                      <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-widest text-zinc-500">Status</th>
+                      <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-widest text-zinc-500">Name</th>
+                      <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-widest text-zinc-500">Phone Number</th>
+                      <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-widest text-zinc-500">Preferred Payment</th>
+                      <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-widest text-zinc-500">Shipping</th>
+                      <th className="px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-widest text-zinc-500">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -880,42 +880,42 @@ export function Products() {
                       const lead = parseOrderLeadNotes(order.notes);
                       if (!product) return null;
                       return (
-                        <tr key={order.id} className="border-b border-gray-100 last:border-0">
+                        <tr key={order.id} className="border-b border-zinc-100 last:border-0">
                           <td className="px-4 py-3">
                             <div className="flex items-center gap-3 min-w-0">
-                              <img src={product.imageUrl} alt={product.name} className="w-12 h-12 object-cover rounded-lg border border-gray-100 shrink-0" />
+                              <img src={product.imageUrl} alt={product.name} className="w-12 h-12 object-cover rounded-lg border border-zinc-100 shrink-0" />
                               <div className="min-w-0">
-                                <p className="font-semibold text-gray-900 truncate">{product.name}</p>
-                                <p className="text-xs text-gray-500">{currencySymbol}{order.revenue.toFixed(2)} · {format(new Date(order.date), 'MMM dd, p')}</p>
+                                <p className="font-semibold text-zinc-900 truncate">{product.name}</p>
+                                <p className="text-xs text-zinc-500">{currencySymbol}{order.revenue.toFixed(2)} · {format(new Date(order.date), 'MMM dd, p')}</p>
                               </div>
                             </div>
                           </td>
-                          <td className="px-4 py-3 text-center font-semibold text-gray-700">{order.quantity}</td>
+                          <td className="px-4 py-3 text-center font-semibold text-zinc-700">{order.quantity}</td>
                           <td className="px-4 py-3">
-                            <span className="inline-flex rounded-full bg-orange-100 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-orange-800">{order.status}</span>
+                            <span className="inline-flex rounded-md bg-orange-100 border border-orange-200 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-orange-800">{order.status}</span>
                           </td>
-                          <td className="px-4 py-3 font-medium text-gray-800">{lead.details.customerName || 'Not provided'}</td>
-                          <td className="px-4 py-3 text-gray-600">
+                          <td className="px-4 py-3 font-medium text-zinc-800">{lead.details.customerName || 'Not provided'}</td>
+                          <td className="px-4 py-3 text-zinc-600">
                             <div>
                               <p>{lead.details.customerPhone || 'Not provided'}</p>
                               {lead.details.email && (
-                                <p className="text-[11px] text-gray-400 mt-0.5">{lead.details.email}</p>
+                                <p className="text-[11px] text-zinc-400 mt-0.5">{lead.details.email}</p>
                               )}
                             </div>
                           </td>
-                          <td className="px-4 py-3 text-gray-600">{formatPaymentMethodLabel(lead.details.paymentMethod) || 'Not provided'}</td>
-                          <td className="px-4 py-3 text-sm text-gray-600 max-w-[180px]">
+                          <td className="px-4 py-3 text-zinc-600">{formatPaymentMethodLabel(lead.details.paymentMethod) || 'Not provided'}</td>
+                          <td className="px-4 py-3 text-sm text-zinc-600 max-w-[180px]">
                             {lead.details.address ? (
                               <div>
                                 <p className="leading-snug">{lead.details.address}</p>
                                 {(lead.details.pincode || lead.details.city) && (
-                                  <p className="text-[11px] text-gray-400 mt-0.5">
+                                  <p className="text-[11px] text-zinc-400 mt-0.5">
                                     {[lead.details.city, lead.details.pincode].filter(Boolean).join(' — ')}
                                   </p>
                                 )}
                               </div>
                             ) : (
-                              <span className="text-gray-300">—</span>
+                              <span className="text-zinc-300">—</span>
                             )}
                           </td>
                           <td className="px-4 py-3">
@@ -989,13 +989,13 @@ export function Products() {
       >
         <div className="space-y-4">
           <div>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-zinc-600">
               Name your collection first. After that, you can add products into it right away.
             </p>
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="collection-name" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="collection-name" className="block text-sm font-medium text-zinc-700">
               Collection name
             </label>
             <input
@@ -1016,7 +1016,7 @@ export function Products() {
                 }
               }}
               placeholder="Festive Specials"
-              className="h-11 w-full rounded-xl border border-gray-200 px-3 text-sm text-gray-900 focus:outline-none focus:border-gray-400"
+              className="h-10 w-full rounded-lg border border-zinc-200 px-3 text-sm text-zinc-900 focus:outline-none focus:border-zinc-400 focus:ring-2 focus:ring-zinc-900/10"
             />
             {createCollectionModal.error && (
               <p className="text-sm text-red-600">{createCollectionModal.error}</p>
@@ -1027,14 +1027,14 @@ export function Products() {
             <button
               type="button"
               onClick={() => setCreateCollectionModal({ open: false, value: '', error: '' })}
-              className="inline-flex h-10 items-center rounded-xl border border-gray-200 px-4 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+              className="inline-flex h-10 items-center rounded-lg border border-zinc-200 px-4 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50"
             >
               Cancel
             </button>
             <button
               type="button"
               onClick={commitCreateCollection}
-              className="inline-flex h-10 items-center rounded-xl bg-gray-900 px-4 text-sm font-semibold text-white transition-colors hover:bg-gray-700"
+              className="inline-flex h-10 items-center rounded-lg bg-zinc-900 px-4 text-sm font-semibold text-white transition-colors hover:bg-zinc-700"
             >
               Continue
             </button>
@@ -1049,55 +1049,55 @@ export function Products() {
         className="max-w-2xl"
       >
         <div className="space-y-4">
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-zinc-600">
             Choose from your existing products and add them to this collection instantly.
           </p>
 
-          <div className="overflow-hidden rounded-2xl border border-gray-200">
+          <div className="overflow-hidden rounded-xl border border-zinc-200">
             {products.filter((product) => !selectedCol || !hasCollection(product, selectedCol)).length === 0 ? (
-              <div className="px-5 py-12 text-center bg-gray-50">
-                <Package className="mx-auto h-9 w-9 text-gray-300" />
-                <p className="mt-3 text-sm font-medium text-gray-700">No more products available</p>
-                <p className="mt-1 text-sm text-gray-500">All of your current products are already in this collection.</p>
+              <div className="px-5 py-12 text-center bg-zinc-50">
+                <Package className="mx-auto h-9 w-9 text-zinc-300" />
+                <p className="mt-3 text-sm font-medium text-zinc-700">No more products available</p>
+                <p className="mt-1 text-sm text-zinc-500">All of your current products are already in this collection.</p>
               </div>
             ) : (
               <div className="max-h-[420px] overflow-auto">
                 <table className="min-w-[720px] w-full text-sm">
-                  <thead className="bg-gray-50">
-                    <tr className="border-b border-gray-200">
-                      <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">Product</th>
-                      <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">Current Collection</th>
-                      <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">Price</th>
-                      <th className="px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-[0.16em] text-gray-500">Action</th>
+                  <thead className="bg-zinc-50">
+                    <tr className="border-b border-zinc-200">
+                      <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500">Product</th>
+                      <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500">Current Collection</th>
+                      <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500">Price</th>
+                      <th className="px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500">Action</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-100 bg-white">
+                  <tbody className="divide-y divide-zinc-100 bg-white">
                     {products
                       .filter((product) => !selectedCol || !hasCollection(product, selectedCol))
                       .map((product) => (
-                        <tr key={product.id} className="hover:bg-gray-50">
+                        <tr key={product.id} className="hover:bg-zinc-50">
                           <td className="px-4 py-3">
                             <div className="flex items-center gap-3 min-w-0">
                               <img
                                 src={product.imageUrl}
                                 alt={product.name}
-                                className="h-11 w-11 rounded-xl border border-gray-100 object-cover"
+                                className="h-11 w-11 rounded-xl border border-zinc-100 object-cover"
                               />
                               <div className="min-w-0">
-                                <p className="truncate font-medium text-gray-900">{product.name}</p>
-                                <p className="mt-0.5 text-xs text-gray-500">{product.description || 'No description added'}</p>
+                                <p className="truncate font-medium text-zinc-900">{product.name}</p>
+                                <p className="mt-0.5 text-xs text-zinc-500">{product.description || 'No description added'}</p>
                               </div>
                             </div>
                           </td>
-                          <td className="px-4 py-3 text-sm text-gray-600">
-                            {getProductCollections(product).length > 0 ? getProductCollections(product).join(', ') : <span className="text-gray-300">Unassigned</span>}
+                          <td className="px-4 py-3 text-sm text-zinc-600">
+                            {getProductCollections(product).length > 0 ? getProductCollections(product).join(', ') : <span className="text-zinc-300">Unassigned</span>}
                           </td>
-                          <td className="px-4 py-3 text-sm font-medium text-gray-700">{currencySymbol}{product.price.toFixed(2)}</td>
+                          <td className="px-4 py-3 text-sm font-medium text-zinc-700">{currencySymbol}{product.price.toFixed(2)}</td>
                           <td className="px-4 py-3 text-right">
                             <button
                               type="button"
                               onClick={() => handleAssignCollection(product, selectedCol ?? '')}
-                              className="inline-flex h-8 items-center rounded-lg bg-gray-900 px-3 text-xs font-semibold text-white transition-colors hover:bg-gray-700"
+                              className="inline-flex h-8 items-center rounded-lg bg-zinc-900 px-3 text-xs font-semibold text-white transition-colors hover:bg-zinc-700"
                             >
                               Add to Collection
                             </button>
@@ -1120,18 +1120,18 @@ export function Products() {
       >
         {collectionAssignProduct && (
           <div className="space-y-4">
-            <div className="rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3">
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-gray-400">Current collections</p>
-              <p className="mt-2 text-sm font-semibold text-gray-900">
+            <div className="rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-3">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-zinc-400">Current collections</p>
+              <p className="mt-2 text-sm font-semibold text-zinc-900">
                 {getProductCollections(collectionAssignProduct).length > 0 ? getProductCollections(collectionAssignProduct).join(', ') : 'No collection assigned'}
               </p>
             </div>
 
             <div className="space-y-2">
-              <p className="text-sm font-medium text-gray-700">Toggle collection membership</p>
+              <p className="text-sm font-medium text-zinc-700">Toggle collection membership</p>
               <div className="grid gap-2">
                 {collections.length === 0 ? (
-                  <div className="rounded-xl border border-dashed border-gray-200 bg-gray-50 px-4 py-6 text-center text-sm text-gray-500">
+                  <div className="rounded-xl border border-dashed border-zinc-200 bg-zinc-50 px-4 py-6 text-center text-sm text-zinc-500">
                     Create a collection first to organize this product.
                   </div>
                 ) : (
@@ -1147,12 +1147,12 @@ export function Products() {
                         className={`flex items-center justify-between rounded-xl border px-4 py-3 text-left transition-colors ${
                           active
                             ? 'border-[#059669] bg-emerald-50'
-                            : 'border-gray-200 bg-white hover:bg-gray-50'
+                            : 'border-zinc-200 bg-white hover:bg-zinc-50'
                         }`}
                       >
                         <div>
-                          <p className="text-sm font-semibold text-gray-900">{collection.name}</p>
-                          <p className="mt-1 text-xs text-gray-500">{collection.count} {collection.count === 1 ? 'product' : 'products'}</p>
+                          <p className="text-sm font-semibold text-zinc-900">{collection.name}</p>
+                          <p className="mt-1 text-xs text-zinc-500">{collection.count} {collection.count === 1 ? 'product' : 'products'}</p>
                         </div>
                         {active && (
                           <span className="rounded-full bg-[#059669] px-2 py-1 text-[10px] font-bold uppercase tracking-[0.16em] text-white">
@@ -1166,7 +1166,7 @@ export function Products() {
               </div>
             </div>
 
-            <div className="flex items-center justify-between border-t border-gray-100 pt-3">
+            <div className="flex items-center justify-between border-t border-zinc-100 pt-3">
               <button
                 type="button"
                 onClick={() => {
@@ -1183,7 +1183,7 @@ export function Products() {
               <button
                 type="button"
                 onClick={() => setCollectionAssignProduct(null)}
-                className="inline-flex h-10 items-center rounded-xl border border-gray-200 px-4 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+                className="inline-flex h-10 items-center rounded-lg border border-zinc-200 px-4 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50"
               >
                 Close
               </button>
@@ -1196,28 +1196,28 @@ export function Products() {
       {renameModal.open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
           <div className="absolute inset-0 bg-black/30" onClick={() => setRenameModal({ open: false, oldName: '', value: '' })} />
-          <div className="relative bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 flex flex-col gap-4">
-            <h3 className="text-base font-semibold text-gray-900">Rename Collection</h3>
+          <div className="relative bg-white rounded-xl shadow-xl w-full max-w-sm p-6 flex flex-col gap-4">
+            <h3 className="text-base font-semibold text-zinc-900">Rename Collection</h3>
             <input
               autoFocus
               type="text"
               value={renameModal.value}
               onChange={e => setRenameModal(prev => ({ ...prev, value: e.target.value }))}
               onKeyDown={e => { if (e.key === 'Enter') commitRename(); if (e.key === 'Escape') setRenameModal({ open: false, oldName: '', value: '' }); }}
-              className="h-10 px-3 w-full border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-gray-400"
+              className="h-10 px-3 w-full border border-zinc-200 rounded-lg text-sm focus:outline-none focus:border-zinc-400 focus:ring-2 focus:ring-zinc-900/10"
               placeholder="Collection name"
             />
             <div className="flex gap-2 justify-end">
               <button
                 onClick={() => setRenameModal({ open: false, oldName: '', value: '' })}
-                className="h-9 px-4 text-sm rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-colors"
+                className="h-9 px-4 text-sm rounded-lg border border-zinc-200 text-zinc-600 hover:bg-zinc-50 transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={commitRename}
                 disabled={!renameModal.value.trim()}
-                className="h-9 px-4 text-sm rounded-xl bg-gray-900 text-white hover:bg-gray-700 transition-colors disabled:opacity-40"
+                className="h-9 px-4 text-sm rounded-lg bg-zinc-900 text-white hover:bg-zinc-700 transition-colors disabled:opacity-40"
               >
                 Rename
               </button>

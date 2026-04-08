@@ -64,8 +64,8 @@ const SECTIONS = [
     subtitle: 'Profile, email, WhatsApp',
     group: 'Workspace',
     icon: User,
-    iconColor: 'text-gray-600',
-    iconBg: 'bg-gray-100',
+    iconColor: 'text-zinc-600',
+    iconBg: 'bg-zinc-100',
   },
 ] as const;
 
@@ -92,16 +92,16 @@ export function Settings() {
   return (
     <div className="w-full max-w-[1120px]">
       <div className="hidden md:block">
-        <div className="overflow-hidden rounded-lg border border-slate-200 bg-white p-6 shadow-[0_1px_2px_rgba(15,23,42,0.06)]">
-          <div className="mb-6 flex items-center justify-between gap-4 border-b border-slate-200 pb-5">
+        <div className="overflow-hidden rounded-xl border border-zinc-200 bg-white p-6">
+          <div className="mb-6 flex items-center justify-between gap-4 border-b border-zinc-200 pb-5">
             <div className="flex items-center gap-3">
-              <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-slate-200 ${activeSection.iconBg}`}>
+              <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-zinc-200 ${activeSection.iconBg}`}>
                 <activeSection.icon style={{ width: 18, height: 18 }} className={activeSection.iconColor} />
               </div>
               <div>
-                <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">{activeSection.group}</p>
-                <h2 className="mt-0.5 text-base font-semibold leading-tight tracking-tight text-slate-900">{activeSection.title}</h2>
-                <p className="mt-0.5 text-xs font-medium text-slate-500">{activeSection.subtitle}</p>
+                <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500">{activeSection.group}</p>
+                <h2 className="mt-0.5 text-base font-semibold leading-tight tracking-tight text-zinc-900">{activeSection.title}</h2>
+                <p className="mt-0.5 text-xs font-medium text-zinc-500">{activeSection.subtitle}</p>
               </div>
             </div>
             {user?.username && (
@@ -109,10 +109,10 @@ export function Settings() {
                 href={getStoreUrl(user.username)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex shrink-0 items-center gap-2 rounded-md border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 shadow-sm transition-colors hover:bg-slate-50"
+                className="inline-flex shrink-0 items-center gap-2 rounded-md border border-zinc-200 bg-white px-3 py-2 text-xs font-semibold text-zinc-700 transition-colors hover:bg-zinc-50"
               >
                 View store
-                <ExternalLink className="h-3.5 w-3.5 text-slate-500" />
+                <ExternalLink className="h-3.5 w-3.5 text-zinc-500" />
               </a>
             )}
           </div>
@@ -124,19 +124,19 @@ export function Settings() {
         <button
           type="button"
           onClick={() => router.back()}
-          className="mb-4 flex items-center gap-2 text-sm font-semibold text-slate-500 transition-colors hover:text-slate-900"
+          className="mb-4 flex items-center gap-2 text-sm font-semibold text-zinc-500 transition-colors hover:text-zinc-900"
         >
           <ChevronLeft className="h-4 w-4" />
           Back
         </button>
         <div className="mb-5 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-slate-200 ${activeSection.iconBg}`}>
+            <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-zinc-200 ${activeSection.iconBg}`}>
               <activeSection.icon style={{ width: 18, height: 18 }} className={activeSection.iconColor} />
             </div>
             <div>
-              <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">{activeSection.group}</p>
-              <h2 className="text-lg font-semibold tracking-tight text-slate-900">{activeSection.title}</h2>
+              <p className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500">{activeSection.group}</p>
+              <h2 className="text-lg font-semibold tracking-tight text-zinc-900">{activeSection.title}</h2>
             </div>
           </div>
           {user?.username && (
@@ -144,9 +144,9 @@ export function Settings() {
               href={getStoreUrl(user.username)}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 rounded-md border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-sm transition-colors hover:bg-slate-50"
+              className="inline-flex items-center gap-1.5 rounded-md border border-zinc-200 bg-white px-3 py-1.5 text-xs font-semibold text-zinc-700 transition-colors hover:bg-zinc-50"
             >
-              View store <ExternalLink className="h-3.5 w-3.5 text-slate-500" />
+              View store <ExternalLink className="h-3.5 w-3.5 text-zinc-500" />
             </a>
           )}
         </div>

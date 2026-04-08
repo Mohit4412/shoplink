@@ -9,17 +9,17 @@ import { deleteImage, uploadImage } from '../../utils/upload';
 import { UpgradeModal, useUpgradeModal } from '../billing/UpgradeModal';
 
 const panelClass =
-  'overflow-hidden rounded-lg border border-slate-200 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.06)]';
+  'overflow-hidden rounded-xl border border-zinc-200 bg-white';
 const panelHeadClass =
-  'flex items-center gap-2 border-b border-slate-200 bg-slate-50/95 px-4 py-2.5 sm:px-5';
+  'flex items-center gap-2 border-b border-zinc-200 bg-zinc-50/60 px-5 py-3.5';
 const panelHeadLabelClass =
-  'text-[11px] font-semibold uppercase tracking-wider text-slate-600';
-const panelBodyClass = 'space-y-5 p-4 sm:p-5';
-const fieldLabelClass = 'mb-1 block text-sm font-medium text-slate-700';
+  'text-xs font-semibold uppercase tracking-widest text-zinc-500';
+const panelBodyClass = 'space-y-5 p-5';
+const fieldLabelClass = 'mb-1 block text-sm font-medium text-zinc-700';
 const controlClass =
-  'border-slate-200 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 focus:ring-offset-0';
+  'border-zinc-200 focus:border-zinc-400 focus:ring-2 focus:ring-zinc-900/10 focus:ring-offset-0';
 const readOnlyFieldClass =
-  'border-slate-200 bg-slate-50 text-slate-600 cursor-not-allowed';
+  'border-zinc-200 bg-zinc-50 text-zinc-500 cursor-not-allowed';
 
 export function StoreSettings() {
   const { store, user, updateStoreSettings } = useStore();
@@ -102,7 +102,7 @@ export function StoreSettings() {
       {/* Brand */}
       <div className={panelClass}>
         <div className={panelHeadClass}>
-          <Building2 className="h-4 w-4 shrink-0 text-slate-500" aria-hidden />
+          <Building2 className="h-4 w-4 shrink-0 text-zinc-500" aria-hidden />
           <span className={panelHeadLabelClass}>Brand &amp; identity</span>
         </div>
         <div className={panelBodyClass}>
@@ -112,24 +112,24 @@ export function StoreSettings() {
                 <img
                   src={storeForm.logoUrl || store.logoUrl}
                   alt="Store logo"
-                  className="h-20 w-20 rounded-xl border border-slate-200 bg-white object-cover shadow-sm"
+                  className="h-20 w-20 rounded-xl border border-zinc-200 bg-white object-cover"
                 />
               ) : (
-                <div className="flex h-20 w-20 select-none items-center justify-center rounded-xl border border-dashed border-slate-200 bg-slate-50 text-2xl font-bold text-slate-400">
+                <div className="flex h-20 w-20 select-none items-center justify-center rounded-xl border border-dashed border-zinc-200 bg-zinc-50 text-2xl font-bold text-zinc-400">
                   {(storeForm.name || store.name || 'S').charAt(0).toUpperCase()}
                 </div>
               )}
               <label
                 htmlFor="logo-upload"
-                className="absolute inset-0 flex cursor-pointer items-center justify-center rounded-xl bg-slate-900/45 opacity-0 transition-opacity group-hover:opacity-100"
+                className="absolute inset-0 flex cursor-pointer items-center justify-center rounded-xl bg-zinc-900/45 opacity-0 transition-opacity group-hover:opacity-100"
               >
                 <Upload className="h-4 w-4 text-white" aria-hidden />
                 <span className="sr-only">Upload logo</span>
               </label>
             </div>
             <div className="min-w-0 flex-1">
-              <p className="text-sm font-semibold text-slate-900">Store logo</p>
-              <p className="mt-0.5 text-xs font-medium text-slate-500">
+              <p className="text-sm font-semibold text-zinc-900">Store logo</p>
+              <p className="mt-0.5 text-xs font-medium text-zinc-500">
                 Square image, at least 512×512px — JPG or PNG.
               </p>
               <input
@@ -143,7 +143,7 @@ export function StoreSettings() {
                 type="button"
                 onClick={() => document.getElementById('logo-upload')?.click()}
                 disabled={isUploadingLogo}
-                className="mt-3 h-9 rounded-md border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-700 shadow-sm transition-colors hover:bg-slate-50 disabled:opacity-50"
+                className="mt-3 h-9 rounded-lg border border-zinc-200 bg-white px-4 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50 disabled:opacity-50"
               >
                 {isUploadingLogo ? 'Uploading…' : 'Upload logo'}
               </button>
@@ -156,7 +156,7 @@ export function StoreSettings() {
       {/* Store profile */}
       <div className={panelClass}>
         <div className={panelHeadClass}>
-          <Link2 className="h-4 w-4 shrink-0 text-slate-500" aria-hidden />
+          <Link2 className="h-4 w-4 shrink-0 text-zinc-500" aria-hidden />
           <span className={panelHeadLabelClass}>Store profile</span>
         </div>
         <div className={panelBodyClass}>
@@ -183,7 +183,7 @@ export function StoreSettings() {
             </label>
             <select
               id="store-currency"
-              className="flex h-11 w-full max-w-md rounded-lg border border-slate-200 bg-white px-3 text-sm font-medium text-slate-900 shadow-sm outline-none transition-colors focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20"
+              className="h-10 w-full max-w-md rounded-lg border border-zinc-200 bg-white px-3 text-sm font-medium text-zinc-900 outline-none transition-colors focus:border-zinc-400 focus:ring-2 focus:ring-zinc-900/10"
               value={storeForm.currency}
               onChange={e => setStoreForm(p => ({ ...p, currency: e.target.value }))}
             >
@@ -194,7 +194,7 @@ export function StoreSettings() {
               <option value="AUD">AUD ($)</option>
               <option value="CAD">CAD ($)</option>
             </select>
-            <p className="mt-1.5 text-xs font-medium text-slate-500">Used for prices and order totals.</p>
+            <p className="mt-1.5 text-xs text-zinc-400">Used for prices and order totals.</p>
           </div>
         </div>
       </div>
@@ -202,7 +202,7 @@ export function StoreSettings() {
       {/* Messaging */}
       <div className={panelClass}>
         <div className={panelHeadClass}>
-          <FileText className="h-4 w-4 shrink-0 text-slate-500" aria-hidden />
+          <FileText className="h-4 w-4 shrink-0 text-zinc-500" aria-hidden />
           <span className={panelHeadLabelClass}>Story &amp; messaging</span>
         </div>
         <div className={panelBodyClass}>
@@ -226,11 +226,11 @@ export function StoreSettings() {
       {/* Payment details */}
       <div className={panelClass}>
         <div className={panelHeadClass}>
-          <CreditCard className="h-4 w-4 shrink-0 text-slate-500" aria-hidden />
+          <CreditCard className="h-4 w-4 shrink-0 text-zinc-500" aria-hidden />
           <span className={panelHeadLabelClass}>Payment details</span>
         </div>
         <div className={panelBodyClass}>
-          <p className="text-xs font-medium text-slate-500">
+          <p className="text-xs text-zinc-400">
             Shown to customers when they choose UPI or bank transfer at checkout.
           </p>
           <Input
@@ -241,8 +241,8 @@ export function StoreSettings() {
             className={controlClass}
             helperText="e.g. merchant@okaxis, 9876543210@paytm"
           />
-          <div className="border-t border-slate-100 pt-4">
-            <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-400">Bank transfer</p>
+          <div className="border-t border-zinc-100 pt-4">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-zinc-400">Bank transfer</p>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <Input
                 label="Account holder name"
@@ -277,7 +277,7 @@ export function StoreSettings() {
         </div>
       </div>
 
-      <div className="flex flex-col gap-3 rounded-lg border border-slate-200 bg-slate-50/90 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+      <div className="flex items-center justify-between rounded-lg border border-zinc-200 bg-zinc-50 px-5 py-3">
         <div className="min-h-[1.25rem] text-sm">
           {saveStatus === 'saved' ? (
             <span className="flex items-center gap-1.5 font-medium text-emerald-700">
@@ -287,7 +287,7 @@ export function StoreSettings() {
           ) : null}
           {saveError ? <span className="text-xs font-medium text-red-600">{saveError}</span> : null}
         </div>
-        <Button type="submit" disabled={isSaving} className="w-full shrink-0 sm:w-auto sm:min-w-[8.5rem]">
+        <Button type="submit" disabled={isSaving} className="shrink-0 sm:min-w-[8.5rem]">
           {isSaving ? 'Saving…' : 'Save changes'}
         </Button>
       </div>

@@ -110,7 +110,7 @@ export function AccountSettings() {
             <img
               src={form.avatarUrl}
               alt="Avatar"
-              className="w-16 h-16 rounded-full object-cover border border-gray-200"
+              className="w-16 h-16 rounded-full object-cover border border-zinc-200"
             />
           ) : (
             <div className="w-16 h-16 rounded-full bg-[#059669] flex items-center justify-center text-white text-xl font-bold">
@@ -125,11 +125,11 @@ export function AccountSettings() {
         </div>
 
         <div>
-          <p className="text-sm font-semibold text-gray-900">{displayName}</p>
-          <p className="text-xs text-gray-400">@{form.username || user?.username}</p>
+          <p className="text-sm font-semibold text-zinc-900">{displayName}</p>
+          <p className="text-xs text-zinc-400">@{form.username || user?.username}</p>
           <label
             htmlFor="avatar-upload"
-            className="mt-2 inline-flex items-center gap-1.5 h-8 px-3 text-xs font-medium rounded-lg border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 cursor-pointer transition-colors"
+            className="mt-2 inline-flex items-center gap-1.5 h-8 px-3 text-xs font-medium rounded-lg border border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50 cursor-pointer transition-colors"
           >
             <Upload className="w-3.5 h-3.5" />
             {isUploadingAvatar ? 'Uploading…' : 'Change photo'}
@@ -179,13 +179,13 @@ export function AccountSettings() {
         type="email"
         value={user?.email || ''}
         disabled
-        className="bg-gray-50 text-gray-400 cursor-not-allowed"
+        className="bg-zinc-50 text-zinc-400 cursor-not-allowed"
         helperText="Email cannot be changed."
       />
 
       {/* WhatsApp */}
       <div className="space-y-1.5">
-        <label className="block text-sm font-medium text-gray-700">WhatsApp number</label>
+        <label className="block text-sm font-medium text-zinc-700">WhatsApp number</label>
         <div className="flex gap-2">
           <div className="relative shrink-0">
             <select
@@ -194,24 +194,24 @@ export function AccountSettings() {
                 const c = countryCodes.find(c => c.code === e.target.value);
                 if (c) setSelectedCountry(c);
               }}
-              className="h-11 w-24 rounded-lg border border-gray-300 bg-white pl-2 pr-6 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300 appearance-none cursor-pointer"
+              className="h-10 w-24 rounded-lg border border-zinc-200 bg-white pl-2 pr-6 text-sm focus:outline-none focus:border-zinc-400 focus:ring-2 focus:ring-zinc-900/10 appearance-none cursor-pointer"
             >
               {countryCodes.map(c => (
                 <option key={c.code} value={c.code}>{c.flag} {c.dialCode}</option>
               ))}
             </select>
-            <ChevronDown className="absolute right-1.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
+            <ChevronDown className="absolute right-1.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-400 pointer-events-none" />
           </div>
           <input
             type="tel"
             value={phoneNumber}
             onChange={e => { setPhoneNumber(e.target.value); setWaError(''); }}
             placeholder="98765 43210"
-            className="flex-1 h-11 px-3 rounded-lg border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300 placeholder:text-gray-400"
+            className="flex-1 h-10 px-3 rounded-lg border border-zinc-200 text-sm focus:outline-none focus:border-zinc-400 focus:ring-2 focus:ring-zinc-900/10 placeholder:text-zinc-400"
           />
         </div>
         {waError && <p className="text-xs text-red-500">{waError}</p>}
-        <p className="text-xs text-gray-400">Customers contact you on this number to place orders.</p>
+        <p className="text-xs text-zinc-400">Customers contact you on this number to place orders.</p>
       </div>
 
       {/* Bio */}
@@ -223,19 +223,19 @@ export function AccountSettings() {
       />
 
       {/* Save */}
-      {saveError && <p className="text-xs text-red-600 bg-red-50 px-3 py-2 rounded-lg border border-red-100">{saveError}</p>}
+      {saveError && <p className="text-xs font-medium text-red-600 bg-red-50 px-3 py-2 rounded-lg border border-red-100">{saveError}</p>}
 
       <button
         type="submit"
         disabled={isSaving}
-        className="w-full h-11 rounded-xl bg-gray-900 text-white text-sm font-semibold flex items-center justify-center gap-2 hover:bg-gray-800 transition-colors disabled:opacity-60"
+        className="w-full h-9 rounded-lg bg-zinc-900 text-white text-sm font-semibold flex items-center justify-center gap-2 hover:bg-zinc-700 transition-colors disabled:opacity-60"
       >
         {isSaving && <Loader2 className="w-4 h-4 animate-spin" />}
         {isSaving ? 'Saving…' : 'Save changes'}
       </button>
 
       {saveStatus === 'saved' && (
-        <p className="text-xs text-green-600 flex items-center gap-1.5 justify-center">
+        <p className="text-sm font-medium text-emerald-700 flex items-center gap-1.5 justify-center">
           <CheckCircle2 className="w-3.5 h-3.5" /> Changes saved
         </p>
       )}

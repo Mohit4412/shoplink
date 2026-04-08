@@ -68,7 +68,7 @@ export function BillingSettings() {
     <div className="space-y-3 mt-4">
 
       {/* Current Plan Card */}
-      <div className={`rounded-2xl border overflow-hidden ${isActivePro ? 'border-[#059669]/30 bg-[#ecfdf5]' : 'border-amber-200 bg-[#FFFBEB]'}`}>
+      <div className={`rounded-xl border overflow-hidden ${isActivePro ? 'border-[#059669]/30 bg-[#ecfdf5]' : 'border-amber-200 bg-[#FFFBEB]'}`}>
         {/* Plan badge row */}
         <div className={`px-4 py-3 flex items-center justify-between border-b ${isActivePro ? 'border-[#059669]/20' : 'border-amber-200/60'}`}>
           <div className="flex items-center gap-2">
@@ -76,10 +76,10 @@ export function BillingSettings() {
               {isActivePro ? <Zap className="w-4 h-4 text-[#059669]" /> : <Sparkles className="w-4 h-4 text-amber-600" />}
             </div>
             <div>
-              <p className="text-sm font-bold text-gray-900">
+              <p className="text-sm font-bold text-zinc-900">
                 {isActivePro ? (isTrialPro ? 'Pro Trial' : 'Pro Plan') : isExpiredPro ? 'Pro (Expired)' : 'Free Plan'}
               </p>
-              <p className="text-[11px] font-medium text-gray-500">
+              <p className="text-[11px] font-medium text-zinc-500">
                 {isActivePro && formattedRenewal
                   ? isTrialPro
                     ? `Trial ends on ${formattedRenewal}`
@@ -105,8 +105,8 @@ export function BillingSettings() {
         <div className="px-4 py-3 space-y-2">
           {(isActivePro ? PRO_FEATURES : FREE_LIMITS).map(f => (
             <div key={f} className="flex items-center gap-2.5">
-              <CheckCircle2 className={`w-3.5 h-3.5 shrink-0 ${isActivePro ? 'text-[#059669]' : 'text-gray-300'}`} />
-              <span className="text-sm text-gray-700">{f}</span>
+              <CheckCircle2 className={`w-3.5 h-3.5 shrink-0 ${isActivePro ? 'text-[#059669]' : 'text-zinc-300'}`} />
+              <span className="text-sm text-zinc-700">{f}</span>
             </div>
           ))}
         </div>
@@ -141,28 +141,28 @@ export function BillingSettings() {
                   <div className="flex items-start gap-2">
                     <AlertTriangle className="w-4 h-4 text-red-500 mt-0.5 shrink-0" />
                     <div>
-                      <p className="text-sm font-semibold text-gray-900">{isTrialPro ? 'End trial access?' : 'Cancel subscription?'}</p>
-                      <p className="text-xs text-gray-500 mt-0.5">
+                      <p className="text-sm font-semibold text-zinc-900">{isTrialPro ? 'End trial access?' : 'Cancel subscription?'}</p>
+                      <p className="text-xs text-zinc-500 mt-0.5">
                         {isTrialPro
                           ? `You'll keep trial access until ${formattedRenewal ?? 'your trial end date'}, then revert to Free.`
                           : `You'll keep Pro access until ${formattedRenewal ?? 'your renewal date'}, then revert to Free.`}
                       </p>
                     </div>
-                    <button onClick={() => setShowCancelConfirm(false)} className="ml-auto text-gray-400 hover:text-gray-600">
+                    <button onClick={() => setShowCancelConfirm(false)} className="ml-auto text-zinc-400 hover:text-zinc-600">
                       <X className="w-4 h-4" />
                     </button>
                   </div>
                   <div className="flex gap-2">
                     <button
                       onClick={() => setShowCancelConfirm(false)}
-                      className="flex-1 h-9 rounded-xl border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-gray-50 transition-colors"
+                      className="flex-1 h-9 rounded-lg border border-zinc-200 bg-white text-zinc-700 text-sm font-medium hover:bg-zinc-50 transition-colors"
                     >
                       {isTrialPro ? 'Keep trial' : 'Keep Pro'}
                     </button>
                     <button
                       onClick={handleCancel}
                       disabled={cancelState === 'loading'}
-                      className="flex-1 h-9 rounded-xl bg-red-500 text-white text-sm font-semibold hover:bg-red-600 disabled:opacity-60 transition-colors"
+                      className="flex-1 h-9 rounded-lg border border-red-200 bg-red-50 text-red-600 text-sm font-medium hover:bg-red-100 disabled:opacity-60 transition-colors"
                     >
                       {cancelState === 'loading' ? 'Cancelling…' : 'Yes, cancel'}
                     </button>
@@ -171,7 +171,7 @@ export function BillingSettings() {
               ) : cancelState !== 'success' && (
                 <button
                   onClick={() => setShowCancelConfirm(true)}
-                  className="w-full h-10 rounded-xl border border-[#059669]/40 text-[#15803d] text-sm font-semibold hover:bg-[#dcfce7] transition-colors"
+                  className="w-full h-9 rounded-lg border border-[#059669]/40 text-[#15803d] text-sm font-medium hover:bg-[#dcfce7] transition-colors"
                 >
                   {isTrialPro ? 'End trial' : 'Cancel subscription'}
                 </button>
@@ -180,7 +180,7 @@ export function BillingSettings() {
           ) : (
             <button
               onClick={upgradeModal.open}
-              className="w-full h-10 rounded-xl bg-gray-900 text-white text-sm font-semibold hover:bg-gray-800 transition-colors flex items-center justify-center gap-2"
+              className="w-full h-9 rounded-lg bg-zinc-900 text-white text-sm font-semibold hover:bg-zinc-700 transition-colors flex items-center justify-center gap-2"
             >
               <Zap className="w-4 h-4" />
               {isExpiredPro ? 'Renew Pro' : 'Upgrade to Pro — ₹349/mo'}
@@ -191,17 +191,17 @@ export function BillingSettings() {
 
       {/* Payment Method — Pro only */}
       {isActivePro && (
-        <div className="bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm">
-          <div className="px-4 pt-3.5 pb-2 border-b border-gray-50">
-            <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Payment method</p>
+        <div className="bg-white border border-zinc-200 rounded-xl overflow-hidden">
+          <div className="px-5 py-3.5 border-b border-zinc-200 bg-zinc-50/60">
+            <p className="text-xs font-semibold uppercase tracking-widest text-zinc-500">Payment method</p>
           </div>
           <div className="p-4 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center shrink-0">
-              <CreditCard className="w-5 h-5 text-gray-400" />
+            <div className="w-10 h-10 rounded-xl bg-zinc-100 flex items-center justify-center shrink-0">
+              <CreditCard className="w-5 h-5 text-zinc-400" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-gray-900">Razorpay</p>
-              <p className="text-xs text-gray-400">Cards, UPI, and netbanking via Razorpay.</p>
+              <p className="text-sm font-semibold text-zinc-900">Razorpay</p>
+              <p className="text-xs text-zinc-400">Cards, UPI, and netbanking via Razorpay.</p>
             </div>
           </div>
         </div>
@@ -209,9 +209,9 @@ export function BillingSettings() {
 
       {/* Billing support note */}
       {isActivePro && (
-        <p className="text-[11px] text-gray-400 text-center px-2">
+        <p className="text-[11px] text-zinc-400 text-center px-2">
           For billing queries, reach us at{' '}
-          <a href="mailto:support@myshoplink.site" className="underline hover:text-gray-700">support@myshoplink.site</a>
+          <a href="mailto:support@myshoplink.site" className="underline hover:text-zinc-700">support@myshoplink.site</a>
         </p>
       )}
 

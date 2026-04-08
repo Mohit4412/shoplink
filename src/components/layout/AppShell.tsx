@@ -171,11 +171,11 @@ export function AppShell({
       {/* ── DESKTOP SIDEBAR ─────────────────────────────────────────────── */}
       <aside
         ref={desktopSidebarRef}
-        className="hidden md:flex flex-col w-[220px] shrink-0 fixed top-0 left-0 h-screen bg-white border-r border-gray-100 z-40"
+        className="hidden md:flex flex-col w-[220px] shrink-0 fixed top-0 left-0 h-screen bg-white border-r border-zinc-200 z-40"
       >
 
         {/* Logo */}
-        <div className="h-[56px] flex items-center px-5 border-b border-gray-100 shrink-0">
+        <div className="h-[56px] flex items-center px-5 border-b border-zinc-200 shrink-0">
           <AppLogo size="sm" href="/dashboard" />
         </div>
 
@@ -196,9 +196,9 @@ export function AppShell({
               >
                 <div
                   className={`flex items-center gap-3 px-3 py-2.5 rounded-xl mb-0.5 text-sm font-semibold transition-colors ${
-                    active
-                      ? 'bg-[#ecfdf5] text-[#059669]'
-                      : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                  active
+                      ? 'bg-zinc-100 text-zinc-900'
+                      : 'text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900'
                   }`}
                 >
                   <Link href={item.path} className="flex min-w-0 flex-1 items-center gap-3">
@@ -226,7 +226,7 @@ export function AppShell({
                         }
                       }}
                       className={`shrink-0 rounded-md p-1 transition-colors ${
-                        active ? 'hover:bg-[#d1fae5]' : 'hover:bg-gray-100'
+                        active ? 'hover:bg-zinc-200' : 'hover:bg-zinc-100'
                       }`}
                     >
                       <ChevronDown
@@ -238,7 +238,7 @@ export function AppShell({
 
                 {item.children && (
                   <div className={`${showChildren ? 'block' : 'hidden'} mb-2 pl-2`}>
-                    <div className="space-y-1 rounded-xl border border-gray-100 bg-gray-50 px-2 py-2">
+                  <div className="space-y-1 rounded-lg border border-zinc-100 bg-zinc-50 px-2 py-1.5">
                       {item.children.map((child) => {
                         const childActive =
                           (pathname === '/settings' && activeSettingsView === child.view) ||
@@ -249,8 +249,8 @@ export function AppShell({
                             href={child.path}
                             className={`block rounded-lg px-3 py-2 text-xs font-semibold transition-colors ${
                               childActive
-                                ? 'bg-white text-[#059669] shadow-sm'
-                                : 'text-gray-500 hover:bg-white hover:text-gray-900'
+                                ? 'bg-white text-zinc-900 shadow-none border border-zinc-200'
+                                : 'text-zinc-500 hover:bg-zinc-50 hover:text-zinc-800'
                             }`}
                           >
                             {child.label}
@@ -264,13 +264,13 @@ export function AppShell({
             );
           })}
 
-          <div className="mt-3 pt-3 border-t border-gray-100">
+          <div className="mt-3 pt-3 border-t border-zinc-200">
             {user?.username && (
               <a
                 href={getStoreUrl(user.username)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-gray-500 hover:bg-gray-50 hover:text-gray-900 transition-colors"
+                className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900 transition-colors"
               >
                 <ExternalLink style={{ width: 18, height: 18 }} className="shrink-0" />
                 View Store
@@ -294,29 +294,29 @@ export function AppShell({
           ) : (
             <Link
               href="/settings?view=billing"
-              className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-[#ecfdf5] border border-[#059669]/20 hover:bg-[#d1fae5] transition-colors"
+              className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-emerald-50 border border-emerald-200 hover:bg-emerald-100 transition-colors"
             >
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-bold text-green-900">Pro plan</p>
-                <p className="text-[10px] text-green-700 font-medium">All features unlocked</p>
+                <p className="text-xs font-bold text-emerald-900">Pro plan</p>
+                <p className="text-[10px] text-emerald-700 font-medium">All features unlocked</p>
               </div>
             </Link>
           )}
         </div>
 
         {/* User */}
-        <div className="px-3 pb-4 shrink-0 border-t border-gray-100 pt-3 relative">
+        <div className="px-3 pb-4 shrink-0 border-t border-zinc-200 pt-3 relative">
           <div className="w-full flex items-center gap-3 px-2 py-2 rounded-xl text-left">
             <div className="w-8 h-8 rounded-full bg-[#059669] text-white flex items-center justify-center shrink-0 overflow-hidden">
               {avatarContent}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-gray-900 truncate leading-tight">
+              <p className="text-sm font-semibold text-zinc-900 truncate leading-tight">
                 {[user?.firstName, user?.lastName].filter(Boolean).join(' ') || user?.username}
               </p>
-              <p className="text-[11px] text-gray-400 truncate">{user?.email}</p>
+              <p className="text-[11px] text-zinc-400 truncate">{user?.email}</p>
             </div>
-            <ChevronRight className="w-4 h-4 text-gray-300 shrink-0" />
+            <ChevronRight className="w-4 h-4 text-zinc-300 shrink-0" />
           </div>
         </div>
       </aside>
@@ -325,11 +325,11 @@ export function AppShell({
       <div className="flex-1 flex flex-col min-h-screen md:ml-[220px]">
 
         {/* TOP BAR */}
-        <header className="h-[56px] bg-white border-b border-gray-100 sticky top-0 z-30 flex items-center justify-between px-4 shrink-0">
+        <header className="h-14 bg-white border-b border-zinc-200 sticky top-0 z-30 flex items-center justify-between px-4 shrink-0">
           {/* Mobile: logo or back button */}
           <div className="flex items-center gap-2 md:hidden">
             {headerVariant === 'back' ? (
-              <button onClick={handleBack} className="p-1 -ml-1 text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
+              <button onClick={handleBack} className="p-1 -ml-1 text-zinc-900 hover:bg-zinc-100 rounded-lg transition-colors">
                 <ChevronLeft className="w-6 h-6" />
               </button>
             ) : (
@@ -337,8 +337,8 @@ export function AppShell({
             )}
             {headerVariant === 'back' && pageTitle && (
               <div className="flex flex-col">
-                <span className="font-bold text-[16px] text-gray-900 leading-tight">{pageTitle}</span>
-                {pageSubtitle && <span className="text-[12px] text-gray-500 font-medium leading-tight">{pageSubtitle}</span>}
+                <span className="font-bold text-[16px] text-zinc-900 leading-tight">{pageTitle}</span>
+                {pageSubtitle && <span className="text-[12px] text-zinc-500 font-medium leading-tight">{pageSubtitle}</span>}
               </div>
             )}
           </div>
@@ -347,16 +347,16 @@ export function AppShell({
           <div className="hidden md:flex items-center gap-2">
             {headerVariant === 'back' ? (
               <>
-                <button onClick={handleBack} className="p-1 -ml-1 text-gray-500 hover:bg-gray-100 rounded-lg transition-colors">
+                <button onClick={handleBack} className="p-1 -ml-1 text-zinc-500 hover:bg-zinc-100 rounded-lg transition-colors">
                   <ChevronLeft className="w-5 h-5" />
                 </button>
                 <div>
-                  <span className="font-bold text-[16px] text-gray-900 leading-tight">{pageTitle}</span>
-                  {pageSubtitle && <span className="text-[12px] text-gray-500 font-medium leading-tight ml-2">{pageSubtitle}</span>}
+                  <span className="font-bold text-[16px] text-zinc-900 leading-tight">{pageTitle}</span>
+                  {pageSubtitle && <span className="text-[12px] text-zinc-500 font-medium leading-tight ml-2">{pageSubtitle}</span>}
                 </div>
               </>
             ) : (
-              <span className="text-sm font-semibold text-gray-400">
+              <span className="text-sm font-medium text-zinc-500">
                 {activeNavLabel}
               </span>
             )}
@@ -370,7 +370,7 @@ export function AppShell({
             <button
               ref={bellRef}
               onClick={toggleNotif}
-              className="relative p-2 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-xl transition-colors"
+              className="relative p-2 text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 rounded-lg transition-colors"
               aria-label="Notifications"
             >
               <Bell className="w-5 h-5" />
@@ -404,25 +404,25 @@ export function AppShell({
         {desktopProfileOpen && (
           <div
             ref={desktopProfileRef}
-            className="hidden md:block fixed top-[60px] right-4 z-50 w-[220px] bg-white border border-gray-100 rounded-2xl shadow-xl overflow-hidden"
+            className="hidden md:block fixed top-[60px] right-4 z-50 w-[220px] bg-white border border-zinc-200 rounded-xl shadow-lg overflow-hidden"
           >
-            <div className="px-4 py-3 border-b border-gray-100">
-              <p className="text-sm font-semibold text-gray-900 truncate">
+            <div className="px-4 py-3 border-b border-zinc-200">
+              <p className="text-sm font-semibold text-zinc-900 truncate">
                 {[user?.firstName, user?.lastName].filter(Boolean).join(' ') || user?.username}
               </p>
-              <p className="text-xs text-gray-400 truncate">{user?.email}</p>
+              <p className="text-xs text-zinc-400 truncate">{user?.email}</p>
             </div>
             <div className="py-1">
               <button onClick={() => { setDesktopProfileOpen(false); router.push('/settings?view=account'); }}
-                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
-                <User className="w-4 h-4 text-gray-400" /> Edit profile
+                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-zinc-700 hover:bg-zinc-50 transition-colors">
+                <User className="w-4 h-4 text-zinc-400" /> Edit profile
               </button>
               <button onClick={() => { setDesktopProfileOpen(false); router.push('/settings'); }}
-                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
-                <Settings className="w-4 h-4 text-gray-400" /> Settings
+                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-zinc-700 hover:bg-zinc-50 transition-colors">
+                <Settings className="w-4 h-4 text-zinc-400" /> Settings
               </button>
             </div>
-            <div className="border-t border-gray-100 py-1">
+            <div className="border-t border-zinc-200 py-1">
               <button onClick={handleLogout}
                 className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors">
                 <LogOut className="w-4 h-4" /> Log out
@@ -435,11 +435,11 @@ export function AppShell({
         {notifOpen && (
           <div
             ref={notifRef}
-            className="fixed top-[56px] right-4 z-50 w-[340px] bg-white border border-gray-100 rounded-2xl shadow-2xl overflow-hidden max-h-[480px] flex flex-col"
+            className="fixed top-[56px] right-4 z-50 w-[340px] bg-white border border-zinc-200 rounded-xl shadow-lg overflow-hidden max-h-[480px] flex flex-col"
           >
-            <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 shrink-0">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-200 shrink-0">
               <div className="flex items-center gap-2">
-                <span className="text-sm font-semibold text-gray-900">Notifications</span>
+                <span className="text-sm font-semibold text-zinc-900">Notifications</span>
                 {unreadCount > 0 && (
                   <span className="text-[11px] font-bold bg-red-100 text-red-600 px-1.5 py-0.5 rounded-full">{unreadCount}</span>
                 )}
@@ -447,18 +447,18 @@ export function AppShell({
               <div className="flex items-center gap-1">
                 {unreadCount > 0 && (
                   <button onClick={markAllNotificationsRead}
-                    className="flex items-center gap-1 text-xs text-gray-500 hover:text-gray-900 px-2 py-1 rounded-lg hover:bg-gray-100 transition-colors">
+                    className="flex items-center gap-1 text-xs text-zinc-500 hover:text-zinc-900 px-2 py-1 rounded-lg hover:bg-zinc-100 transition-colors">
                     <CheckCheck className="w-3.5 h-3.5" /> Mark all read
                   </button>
                 )}
                 {notifs.length > 0 && (
                   <button onClick={clearAllNotifications}
-                    className="p-1.5 text-gray-400 hover:text-red-500 rounded-lg hover:bg-red-50 transition-colors">
+                    className="p-1.5 text-zinc-400 hover:text-red-500 rounded-lg hover:bg-red-50 transition-colors">
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
                 )}
                 <button onClick={() => setNotifOpen(false)}
-                  className="p-1.5 text-gray-400 hover:text-gray-700 rounded-lg hover:bg-gray-100 transition-colors">
+                  className="p-1.5 text-zinc-400 hover:text-zinc-700 rounded-lg hover:bg-zinc-100 transition-colors">
                   <X className="w-4 h-4" />
                 </button>
               </div>
@@ -466,19 +466,19 @@ export function AppShell({
             <div className="overflow-y-auto flex-1">
               {notifs.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-12 text-center px-4">
-                  <Bell className="w-8 h-8 text-gray-200 mb-2" />
-                  <p className="text-sm text-gray-400">No notifications yet</p>
-                  <p className="text-xs text-gray-300 mt-1">WhatsApp inquiries will show up here</p>
+                  <Bell className="w-8 h-8 text-zinc-200 mb-2" />
+                  <p className="text-sm text-zinc-400">No notifications yet</p>
+                  <p className="text-xs text-zinc-300 mt-1">WhatsApp inquiries will show up here</p>
                 </div>
               ) : (
                 notifs.map(n => (
                   <button key={n.id} onClick={() => markNotificationRead(n.id)}
-                    className={`w-full text-left flex items-start gap-3 px-4 py-3 border-b border-gray-50 transition-colors hover:bg-gray-50 ${!n.read ? 'bg-blue-50/40' : ''}`}>
+                    className={`w-full text-left flex items-start gap-3 px-4 py-3 border-b border-zinc-50 transition-colors hover:bg-zinc-50 ${!n.read ? 'bg-blue-50/40' : ''}`}>
                     <div className={`mt-0.5 w-2 h-2 rounded-full shrink-0 ${!n.read ? 'bg-blue-500' : 'bg-transparent'}`} />
                     <div className="flex-1 min-w-0">
-                      <p className={`text-sm leading-snug ${!n.read ? 'font-semibold text-gray-900' : 'font-medium text-gray-700'}`}>{n.title}</p>
-                      <p className="text-xs text-gray-500 mt-0.5 leading-snug">{n.message}</p>
-                      <p className="text-[11px] text-gray-300 mt-1">{formatDistanceToNow(new Date(n.date), { addSuffix: true })}</p>
+                      <p className={`text-sm leading-snug ${!n.read ? 'font-semibold text-zinc-900' : 'font-medium text-zinc-700'}`}>{n.title}</p>
+                      <p className="text-xs text-zinc-500 mt-0.5 leading-snug">{n.message}</p>
+                      <p className="text-[11px] text-zinc-300 mt-1">{formatDistanceToNow(new Date(n.date), { addSuffix: true })}</p>
                     </div>
                   </button>
                 ))
@@ -491,32 +491,32 @@ export function AppShell({
         {mobileProfileOpen && (
           <div
             ref={mobileProfileRef}
-            className="md:hidden fixed top-[56px] right-3 z-50 w-[220px] bg-white border border-gray-100 rounded-2xl shadow-xl overflow-hidden"
+            className="md:hidden fixed top-[56px] right-3 z-50 w-[220px] bg-white border border-zinc-200 rounded-xl shadow-lg overflow-hidden"
           >
-            <div className="px-4 py-3 border-b border-gray-100">
-              <p className="text-sm font-semibold text-gray-900 truncate">
+            <div className="px-4 py-3 border-b border-zinc-200">
+              <p className="text-sm font-semibold text-zinc-900 truncate">
                 {[user?.firstName, user?.lastName].filter(Boolean).join(' ') || user?.username}
               </p>
-              <p className="text-xs text-gray-400 truncate">{user?.email}</p>
+              <p className="text-xs text-zinc-400 truncate">{user?.email}</p>
             </div>
             <div className="py-1">
               <button onClick={() => { setMobileProfileOpen(false); router.push('/settings?view=account'); }}
-                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
-                <User className="w-4 h-4 text-gray-400" /> Edit profile
+                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-zinc-700 hover:bg-zinc-50 transition-colors">
+                <User className="w-4 h-4 text-zinc-400" /> Edit profile
               </button>
               <button onClick={() => { setMobileProfileOpen(false); router.push('/settings'); }}
-                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
-                <Settings className="w-4 h-4 text-gray-400" /> Settings
+                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-zinc-700 hover:bg-zinc-50 transition-colors">
+                <Settings className="w-4 h-4 text-zinc-400" /> Settings
               </button>
               {user?.username && (
                 <a href={getStoreUrl(user.username)} target="_blank" rel="noopener noreferrer"
                   onClick={() => setMobileProfileOpen(false)}
-                  className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors">
-                  <ExternalLink className="w-4 h-4 text-gray-400" /> View store
+                  className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-zinc-700 hover:bg-zinc-50 transition-colors">
+                  <ExternalLink className="w-4 h-4 text-zinc-400" /> View store
                 </a>
               )}
             </div>
-            <div className="border-t border-gray-100 py-1">
+            <div className="border-t border-zinc-200 py-1">
               <button onClick={handleLogout}
                 className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors">
                 <LogOut className="w-4 h-4" /> Log out
@@ -532,7 +532,7 @@ export function AppShell({
           const currentView = searchParams?.get('view') ?? '';
           return (
             <div
-              className="md:hidden sticky top-[56px] z-20 bg-white border-b border-gray-100 flex gap-1.5 px-3 py-2"
+              className="md:hidden sticky top-14 z-20 bg-white border-b border-zinc-200 flex gap-1.5 px-3 py-2"
               style={{ overflowX: 'auto', msOverflowStyle: 'none', scrollbarWidth: 'none' }}
             >
               {activeItem.children!.map((child) => {
@@ -543,8 +543,8 @@ export function AppShell({
                     href={child.path}
                     className={`shrink-0 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-colors whitespace-nowrap ${
                       isChildActive
-                        ? 'bg-[#059669] text-white'
-                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                        ? 'bg-zinc-900 text-white'
+                        : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
                     }`}
                   >
                     {child.label}
@@ -564,7 +564,7 @@ export function AppShell({
         </main>
 
         {/* MOBILE BOTTOM NAV */}
-        <nav className="md:hidden h-[64px] bg-white border-t border-gray-100 fixed bottom-0 left-0 right-0 z-30 flex items-center justify-between px-2">
+        <nav className="md:hidden h-[64px] bg-white border-t border-zinc-200 fixed bottom-0 left-0 right-0 z-30 flex items-center justify-between px-2">
           {NAV_ITEMS.map(item => {
             const active = isActive(item);
             // For items with children, link to first child when not already on that route
@@ -574,7 +574,7 @@ export function AppShell({
                 key={item.path}
                 href={href}
                 className={`flex-1 flex flex-col items-center justify-center gap-1 h-full transition-colors ${
-                  active ? 'text-[#059669]' : 'text-gray-400 hover:text-gray-600'
+                  active ? 'text-zinc-900' : 'text-zinc-400 hover:text-zinc-600'
                 }`}
               >
                 <item.icon className="w-6 h-6" />
