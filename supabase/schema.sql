@@ -57,6 +57,7 @@ create table if not exists public.products (
   collection_name text,
   collections_json jsonb,
   highlights_json jsonb,
+  page_sections_json jsonb,
   variants_json jsonb,
   reviews_json jsonb,
   is_demo boolean not null default false,

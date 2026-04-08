@@ -75,6 +75,11 @@ export function Products() {
     highlights: '',
     collection: '',
     variants: [] as import('../types').ProductVariant[],
+    detailsTitle: '',
+    shippingTitle: '',
+    shippingContent: '',
+    careTitle: '',
+    careContent: '',
   });
 
   const parseLines = (value: string) =>
@@ -120,6 +125,13 @@ export function Products() {
       collection: formData.collection || undefined,
       collections: formData.collection ? [formData.collection] : [],
       reviews: [],
+      pageSections: {
+        detailsTitle: formData.detailsTitle.trim() || undefined,
+        shippingTitle: formData.shippingTitle.trim() || undefined,
+        shippingContent: formData.shippingContent.trim(),
+        careTitle: formData.careTitle.trim() || undefined,
+        careContent: formData.careContent.trim(),
+      },
     });
     if (result === 'LIMIT_REACHED') {
       throw new Error('LIMIT_REACHED');
@@ -145,6 +157,13 @@ export function Products() {
       collections: formData.collection
         ? Array.from(new Set([formData.collection, ...getProductCollections(selectedProduct).filter((collectionName) => collectionName !== selectedProduct.collection)]))
         : getProductCollections(selectedProduct).filter((collectionName) => collectionName !== selectedProduct.collection),
+      pageSections: {
+        detailsTitle: formData.detailsTitle.trim() || undefined,
+        shippingTitle: formData.shippingTitle.trim() || undefined,
+        shippingContent: formData.shippingContent.trim(),
+        careTitle: formData.careTitle.trim() || undefined,
+        careContent: formData.careContent.trim(),
+      },
     });
     setIsEditModalOpen(false);
     resetForm();
@@ -167,6 +186,11 @@ export function Products() {
       highlights: (product.highlights ?? []).join('\n'),
       collection: getProductCollections(product)[0] ?? '',
       variants: product.variants ?? [],
+      detailsTitle: product.pageSections?.detailsTitle ?? '',
+      shippingTitle: product.pageSections?.shippingTitle ?? '',
+      shippingContent: product.pageSections?.shippingContent ?? '',
+      careTitle: product.pageSections?.careTitle ?? '',
+      careContent: product.pageSections?.careContent ?? '',
     });
     setIsEditModalOpen(true);
   };
@@ -186,6 +210,11 @@ export function Products() {
       highlights: '',
       collection: '',
       variants: [],
+      detailsTitle: '',
+      shippingTitle: '',
+      shippingContent: '',
+      careTitle: '',
+      careContent: '',
     });
     setSelectedProduct(null);
   };

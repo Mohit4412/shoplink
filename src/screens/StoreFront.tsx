@@ -10,7 +10,7 @@ import { StoreSettings, Product, PublicStorefrontData } from '../types';
 import { Nav } from '../components/storefront/Nav';
 import { ProductCard } from '../components/storefront/ProductCard';
 import { ThemeLayout } from '../utils/themes';
-import { getProductUrl } from '../utils/storeUrl';
+import { getProductUrl, getStoreSubdomain, isStoreSubdomainHost } from '../utils/storeUrl';
 import { getTypographyClasses, getSectionSpacingClass } from '../utils/themeHelpers';
 import { SparkStoreFront } from '../components/storefront/themes/SparkStoreFront';
 import { CraftStoreFront } from '../components/storefront/themes/CraftStoreFront';
@@ -219,18 +219,12 @@ export function StoreFront({ storefront }: { storefront?: PublicStorefrontData }
   const store = storefront?.store ?? localStore;
   const products = storefront?.products ?? localProducts;
 
-  function getSubdomain(): string | null {
-    if (typeof window === 'undefined') return null;
-    const host = window.location.hostname;
-    const parts = host.split('.');
-    if (parts.length >= 3) return parts[0];
-    if (host === 'localhost') return null;
-    return null;
-  }
-
-  const resolvedStoreId = storeId || getSubdomain() || publicUser?.username || localUser?.username || 'store';
+  const runtimeSubdomain = typeof window !== 'undefined'
+    ? getStoreSubdomain(window.location.hostname)
+    : null;
+  const resolvedStoreId = storeId || runtimeSubdomain || publicUser?.username || localUser?.username || 'store';
   const isSubdomain = typeof window !== 'undefined'
-    ? window.location.hostname.split('.').length >= 3
+    ? !storeId && isStoreSubdomainHost(window.location.hostname)
     : Boolean(publicUser?.username && !storeId);
   const activeUser = publicUser ?? (
     localUser

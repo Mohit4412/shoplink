@@ -41,45 +41,94 @@ function AccordionItem({ title, content, defaultOpen = false }: AccordionItemPro
 
 interface ProductAccordionProps {
   description: string;
+  detailsTitle?: string;
+  shippingTitle?: string;
   shippingInfo?: ReactNode;
+  shippingContent?: string;
+  careTitle?: string;
   careInstructions?: ReactNode;
+  careContent?: string;
   sizeGuide?: ReactNode;
 }
 
-export function ProductAccordion({ description, shippingInfo, careInstructions, sizeGuide }: ProductAccordionProps) {
+function renderMultilineContent(content: string) {
+  const lines = content
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean);
+
+  if (lines.length === 0) {
+    return null;
+  }
+
+  const looksLikeList = lines.length > 1;
+
+  if (looksLikeList) {
+    return (
+      <ul className="list-disc pl-4 space-y-1">
+        {lines.map((line, index) => (
+          <li key={`${line}-${index}`}>{line.replace(/^[-*]\s*/, '')}</li>
+        ))}
+      </ul>
+    );
+  }
+
+  return <p>{lines[0]}</p>;
+}
+
+export function ProductAccordion({
+  description,
+  detailsTitle,
+  shippingTitle,
+  shippingInfo,
+  shippingContent,
+  careTitle,
+  careInstructions,
+  careContent,
+  sizeGuide,
+}: ProductAccordionProps) {
+  const hasCustomShippingContent = shippingContent !== undefined;
+  const hasCustomCareContent = careContent !== undefined;
+  const shippingSectionContent = hasCustomShippingContent ? renderMultilineContent(shippingContent ?? '') : null;
+  const careSectionContent = hasCustomCareContent ? renderMultilineContent(careContent ?? '') : null;
+
   return (
     <div className="w-full mt-10">
-      <AccordionItem title="Product Details" content={<p>{description}</p>} defaultOpen />
+      <AccordionItem title={detailsTitle?.trim() || 'Product Details'} content={<p>{description}</p>} defaultOpen />
       
       {sizeGuide && (
         <AccordionItem title="Size Guide" content={sizeGuide} />
       )}
       
-      <AccordionItem 
-        title="Shipping & Returns" 
-        content={
-          shippingInfo || (
-            <>
-              <p className="mb-2"><strong>Standard Shipping:</strong> 3-5 business days. Free on orders over $100.</p>
-              <p><strong>Returns:</strong> 7-day hassle-free returns. Item must be unworn and in original packaging.</p>
-            </>
-          )
-        } 
-      />
+      {(!hasCustomShippingContent || shippingSectionContent || shippingInfo) && (
+        <AccordionItem 
+          title={shippingTitle?.trim() || 'Shipping & Returns'} 
+          content={
+            shippingInfo || shippingSectionContent || (
+              <>
+                <p className="mb-2"><strong>Standard Shipping:</strong> 3-5 business days. Free on orders over $100.</p>
+                <p><strong>Returns:</strong> 7-day hassle-free returns. Item must be unworn and in original packaging.</p>
+              </>
+            )
+          } 
+        />
+      )}
       
-      <AccordionItem 
-        title="Care Instructions" 
-        content={
-          careInstructions || (
-            <ul className="list-disc pl-4 space-y-1">
-              <li>Machine wash cold with like colors</li>
-              <li>Tumble dry low or line dry</li>
-              <li>Do not bleach</li>
-              <li>Cool iron if needed</li>
-            </ul>
-          )
-        } 
-      />
+      {(!hasCustomCareContent || careSectionContent || careInstructions) && (
+        <AccordionItem 
+          title={careTitle?.trim() || 'Care Instructions'} 
+          content={
+            careInstructions || careSectionContent || (
+              <ul className="list-disc pl-4 space-y-1">
+                <li>Machine wash cold with like colors</li>
+                <li>Tumble dry low or line dry</li>
+                <li>Do not bleach</li>
+                <li>Cool iron if needed</li>
+              </ul>
+            )
+          } 
+        />
+      )}
     </div>
   );
 }

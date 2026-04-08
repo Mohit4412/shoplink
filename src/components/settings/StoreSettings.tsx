@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, FormEvent } from 'react';
-import { CheckCircle2, Upload, Building2, Link2, FileText } from 'lucide-react';
+import { CheckCircle2, Upload, Building2, Link2, FileText, CreditCard } from 'lucide-react';
 import { useStore } from '../../context/StoreContext';
 import { Button } from '../ui/Button';
 import { Input, Textarea } from '../ui/Input';
@@ -38,6 +38,14 @@ export function StoreSettings() {
     currency: store.currency || 'INR',
   });
 
+  const [paymentForm, setPaymentForm] = useState({
+    upiId: store.paymentSettings?.upiId || '',
+    bankAccountName: store.paymentSettings?.bankAccountName || '',
+    bankAccountNumber: store.paymentSettings?.bankAccountNumber || '',
+    bankIfsc: store.paymentSettings?.bankIfsc || '',
+    bankBranch: store.paymentSettings?.bankBranch || '',
+  });
+
   const sanitizeName = (val: string) => val.trim().replace(/[<>"&]/g, '');
 
   const handleStoreSave = async (e: FormEvent) => {
@@ -51,6 +59,13 @@ export function StoreSettings() {
         name: sanitizeName(storeForm.name),
         tagline: storeForm.tagline.trim(),
         bio: storeForm.bio.trim(),
+        paymentSettings: {
+          upiId: paymentForm.upiId.trim() || undefined,
+          bankAccountName: paymentForm.bankAccountName.trim() || undefined,
+          bankAccountNumber: paymentForm.bankAccountNumber.trim() || undefined,
+          bankIfsc: paymentForm.bankIfsc.trim().toUpperCase() || undefined,
+          bankBranch: paymentForm.bankBranch.trim() || undefined,
+        },
       });
       if (previousLogoUrl && previousLogoUrl !== storeForm.logoUrl) {
         void deleteImage(previousLogoUrl);
@@ -205,6 +220,60 @@ export function StoreSettings() {
             placeholder="Tell customers about your story and what you offer."
             className={`min-h-[120px] ${controlClass}`}
           />
+        </div>
+      </div>
+
+      {/* Payment details */}
+      <div className={panelClass}>
+        <div className={panelHeadClass}>
+          <CreditCard className="h-4 w-4 shrink-0 text-slate-500" aria-hidden />
+          <span className={panelHeadLabelClass}>Payment details</span>
+        </div>
+        <div className={panelBodyClass}>
+          <p className="text-xs font-medium text-slate-500">
+            Shown to customers when they choose UPI or bank transfer at checkout.
+          </p>
+          <Input
+            label="UPI ID"
+            value={paymentForm.upiId}
+            onChange={e => setPaymentForm(p => ({ ...p, upiId: e.target.value }))}
+            placeholder="yourname@upi"
+            className={controlClass}
+            helperText="e.g. merchant@okaxis, 9876543210@paytm"
+          />
+          <div className="border-t border-slate-100 pt-4">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-400">Bank transfer</p>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <Input
+                label="Account holder name"
+                value={paymentForm.bankAccountName}
+                onChange={e => setPaymentForm(p => ({ ...p, bankAccountName: e.target.value }))}
+                placeholder="Riya Sharma"
+                className={controlClass}
+              />
+              <Input
+                label="Account number"
+                value={paymentForm.bankAccountNumber}
+                onChange={e => setPaymentForm(p => ({ ...p, bankAccountNumber: e.target.value }))}
+                placeholder="1234567890"
+                className={controlClass}
+              />
+              <Input
+                label="IFSC code"
+                value={paymentForm.bankIfsc}
+                onChange={e => setPaymentForm(p => ({ ...p, bankIfsc: e.target.value.toUpperCase() }))}
+                placeholder="SBIN0001234"
+                className={controlClass}
+              />
+              <Input
+                label="Branch (optional)"
+                value={paymentForm.bankBranch}
+                onChange={e => setPaymentForm(p => ({ ...p, bankBranch: e.target.value }))}
+                placeholder="Mumbai Main Branch"
+                className={controlClass}
+              />
+            </div>
+          </div>
         </div>
       </div>
 

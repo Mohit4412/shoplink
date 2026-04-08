@@ -16,6 +16,11 @@ interface ProductFormData {
   highlights: string;
   collection: string;
   variants: ProductVariant[];
+  detailsTitle: string;
+  shippingTitle: string;
+  shippingContent: string;
+  careTitle: string;
+  careContent: string;
 }
 
 interface ProductModalProps {
@@ -257,6 +262,50 @@ export function ProductModal({ isOpen, isEditMode, onClose, formData, setFormDat
           variants={formData.variants}
           onChange={(variants) => setFormData({ ...formData, variants })}
         />
+
+        <div className="space-y-3 rounded-2xl border border-gray-200 bg-gray-50 px-4 py-4">
+          <div>
+            <p className="text-sm font-semibold text-gray-900">Product Page Sections</p>
+            <p className="mt-1 text-xs text-gray-500">
+              Customize the accordion labels and content shown on the product page. Leave a content field empty to hide that section.
+            </p>
+          </div>
+
+          <Input
+            label="Details Section Title"
+            value={formData.detailsTitle}
+            onChange={(e) => setFormData({ ...formData, detailsTitle: e.target.value })}
+            placeholder="e.g. Vehicle Details"
+          />
+
+          <Input
+            label="Shipping / Returns Section Title"
+            value={formData.shippingTitle}
+            onChange={(e) => setFormData({ ...formData, shippingTitle: e.target.value })}
+            placeholder="e.g. Delivery & Ownership"
+          />
+
+          <Textarea
+            label="Shipping / Returns Content"
+            value={formData.shippingContent}
+            onChange={(e) => setFormData({ ...formData, shippingContent: e.target.value })}
+            placeholder={'One point per line\nExample: Pickup available in Kochi\nRC transfer support available'}
+          />
+
+          <Input
+            label="Care / Usage Section Title"
+            value={formData.careTitle}
+            onChange={(e) => setFormData({ ...formData, careTitle: e.target.value })}
+            placeholder="e.g. Service Notes"
+          />
+
+          <Textarea
+            label="Care / Usage Content"
+            value={formData.careContent}
+            onChange={(e) => setFormData({ ...formData, careContent: e.target.value })}
+            placeholder={'One point per line\nExample: Last serviced in January 2026\nInsurance valid until Dec 2026'}
+          />
+        </div>
 
         {submitError ? <p className="text-sm text-red-600">{submitError}</p> : null}
 

@@ -15,6 +15,7 @@ export const normalizeProduct = (product: Product): Product => ({
   images: product.images?.length ? product.images : [product.imageUrl],
   highlights: product.highlights ?? [],
   reviews: product.reviews ?? [],
+  pageSections: product.pageSections ?? {},
 });
 
 export function getDefaultAppState(): AppState {

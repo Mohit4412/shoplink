@@ -1,3 +1,5 @@
+import type { SectionConfig } from '../types';
+
 export interface ThemeTokens {
   // Page
   pageBg: string;
@@ -52,9 +54,60 @@ export interface ThemeLayout {
 export interface Theme {
   tokens: ThemeTokens;
   layout: ThemeLayout;
+  defaultSections: SectionConfig[];
 }
 
 // ─── Themes ──────────────────────────────────────────────────────────────────
+
+const DEFAULT_SECTIONS: SectionConfig[] = [
+  {
+    id: 'hero',
+    label: 'Hero',
+    enabled: true,
+    order: 1,
+    settings: {
+      ctaText: 'Shop now',
+    },
+  },
+  {
+    id: 'featured',
+    label: 'Featured Products',
+    enabled: true,
+    order: 2,
+    settings: {
+      heading: 'Featured Highlights',
+    },
+  },
+  {
+    id: 'all-products',
+    label: 'All Products',
+    enabled: true,
+    order: 3,
+    settings: {
+      heading: 'All Products',
+    },
+  },
+  {
+    id: 'about',
+    label: 'About',
+    enabled: true,
+    order: 4,
+    settings: {
+      heading: 'About Us',
+    },
+  },
+  {
+    id: 'whatsapp-cta',
+    label: 'WhatsApp CTA',
+    enabled: true,
+    order: 5,
+    settings: {
+      heading: "Questions? We're on WhatsApp",
+      subtext: 'Chat with us directly for quick help.',
+      ctaText: 'Chat to Order',
+    },
+  },
+];
 
 const THEMES: Record<string, Theme> = {
 
@@ -96,6 +149,7 @@ const THEMES: Record<string, Theme> = {
       cardAnatomy: 'portrait',
       sectionSpacing: 'relaxed',
     },
+    defaultSections: DEFAULT_SECTIONS,
   },
 
   // ⚡ Spark — Instagram-grid feel, category tabs, fashion/clothing
@@ -138,6 +192,7 @@ const THEMES: Record<string, Theme> = {
       sectionSpacing: 'tight',
       variant: 'spark',
     },
+    defaultSections: DEFAULT_SECTIONS,
   },
 
   // 🪡 Craft — Handmade/artisan, editorial storytelling, one product at a time
@@ -180,6 +235,7 @@ const THEMES: Record<string, Theme> = {
       sectionSpacing: 'airy',
       variant: 'craft',
     },
+    defaultSections: DEFAULT_SECTIONS,
   },
 
   // 🌿 Fresh — Food/home business, clean catalogue, quantity selectors
@@ -222,6 +278,7 @@ const THEMES: Record<string, Theme> = {
       sectionSpacing: 'tight',
       variant: 'fresh',
     },
+    defaultSections: DEFAULT_SECTIONS,
   },
 
   // ⚡ Swift — Electronics/accessories, compact list, price-first
@@ -264,6 +321,7 @@ const THEMES: Record<string, Theme> = {
       sectionSpacing: 'tight',
       variant: 'swift',
     },
+    defaultSections: DEFAULT_SECTIONS,
   },
 
   // ◆ Noir — Premium/luxury, dark editorial, minimal product count
@@ -306,6 +364,7 @@ const THEMES: Record<string, Theme> = {
       sectionSpacing: 'airy',
       variant: 'noir',
     },
+    defaultSections: DEFAULT_SECTIONS,
   },
 
 };

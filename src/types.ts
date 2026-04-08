@@ -16,6 +16,14 @@ export interface ProductVariant {
   options: string[]; // e.g. ["S", "M", "L"] or ["Red", "Blue"]
 }
 
+export interface ProductPageSections {
+  detailsTitle?: string;
+  shippingTitle?: string;
+  shippingContent?: string;
+  careTitle?: string;
+  careContent?: string;
+}
+
 export interface Product {
   id: string;
   imageUrl: string;
@@ -32,6 +40,7 @@ export interface Product {
   highlights?: string[];
   variants?: ProductVariant[];
   reviews?: ProductReview[];
+  pageSections?: ProductPageSections;
 }
 
 export interface ProductReview {
@@ -71,11 +80,26 @@ export interface TrustBadgeConfig {
   icon: string;
 }
 
+export type StoreSectionId = 'hero' | 'featured' | 'all-products' | 'about' | 'whatsapp-cta';
+
+export interface SectionConfig {
+  id: StoreSectionId;
+  label: string;
+  enabled: boolean;
+  order: number;
+  settings?: {
+    heading?: string;
+    subtext?: string;
+    ctaText?: string;
+  };
+}
+
 export interface StoreSettings {
   logoUrl: string;
   name: string;
   tagline: string;
   bio?: string;
+  sections?: SectionConfig[];
   trustBadges?: TrustBadgeConfig[];
   currency: string;
   theme?: string;

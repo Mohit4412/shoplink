@@ -51,13 +51,14 @@ interface ProductRow {
   collection_name: string | null;
   collections_json?: string | null | unknown;
   highlights_json: string | null | unknown;
+  page_sections_json?: string | null | unknown;
   variants_json: string | null | unknown;
   reviews_json: string | null | unknown;
   is_demo: number | boolean | null;
 }
 
 const OPTIONAL_STORE_COLUMNS = ['legal_json', 'payment_json'] as const;
-const OPTIONAL_PRODUCT_COLUMNS = ['collections_json', 'variants_json'] as const;
+const OPTIONAL_PRODUCT_COLUMNS = ['collections_json', 'variants_json', 'page_sections_json'] as const;
 
 function parseJson<T>(value: string | null | unknown, fallback: T): T {
   if (value === null || value === undefined) return fallback;
@@ -194,6 +195,7 @@ export function ensureStoreSchema() {
       collection_name TEXT,
       collections_json TEXT,
       highlights_json TEXT,
+      page_sections_json TEXT,
       reviews_json TEXT,
       is_demo INTEGER NOT NULL DEFAULT 0,
       PRIMARY KEY (store_username, product_id),
@@ -206,6 +208,7 @@ export function ensureStoreSchema() {
   try { db.exec(`ALTER TABLE products ADD COLUMN collections_json TEXT`); } catch { /* already exists */ }
   try { db.exec(`ALTER TABLE stores ADD COLUMN payment_json TEXT`); } catch { /* already exists */ }
   try { db.exec(`ALTER TABLE products ADD COLUMN variants_json TEXT`); } catch { /* already exists */ }
+  try { db.exec(`ALTER TABLE products ADD COLUMN page_sections_json TEXT`); } catch { /* already exists */ }
 }
 
 function serializeStore(bundle: MerchantStorefrontBundle) {
@@ -257,6 +260,7 @@ function serializeProduct(username: string, product: Product) {
     collection_name: normalizedCollections[0] ?? null,
     collections_json: JSON.stringify(normalizedCollections),
     highlights_json: JSON.stringify(product.highlights ?? []),
+    page_sections_json: JSON.stringify(product.pageSections ?? {}),
     variants_json: JSON.stringify(product.variants ?? []),
     reviews_json: JSON.stringify(product.reviews ?? []),
   };
@@ -308,6 +312,7 @@ function hydrateProduct(row: ProductRow): Product {
     collection: (parseJson<string[]>(row.collections_json, row.collection_name ? [row.collection_name] : [])?.[0]) ?? undefined,
     collections: parseJson<string[]>(row.collections_json, row.collection_name ? [row.collection_name] : []),
     highlights: parseJson(row.highlights_json, []),
+    pageSections: parseJson(row.page_sections_json, {}),
     variants: parseJson(row.variants_json, []),
     reviews: parseJson(row.reviews_json, []),
   });
@@ -364,10 +369,10 @@ if (db) {
   replaceProductStmt = db.prepare(`
   INSERT INTO products (
     store_username, product_id, image_url, images_json, name, price, description, status, created_at,
-    category, stock, collection_name, collections_json, highlights_json, variants_json, reviews_json
+    category, stock, collection_name, collections_json, highlights_json, page_sections_json, variants_json, reviews_json
   ) VALUES (
     @store_username, @product_id, @image_url, @images_json, @name, @price, @description, @status, @created_at,
-    @category, @stock, @collection_name, @collections_json, @highlights_json, @variants_json, @reviews_json
+    @category, @stock, @collection_name, @collections_json, @highlights_json, @page_sections_json, @variants_json, @reviews_json
   )
   ON CONFLICT(store_username, product_id) DO UPDATE SET
     image_url = excluded.image_url,
@@ -382,6 +387,7 @@ if (db) {
     collection_name = excluded.collection_name,
     collections_json = excluded.collections_json,
     highlights_json = excluded.highlights_json,
+    page_sections_json = excluded.page_sections_json,
     variants_json = excluded.variants_json,
     reviews_json = excluded.reviews_json
 `);

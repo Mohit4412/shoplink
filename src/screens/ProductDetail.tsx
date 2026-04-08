@@ -12,6 +12,7 @@ import {
 import { useStore } from '../context/StoreContext';
 import { getCurrencySymbol } from '../utils/currency';
 import { getTheme } from '../utils/themes';
+import { getStoreSubdomain, isStoreSubdomainHost } from '../utils/storeUrl';
 import { ProductCarousel } from '../components/product/ProductCarousel';
 import { FloatingWhatsApp } from '../components/product/FloatingWhatsApp';
 import { ProductAccordion } from '../components/product/ProductAccordion';
@@ -36,18 +37,12 @@ export function ProductDetail({ storefront, productId: productIdProp }: { storef
   const store = storefront?.store ?? localStore;
   const products = storefront?.products ?? localProducts;
 
-  function getSubdomain(): string | null {
-    if (typeof window === 'undefined') return null;
-    const host = window.location.hostname;
-    const parts = host.split('.');
-    if (parts.length >= 3) return parts[0];
-    if (host === 'localhost') return null;
-    return null;
-  }
-
-  const resolvedStoreId = storeId || getSubdomain() || publicUser?.username || localUser?.username || 'store';
+  const runtimeSubdomain = typeof window !== 'undefined'
+    ? getStoreSubdomain(window.location.hostname)
+    : null;
+  const resolvedStoreId = storeId || runtimeSubdomain || publicUser?.username || localUser?.username || 'store';
   const isSubdomain = typeof window !== 'undefined'
-    ? window.location.hostname.split('.').length >= 3
+    ? !storeId && isStoreSubdomainHost(window.location.hostname)
     : Boolean(publicUser?.username && !storeId);
 
   const storeHref = isSubdomain ? '/' : `/${resolvedStoreId}`;
@@ -284,7 +279,14 @@ export function ProductDetail({ storefront, productId: productIdProp }: { storef
           )}
 
           {/* Description accordion */}
-          <ProductAccordion description={product.description} />
+          <ProductAccordion
+            description={product.description}
+            detailsTitle={product.pageSections?.detailsTitle}
+            shippingTitle={product.pageSections?.shippingTitle}
+            shippingContent={product.pageSections?.shippingContent}
+            careTitle={product.pageSections?.careTitle}
+            careContent={product.pageSections?.careContent}
+          />
 
           {/* Related Products */}
           {relatedProducts.length > 0 && (
