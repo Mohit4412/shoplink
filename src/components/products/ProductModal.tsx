@@ -1,7 +1,6 @@
 import { useState, useRef, FormEvent, ChangeEvent, Dispatch, SetStateAction } from 'react';
-import { Image as ImageIcon, Star, Trash2, Upload } from 'lucide-react';
+import { Image as ImageIcon, Star, Trash2, X, Plus } from 'lucide-react';
 import { ProductStatus, ProductVariant } from '../../types';
-import { Modal } from '../ui/Modal';
 import { Input, Textarea } from '../ui/Input';
 import { Button } from '../ui/Button';
 import { uploadImage } from '../../utils/upload';
@@ -16,11 +15,11 @@ interface ProductFormData {
   highlights: string;
   collection: string;
   variants: ProductVariant[];
-  detailsTitle: string;
-  shippingTitle: string;
-  shippingContent: string;
-  careTitle: string;
-  careContent: string;
+  detailsTitle?: string;
+  shippingTitle?: string;
+  shippingContent?: string;
+  careTitle?: string;
+  careContent?: string;
 }
 
 interface ProductModalProps {
@@ -35,7 +34,10 @@ interface ProductModalProps {
   existingCollections?: string[];
 }
 
-export function ProductModal({ isOpen, isEditMode, onClose, formData, setFormData, onSubmit, onUpgradeRequired, currencySymbol, existingCollections = [] }: ProductModalProps) {
+export function ProductModal({
+  isOpen, isEditMode, onClose, formData, setFormData,
+  onSubmit, onUpgradeRequired, currencySymbol, existingCollections = [],
+}: ProductModalProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const collectionInputRef = useRef<HTMLInputElement>(null);
   const [submitError, setSubmitError] = useState('');
@@ -52,276 +54,251 @@ export function ProductModal({ isOpen, isEditMode, onClose, formData, setFormDat
       await onSubmit(e);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
-      if (message === 'LIMIT_REACHED') {
-        onUpgradeRequired?.();
-        return;
-      }
+      if (message === 'LIMIT_REACHED') { onUpgradeRequired?.(); return; }
       setSubmitError('Unable to save product right now. Please try again.');
     }
   };
 
   const handleImageUpload = async (e: ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files ?? []).filter((file): file is File => file instanceof File);
+    const files = Array.from(e.target.files ?? []).filter((f): f is File => f instanceof File);
     if (!files.length) return;
     setSubmitError('');
     setIsUploadingImages(true);
     try {
-      const nextImages = await Promise.all(files.map((file) => uploadImage(file, 'products')));
-      setFormData((prev) => ({
-        ...prev,
-        images: [...prev.images, ...nextImages],
-      }));
-    } catch (error) {
-      setSubmitError(error instanceof Error ? error.message : 'Unable to upload images right now.');
+      const next = await Promise.all(files.map((f) => uploadImage(f, 'products')));
+      setFormData((prev) => ({ ...prev, images: [...prev.images, ...next] }));
+    } catch (err) {
+      setSubmitError(err instanceof Error ? err.message : 'Unable to upload images right now.');
     } finally {
       setIsUploadingImages(false);
+      e.target.value = '';
     }
-
-    e.target.value = '';
   };
 
-  const makeCoverImage = (index: number) => {
-    setFormData((prev) => {
-      const nextImages = [...prev.images];
-      const [selected] = nextImages.splice(index, 1);
-      return {
-        ...prev,
-        images: [selected, ...nextImages],
-      };
-    });
-  };
+  const makeCover = (i: number) => setFormData((prev) => {
+    const imgs = [...prev.images];
+    const [sel] = imgs.splice(i, 1);
+    return { ...prev, images: [sel, ...imgs] };
+  });
 
-  const removeImage = (index: number) => {
-    setFormData((prev) => ({
-      ...prev,
-      images: prev.images.filter((_, imageIndex) => imageIndex !== index),
-    }));
-  };
+  const removeImage = (i: number) =>
+    setFormData((prev) => ({ ...prev, images: prev.images.filter((_, idx) => idx !== i) }));
 
-  const coverImage = formData.images[0];
+  if (!isOpen) return null;
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      title={isEditMode ? 'Edit Product' : 'Add New Product'}
-    >
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div
-          className="group relative cursor-pointer overflow-hidden rounded-2xl border-2 border-dashed border-gray-300 p-6 text-center transition-colors hover:bg-gray-50"
-          onClick={() => fileInputRef.current?.click()}
-        >
-          {coverImage ? (
-            <img src={coverImage} alt="Cover preview" className="absolute inset-0 h-full w-full object-cover opacity-40 transition-opacity group-hover:opacity-25" />
-          ) : null}
-          <div className="relative z-10 flex flex-col items-center">
-            <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 shadow-sm transition-colors group-hover:bg-white">
-              <ImageIcon className="h-6 w-6 text-gray-400" />
-            </div>
-            <p className="text-sm font-medium text-gray-900">
-              {isUploadingImages ? 'Uploading images...' : coverImage ? 'Add more product images' : 'Upload product images'}
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm sm:p-4">
+      <div
+        className="bg-white w-full sm:rounded-2xl shadow-2xl flex flex-col"
+        style={{ maxWidth: '900px', maxHeight: '92dvh' }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 shrink-0">
+          <div>
+            <h2 className="text-lg font-bold text-gray-900">
+              {isEditMode ? 'Edit Product' : 'Add New Product'}
+            </h2>
+            <p className="text-xs text-gray-400 mt-0.5">
+              {isEditMode ? 'Update product details below.' : 'Fill in the details to list your product.'}
             </p>
-            <p className="mt-1 text-xs text-gray-500">Pick one or multiple images. The first image becomes the cover.</p>
           </div>
-          <input
-            type="file"
-            ref={fileInputRef}
-            className="hidden"
-            accept="image/*"
-            multiple
-            onChange={handleImageUpload}
-          />
+          <button onClick={onClose} className="p-2 rounded-full hover:bg-gray-100 transition-colors">
+            <X className="w-5 h-5 text-gray-500" />
+          </button>
         </div>
 
-        {formData.images.length > 0 && (
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <p className="text-sm font-medium text-gray-900">Product Gallery</p>
-              <p className="text-xs text-gray-500">Tap a thumbnail to manage it. Cover image appears first.</p>
-            </div>
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
-              {formData.images.map((image, index) => (
-                <div key={`${image}-${index}`} className="flex flex-col overflow-hidden rounded-xl border border-gray-200 bg-white">
-                  <div className="relative group flex-1">
-                    <img src={image} alt={`Product image ${index + 1}`} className="h-28 w-full object-cover" />
-                    {index === 0 && (
-                      <div className="absolute left-2 top-2 inline-flex items-center gap-1 rounded-full bg-black/80 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-white">
-                        <Star className="h-3 w-3 fill-current" />
-                        Cover
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex gap-1.5 p-2 border-t border-gray-100 bg-gray-50/50">
-                    <button
-                      type="button"
-                      onClick={() => makeCoverImage(index)}
-                      disabled={index === 0}
-                      className="flex-1 rounded-md border border-gray-200 bg-white px-1 py-1.5 text-[10px] font-medium text-gray-700 transition hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-teal-500 disabled:cursor-not-allowed disabled:opacity-50 truncate shadow-sm"
-                    >
-                      {index === 0 ? 'Cover Image' : 'Set as Cover'}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => removeImage(index)}
-                      className="shrink-0 flex items-center justify-center w-8 rounded-md border border-red-100 bg-white text-red-500 transition hover:bg-red-50 hover:text-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 shadow-sm"
-                      aria-label={`Remove image ${index + 1}`}
-                    >
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+        {/* Body — two columns on desktop */}
+        <form id="product-form" onSubmit={handleSubmit} className="flex flex-col lg:flex-row flex-1 min-h-0">
 
-        <Input
-          label="Product Name"
-          required
-          value={formData.name}
-          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-          placeholder="e.g. Organic Cotton Tee"
-        />
+          {/* LEFT — Images */}
+          <div className="lg:w-[280px] shrink-0 border-b lg:border-b-0 lg:border-r border-gray-100 p-5 flex flex-col gap-4 overflow-y-auto">
+            <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">Product images</p>
 
-        <div className="grid grid-cols-2 gap-4">
-          <Input
-            label={`Price (${currencySymbol})`}
-            type="number"
-            step="0.01"
-            min="0"
-            required
-            value={formData.price}
-            onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-            placeholder="0.00"
-          />
-          <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">Status</label>
-            <select
-              className="flex h-11 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-"
-              value={formData.status}
-              onChange={(e) => setFormData({ ...formData, status: e.target.value as ProductStatus })}
+            {/* Upload zone */}
+            <div
+              className="group relative cursor-pointer overflow-hidden rounded-xl border-2 border-dashed border-gray-200 p-5 text-center transition-colors hover:border-gray-300 hover:bg-gray-50"
+              onClick={() => fileInputRef.current?.click()}
             >
-              <option value="Active">Active</option>
-              <option value="Draft">Draft</option>
-            </select>
-          </div>
-        </div>
+              {formData.images[0] && (
+                <img src={formData.images[0]} alt="Cover" className="absolute inset-0 h-full w-full object-cover opacity-30 group-hover:opacity-20 transition-opacity" />
+              )}
+              <div className="relative z-10 flex flex-col items-center gap-2">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 group-hover:bg-white transition-colors">
+                  <ImageIcon className="h-5 w-5 text-gray-400" />
+                </div>
+                <p className="text-xs font-medium text-gray-700">
+                  {isUploadingImages ? 'Uploading…' : 'Click to upload'}
+                </p>
+                <p className="text-[11px] text-gray-400">JPG, PNG, GIF · Multiple allowed</p>
+              </div>
+              <input type="file" ref={fileInputRef} className="hidden" accept="image/*" multiple onChange={handleImageUpload} />
+            </div>
 
-        <Textarea
-          label="Description"
-          required
-          value={formData.description}
-          onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-          placeholder="Describe your product..."
-          maxLength={200}
-        />
-
-        {/* Collection combobox */}
-        <div className="relative">
-          <label className="mb-1 block text-sm font-medium text-gray-700">Collection</label>
-          <input
-            ref={collectionInputRef}
-            className="flex h-11 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300"
-            value={formData.collection}
-            placeholder="e.g. Summer Collection"
-            autoComplete="off"
-            onChange={(e) => {
-              setFormData({ ...formData, collection: e.target.value });
-              setShowSuggestions(true);
-            }}
-            onFocus={() => setShowSuggestions(true)}
-            onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
-          />
-          {showSuggestions && filteredCollections.length > 0 && (
-            <ul className="absolute z-50 mt-1 w-full rounded-xl border border-gray-200 bg-white shadow-lg overflow-hidden">
-              {filteredCollections.map((col) => (
-                <li
-                  key={col}
-                  onMouseDown={() => {
-                    setFormData({ ...formData, collection: col });
-                    setShowSuggestions(false);
-                  }}
-                  className="flex items-center gap-2 px-3 py-2.5 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer"
-                >
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />
-                  {col}
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-
-        <Textarea
-          label="Highlights"
-          value={formData.highlights}
-          onChange={(e) => setFormData({ ...formData, highlights: e.target.value })}
-          placeholder="One highlight per line"
-        />
-
-        <VariantEditor
-          variants={formData.variants}
-          onChange={(variants) => setFormData({ ...formData, variants })}
-        />
-
-        <div className="space-y-3 rounded-2xl border border-gray-200 bg-gray-50 px-4 py-4">
-          <div>
-            <p className="text-sm font-semibold text-gray-900">Product Page Sections</p>
-            <p className="mt-1 text-xs text-gray-500">
-              Customize the accordion labels and content shown on the product page. Leave a content field empty to hide that section.
-            </p>
+            {/* Gallery grid */}
+            {formData.images.length > 0 && (
+              <div className="grid grid-cols-2 gap-2">
+                {formData.images.map((img, i) => (
+                  <div key={`${img}-${i}`} className="group relative overflow-hidden rounded-xl border border-gray-200 bg-gray-50">
+                    <img src={img} alt={`Image ${i + 1}`} className="h-24 w-full object-cover" />
+                    {i === 0 && (
+                      <span className="absolute left-1.5 top-1.5 inline-flex items-center gap-0.5 rounded-full bg-black/75 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-white">
+                        <Star className="h-2.5 w-2.5 fill-current" /> Cover
+                      </span>
+                    )}
+                    <div className="absolute inset-0 flex items-center justify-center gap-1.5 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
+                      {i !== 0 && (
+                        <button type="button" onClick={() => makeCover(i)}
+                          className="rounded-lg bg-white px-2 py-1 text-[10px] font-semibold text-gray-800 hover:bg-gray-100">
+                          Cover
+                        </button>
+                      )}
+                      <button type="button" onClick={() => removeImage(i)}
+                        className="flex h-7 w-7 items-center justify-center rounded-lg bg-red-500 text-white hover:bg-red-600">
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+                {/* Add more tile */}
+                <button type="button" onClick={() => fileInputRef.current?.click()}
+                  className="flex h-24 items-center justify-center rounded-xl border-2 border-dashed border-gray-200 text-gray-400 hover:border-gray-300 hover:text-gray-500 transition-colors">
+                  <Plus className="h-5 w-5" />
+                </button>
+              </div>
+            )}
           </div>
 
-          <Input
-            label="Details Section Title"
-            value={formData.detailsTitle}
-            onChange={(e) => setFormData({ ...formData, detailsTitle: e.target.value })}
-            placeholder="e.g. Vehicle Details"
-          />
+          {/* RIGHT — Fields */}
+          <div className="flex-1 overflow-y-auto p-5 space-y-5">
 
-          <Input
-            label="Shipping / Returns Section Title"
-            value={formData.shippingTitle}
-            onChange={(e) => setFormData({ ...formData, shippingTitle: e.target.value })}
-            placeholder="e.g. Delivery & Ownership"
-          />
+            {/* Basic info */}
+            <section className="space-y-4">
+              <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">Basic info</p>
+              <Input
+                label="Product name"
+                required
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                placeholder="e.g. Organic Cotton Tee"
+              />
+              <div className="grid grid-cols-2 gap-4">
+                <Input
+                  label={`Price (${currencySymbol})`}
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  required
+                  value={formData.price}
+                  onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                  placeholder="0.00"
+                />
+                <div>
+                  <label className="mb-1 block text-sm font-medium text-gray-700">Status</label>
+                  <select
+                    className="flex h-11 w-full rounded-lg border border-gray-300 bg-white px-3 text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"
+                    value={formData.status}
+                    onChange={(e) => setFormData({ ...formData, status: e.target.value as ProductStatus })}
+                  >
+                    <option value="Active">Active</option>
+                    <option value="Draft">Draft</option>
+                  </select>
+                </div>
+              </div>
+              <Textarea
+                label="Description"
+                required
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                placeholder="Describe your product…"
+                maxLength={200}
+              />
+            </section>
 
-          <Textarea
-            label="Shipping / Returns Content"
-            value={formData.shippingContent}
-            onChange={(e) => setFormData({ ...formData, shippingContent: e.target.value })}
-            placeholder={'One point per line\nExample: Pickup available in Kochi\nRC transfer support available'}
-          />
+            {/* Organisation */}
+            <section className="space-y-4">
+              <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">Organisation</p>
+              <div className="relative">
+                <label className="mb-1 block text-sm font-medium text-gray-700">Collection</label>
+                <input
+                  ref={collectionInputRef}
+                  className="flex h-11 w-full rounded-lg border border-gray-300 bg-white px-3 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300"
+                  value={formData.collection}
+                  placeholder="e.g. Summer Collection"
+                  autoComplete="off"
+                  onChange={(e) => { setFormData({ ...formData, collection: e.target.value }); setShowSuggestions(true); }}
+                  onFocus={() => setShowSuggestions(true)}
+                  onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
+                />
+                {showSuggestions && filteredCollections.length > 0 && (
+                  <ul className="absolute z-50 mt-1 w-full rounded-xl border border-gray-200 bg-white shadow-lg overflow-hidden">
+                    {filteredCollections.map((col) => (
+                      <li key={col} onMouseDown={() => { setFormData({ ...formData, collection: col }); setShowSuggestions(false); }}
+                        className="flex items-center gap-2 px-3 py-2.5 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />{col}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </section>
 
-          <Input
-            label="Care / Usage Section Title"
-            value={formData.careTitle}
-            onChange={(e) => setFormData({ ...formData, careTitle: e.target.value })}
-            placeholder="e.g. Service Notes"
-          />
+            {/* Highlights */}
+            <section className="space-y-4">
+              <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">Highlights</p>
+              <Textarea
+                label="Key highlights"
+                value={formData.highlights}
+                onChange={(e) => setFormData({ ...formData, highlights: e.target.value })}
+                placeholder="One highlight per line&#10;e.g. 100% organic cotton&#10;Hand-stitched"
+              />
+            </section>
 
-          <Textarea
-            label="Care / Usage Content"
-            value={formData.careContent}
-            onChange={(e) => setFormData({ ...formData, careContent: e.target.value })}
-            placeholder={'One point per line\nExample: Last serviced in January 2026\nInsurance valid until Dec 2026'}
-          />
+            {/* Variants */}
+            <section className="space-y-3">
+              <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">Variants</p>
+              <VariantEditor
+                variants={formData.variants}
+                onChange={(variants) => setFormData({ ...formData, variants })}
+              />
+            </section>
+
+            {/* Product page sections */}
+            <section className="space-y-4 rounded-xl border border-gray-100 bg-gray-50 p-4">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">Product page sections</p>
+                <p className="mt-1 text-[11px] text-gray-400">Customize accordion labels shown on the product page. Leave content empty to hide.</p>
+              </div>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <Input label="Details section title" value={formData.detailsTitle ?? ''} onChange={(e) => setFormData({ ...formData, detailsTitle: e.target.value })} placeholder="e.g. Product Details" />
+                <Input label="Shipping section title" value={formData.shippingTitle ?? ''} onChange={(e) => setFormData({ ...formData, shippingTitle: e.target.value })} placeholder="e.g. Shipping & Returns" />
+              </div>
+              <Textarea label="Shipping content" value={formData.shippingContent ?? ''} onChange={(e) => setFormData({ ...formData, shippingContent: e.target.value })} placeholder="One point per line" />
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <Input label="Care section title" value={formData.careTitle ?? ''} onChange={(e) => setFormData({ ...formData, careTitle: e.target.value })} placeholder="e.g. Care Instructions" />
+              </div>
+              <Textarea label="Care content" value={formData.careContent ?? ''} onChange={(e) => setFormData({ ...formData, careContent: e.target.value })} placeholder="One point per line" />
+            </section>
+
+            {submitError && <p className="text-sm text-red-600">{submitError}</p>}
+          </div>
+        </form>
+
+        {/* Sticky footer */}
+        <div className="flex items-center justify-between gap-3 border-t border-gray-100 px-6 py-4 shrink-0 bg-white">
+          <button type="button" onClick={() => fileInputRef.current?.click()} disabled={isUploadingImages}
+            className="inline-flex items-center gap-2 rounded-xl border border-gray-200 px-4 py-2.5 text-sm font-semibold text-gray-600 hover:bg-gray-50 disabled:opacity-50 transition-colors">
+            <ImageIcon className="h-4 w-4" />
+            {isUploadingImages ? 'Uploading…' : 'Add images'}
+          </button>
+          <div className="flex items-center gap-3">
+            <Button type="button" variant="ghost" onClick={onClose}>Cancel</Button>
+            <Button type="submit" form="product-form" disabled={isUploadingImages}>
+              {isEditMode ? 'Save changes' : 'Add product'}
+            </Button>
+          </div>
         </div>
-
-        {submitError ? <p className="text-sm text-red-600">{submitError}</p> : null}
-
-        <div className="flex justify-end gap-3 border-t border-gray-100 pt-4">
-          <Button type="button" variant="ghost" onClick={onClose}>
-            Cancel
-          </Button>
-          <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()} disabled={isUploadingImages}>
-            <Upload className="mr-2 h-4 w-4" />
-            {isUploadingImages ? 'Uploading...' : 'Add Images'}
-          </Button>
-          <Button type="submit" disabled={isUploadingImages}>
-            {isEditMode ? 'Save Changes' : 'Add Product'}
-          </Button>
-        </div>
-      </form>
-    </Modal>
+      </div>
+    </div>
   );
 }
