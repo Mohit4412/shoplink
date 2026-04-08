@@ -42,7 +42,7 @@ export function ProductDetail({ storefront, productId: productIdProp }: { storef
     : null;
   const resolvedStoreId = storeId || runtimeSubdomain || publicUser?.username || localUser?.username || 'store';
   const isStoreRootHost = typeof window !== 'undefined'
-    ? !storeId && isStoreHostedAtRoot(window.location.hostname)
+    ? isStoreHostedAtRoot(window.location.hostname)
     : Boolean(publicUser?.username && !storeId);
 
   const storeHref = isStoreRootHost ? '/' : `/${resolvedStoreId}`;
