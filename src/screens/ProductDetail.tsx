@@ -281,10 +281,10 @@ export function ProductDetail({ storefront, productId: productIdProp }: { storef
           {/* Description accordion */}
           <ProductAccordion
             description={product.description}
-            detailsTitle={product.pageSections?.detailsTitle}
-            shippingTitle={product.pageSections?.shippingTitle}
+            detailsTitle={product.pageSections?.detailsTitle || store.productAccordionDefaults?.detailsTitle}
+            shippingTitle={product.pageSections?.shippingTitle || store.productAccordionDefaults?.shippingTitle}
             shippingContent={product.pageSections?.shippingContent}
-            careTitle={product.pageSections?.careTitle}
+            careTitle={product.pageSections?.careTitle || store.productAccordionDefaults?.careTitle}
             careContent={product.pageSections?.careContent}
           />
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { MessageCircle } from 'lucide-react';
 import type { Theme } from '../../../utils/themes';
@@ -17,10 +17,11 @@ interface SparkStoreFrontProps {
   onContactClick: (product?: Product) => void;
   onOrderClick: (product: Product) => void;
   isFreePlan: boolean;
+  searchQuery?: string;
 }
 
 export function SparkStoreFront({
-  theme, store, products, resolvedStoreId, isSubdomain, onContactClick, onOrderClick, isFreePlan,
+  theme, store, products, resolvedStoreId, isSubdomain, onContactClick, onOrderClick, isFreePlan, searchQuery = '',
 }: SparkStoreFrontProps) {
   const t = theme.tokens;
   const currencySymbol = getCurrencySymbol(store.currency);
@@ -33,9 +34,16 @@ export function SparkStoreFront({
     new Set(activeProducts.map(product => product.collection).filter(Boolean))
   ).slice(0, 3) as string[];
 
-  const filtered = activeCategory === 'All'
-    ? activeProducts
-    : activeProducts.filter(p => p.category === activeCategory);
+  const filtered = useMemo(() => {
+    const byCategory = activeCategory === 'All'
+      ? activeProducts
+      : activeProducts.filter(p => p.category === activeCategory);
+    const q = searchQuery?.toLowerCase().trim();
+    if (!q) return byCategory;
+    return byCategory.filter(p =>
+      p.name.toLowerCase().includes(q) || p.description.toLowerCase().includes(q)
+    );
+  }, [activeProducts, activeCategory, searchQuery]);
 
   const productHref = (id: string) => isSubdomain ? `/product/${id}` : `/${resolvedStoreId}/product/${id}`;
 

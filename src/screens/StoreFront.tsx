@@ -339,6 +339,13 @@ export function StoreFront({ storefront }: { storefront?: PublicStorefrontData }
           </div>
         )}
 
+        {/* Announcement bar */}
+        {store.announcementBar?.trim() && (
+          <div className="px-4 py-2 text-center text-xs font-semibold" style={{ background: t.accent, color: t.btnText }}>
+            {store.announcementBar}
+          </div>
+        )}
+
         {/* Theme-aware Nav */}
         <Nav
           theme={theme}
@@ -359,6 +366,7 @@ export function StoreFront({ storefront }: { storefront?: PublicStorefrontData }
             onContactClick={handleContactClick}
             onOrderClick={openOrderRequest}
             isFreePlan={activeUser?.plan === 'Free'}
+            searchQuery={searchQuery}
           />
         ) : theme.layout.variant === 'craft' ? (
           <CraftStoreFront

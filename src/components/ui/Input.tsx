@@ -12,21 +12,22 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     return (
       <div className="w-full">
         {label && (
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="mb-1 block text-[13px] font-medium text-[var(--app-text)]">
             {label}
           </label>
         )}
         <input
           className={cn(
-            "flex h-11 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-brand- focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50 transition-colors",
+            "flex h-10 w-full rounded-xl border bg-white px-3 py-2 text-[13px] text-[var(--app-text)] placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-900/8 disabled:cursor-not-allowed disabled:opacity-50 transition-colors",
             error && "border-red-500 focus:ring-red-500",
             className
           )}
+          style={error ? undefined : { borderColor: 'var(--app-border)' }}
           ref={ref}
           {...props}
         />
         {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
-        {helperText && !error && <p className="mt-1 text-xs text-gray-500">{helperText}</p>}
+        {helperText && !error && <p className="mt-1 text-[11px] text-[var(--app-text-muted)]">{helperText}</p>}
       </div>
     );
   }
@@ -38,16 +39,17 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaHTMLAttributes<H
     return (
       <div className="w-full">
         {label && (
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="mb-1 block text-[13px] font-medium text-[var(--app-text)]">
             {label}
           </label>
         )}
         <textarea
           className={cn(
-            "flex min-h-[80px] w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-brand- focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50 transition-colors",
+            "flex min-h-[92px] w-full rounded-xl border bg-white px-3 py-2 text-[13px] text-[var(--app-text)] placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-900/8 disabled:cursor-not-allowed disabled:opacity-50 transition-colors",
             error && "border-red-500 focus:ring-red-500",
             className
           )}
+          style={error ? undefined : { borderColor: 'var(--app-border)' }}
           ref={ref}
           {...props}
         />

@@ -35,6 +35,7 @@ const NAV_ITEMS = [
       { label: 'Collections', path: '/products?view=collections', view: 'collections' },
       { label: 'Orders', path: '/products?view=orders', view: 'orders' },
       { label: 'Sales History', path: '/products?view=sales', view: 'sales' },
+      { label: 'Customers', path: '/products?view=customers', view: 'customers' },
     ],
   },
   { icon: BarChart3, label: 'Analytics', path: '/analytics', exact: false },
@@ -166,19 +167,14 @@ export function AppShell({
     : <span className="text-sm font-bold">{userInitials}</span>;
 
   return (
-    <div className="min-h-screen bg-[#F2F3F5] font-sans flex">
+    <div className="min-h-screen bg-[var(--app-canvas)] font-sans flex">
 
       {/* ── DESKTOP SIDEBAR ─────────────────────────────────────────────── */}
       <aside
         ref={desktopSidebarRef}
-        className="hidden md:flex flex-col w-[220px] shrink-0 fixed top-0 left-0 h-screen bg-white border-r border-zinc-200 z-40"
+        className="hidden md:flex flex-col w-[220px] shrink-0 fixed top-14 left-0 h-[calc(100vh-56px)] bg-[var(--app-sidebar)] border-r z-20"
+        style={{ borderColor: 'var(--app-border)' }}
       >
-
-        {/* Logo */}
-        <div className="h-[56px] flex items-center px-5 border-b border-zinc-200 shrink-0">
-          <AppLogo size="sm" href="/dashboard" />
-        </div>
-
         {/* Nav */}
         <nav className="flex-1 overflow-y-auto py-3 px-2">
           {NAV_ITEMS.map(item => {
@@ -195,14 +191,14 @@ export function AppShell({
                 ref={isProductsItem ? productsMenuRef : isSettingsItem ? settingsMenuRef : undefined}
               >
                 <div
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-xl mb-0.5 text-sm font-semibold transition-colors ${
+                  className={`mb-0.5 flex items-center gap-2.5 rounded-xl px-2.5 py-2 text-[13px] font-medium transition-colors ${
                   active
-                      ? 'bg-zinc-100 text-zinc-900'
-                      : 'text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900'
+                      ? 'bg-[var(--app-panel)] text-[var(--app-text)] shadow-[inset_0_0_0_1px_var(--app-border)]'
+                      : 'text-[var(--app-text-muted)] hover:bg-white/55 hover:text-[var(--app-text)]'
                   }`}
                 >
-                  <Link href={item.path} className="flex min-w-0 flex-1 items-center gap-3">
-                    <item.icon className="w-4.5 h-4.5 shrink-0" style={{ width: 18, height: 18 }} />
+                  <Link href={item.path} className="flex min-w-0 flex-1 items-center gap-2.5">
+                    <item.icon className="shrink-0" style={{ width: 16, height: 16 }} />
                     <span className="truncate">{item.label}</span>
                   </Link>
                   {item.children && (
@@ -225,8 +221,8 @@ export function AppShell({
                           setSettingsMenuOpen(false);
                         }
                       }}
-                      className={`shrink-0 rounded-md p-1 transition-colors ${
-                        active ? 'hover:bg-zinc-200' : 'hover:bg-zinc-100'
+                      className={`shrink-0 rounded-md p-0.5 transition-colors ${
+                        active ? 'hover:bg-[#ebe7df]' : 'hover:bg-white/60'
                       }`}
                     >
                       <ChevronDown
@@ -238,7 +234,7 @@ export function AppShell({
 
                 {item.children && (
                   <div className={`${showChildren ? 'block' : 'hidden'} mb-2 pl-2`}>
-                  <div className="space-y-1 rounded-lg border border-zinc-100 bg-zinc-50 px-2 py-1.5">
+                  <div className="space-y-0.5 rounded-xl border px-1.5 py-1.5 bg-white/45" style={{ borderColor: 'var(--app-border)' }}>
                       {item.children.map((child) => {
                         const childActive =
                           (pathname === '/settings' && activeSettingsView === child.view) ||
@@ -247,11 +243,12 @@ export function AppShell({
                           <Link
                             key={child.path}
                             href={child.path}
-                            className={`block rounded-lg px-3 py-2 text-xs font-semibold transition-colors ${
+                            className={`block rounded-lg px-2.5 py-1.5 text-[11px] font-medium transition-colors ${
                               childActive
-                                ? 'bg-white text-zinc-900 shadow-none border border-zinc-200'
-                                : 'text-zinc-500 hover:bg-zinc-50 hover:text-zinc-800'
+                                ? 'bg-[var(--app-panel)] text-[var(--app-text)] border'
+                                : 'text-[var(--app-text-muted)] hover:bg-white/60 hover:text-[var(--app-text)]'
                             }`}
+                            style={childActive ? { borderColor: 'var(--app-border)' } : undefined}
                           >
                             {child.label}
                           </Link>
@@ -264,15 +261,15 @@ export function AppShell({
             );
           })}
 
-          <div className="mt-3 pt-3 border-t border-zinc-200">
+          <div className="mt-2.5 pt-2.5 border-t" style={{ borderColor: 'var(--app-border)' }}>
             {user?.username && (
               <a
                 href={getStoreUrl(user.username)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900 transition-colors"
+                className="flex items-center gap-2.5 rounded-xl px-2.5 py-2 text-[13px] font-medium text-[var(--app-text-muted)] hover:bg-white/55 hover:text-[var(--app-text)] transition-colors"
               >
-                <ExternalLink style={{ width: 18, height: 18 }} className="shrink-0" />
+                <ExternalLink style={{ width: 16, height: 16 }} className="shrink-0" />
                 View Store
               </a>
             )}
@@ -284,20 +281,22 @@ export function AppShell({
           {user?.plan === 'Free' ? (
             <Link
               href="/settings?view=billing"
-              className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-amber-50 border border-amber-200 hover:bg-amber-100 transition-colors"
+              className="flex items-center gap-2 rounded-2xl border px-3 py-2 transition-colors bg-[#f5efe1] hover:bg-[#efe5d2]"
+              style={{ borderColor: '#e2d5b4' }}
             >
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-bold text-amber-900">Free plan</p>
-                <p className="text-[10px] text-amber-700 font-medium">Upgrade to Pro →</p>
+                <p className="text-[11px] font-semibold text-amber-900">Free plan</p>
+                <p className="text-[10px] text-amber-700 font-medium">Upgrade to Pro</p>
               </div>
             </Link>
           ) : (
             <Link
               href="/settings?view=billing"
-              className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-emerald-50 border border-emerald-200 hover:bg-emerald-100 transition-colors"
+              className="flex items-center gap-2 rounded-2xl border px-3 py-2 transition-colors bg-[#e8f2eb] hover:bg-[#ddebe2]"
+              style={{ borderColor: '#c5d8c8' }}
             >
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-bold text-emerald-900">Pro plan</p>
+                <p className="text-[11px] font-semibold text-emerald-900">Pro plan</p>
                 <p className="text-[10px] text-emerald-700 font-medium">All features unlocked</p>
               </div>
             </Link>
@@ -305,19 +304,24 @@ export function AppShell({
         </div>
 
         {/* User */}
-        <div className="px-3 pb-4 shrink-0 border-t border-zinc-200 pt-3 relative">
-          <div className="w-full flex items-center gap-3 px-2 py-2 rounded-xl text-left">
+        <div className="px-3 pb-4 shrink-0 border-t pt-3 relative" style={{ borderColor: 'var(--app-border)' }}>
+          <button
+            type="button"
+            onClick={() => router.push('/settings?view=account')}
+            className="w-full flex items-center gap-2.5 rounded-xl px-2 py-1.5 text-left transition-colors hover:bg-white/55"
+            aria-label="Open account settings"
+          >
             <div className="w-8 h-8 rounded-full bg-[#059669] text-white flex items-center justify-center shrink-0 overflow-hidden">
               {avatarContent}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-zinc-900 truncate leading-tight">
+              <p className="truncate text-[13px] font-semibold leading-tight text-[var(--app-text)]">
                 {[user?.firstName, user?.lastName].filter(Boolean).join(' ') || user?.username}
               </p>
-              <p className="text-[11px] text-zinc-400 truncate">{user?.email}</p>
+              <p className="truncate text-[10px] text-[var(--app-text-muted)]">{user?.email}</p>
             </div>
-            <ChevronRight className="w-4 h-4 text-zinc-300 shrink-0" />
-          </div>
+            <ChevronRight className="w-4 h-4 text-zinc-400 shrink-0" />
+          </button>
         </div>
       </aside>
 
@@ -325,38 +329,41 @@ export function AppShell({
       <div className="flex-1 flex flex-col min-h-screen min-w-0 md:ml-[220px]">
 
         {/* TOP BAR */}
-        <header className="h-14 bg-white border-b border-zinc-200 sticky top-0 z-30 flex items-center justify-between px-4 shrink-0">
+        <header className="h-14 bg-zinc-950 border-b border-zinc-800 fixed top-0 left-0 right-0 z-30 flex items-center justify-between px-4 md:px-5 shrink-0">
           {/* Mobile: logo or back button */}
           <div className="flex items-center gap-2 md:hidden">
             {headerVariant === 'back' ? (
-              <button onClick={handleBack} className="p-1 -ml-1 text-zinc-900 hover:bg-zinc-100 rounded-lg transition-colors">
+              <button onClick={handleBack} className="p-1 -ml-1 text-white hover:bg-white/10 rounded-lg transition-colors">
                 <ChevronLeft className="w-6 h-6" />
               </button>
             ) : (
-              <AppLogo size="sm" href="/dashboard" />
+              <AppLogo size="sm" href="/dashboard" textClassName="text-white" />
             )}
             {headerVariant === 'back' && pageTitle && (
               <div className="flex flex-col">
-                <span className="font-bold text-[16px] text-zinc-900 leading-tight">{pageTitle}</span>
-                {pageSubtitle && <span className="text-[12px] text-zinc-500 font-medium leading-tight">{pageSubtitle}</span>}
+                <span className="font-bold text-[16px] text-white leading-tight">{pageTitle}</span>
+                {pageSubtitle && <span className="text-[12px] text-zinc-400 font-medium leading-tight">{pageSubtitle}</span>}
               </div>
             )}
           </div>
 
           {/* Desktop: page title */}
-          <div className="hidden md:flex items-center gap-2">
+          <div className="hidden md:flex items-center gap-4 min-w-0">
+            <div className="flex w-[220px] shrink-0 items-center">
+              <AppLogo size="sm" href="/dashboard" textClassName="text-white" />
+            </div>
             {headerVariant === 'back' ? (
               <>
-                <button onClick={handleBack} className="p-1 -ml-1 text-zinc-500 hover:bg-zinc-100 rounded-lg transition-colors">
+                <button onClick={handleBack} className="p-1 -ml-1 text-zinc-300 hover:bg-white/10 hover:text-white rounded-lg transition-colors">
                   <ChevronLeft className="w-5 h-5" />
                 </button>
-                <div>
-                  <span className="font-bold text-[16px] text-zinc-900 leading-tight">{pageTitle}</span>
-                  {pageSubtitle && <span className="text-[12px] text-zinc-500 font-medium leading-tight ml-2">{pageSubtitle}</span>}
+                <div className="min-w-0">
+                  <span className="font-bold text-[16px] text-white leading-tight">{pageTitle}</span>
+                  {pageSubtitle && <span className="text-[12px] text-zinc-400 font-medium leading-tight ml-2">{pageSubtitle}</span>}
                 </div>
               </>
             ) : (
-              <span className="text-sm font-medium text-zinc-500">
+              <span className="truncate text-sm font-medium text-zinc-300">
                 {activeNavLabel}
               </span>
             )}
@@ -370,12 +377,12 @@ export function AppShell({
             <button
               ref={bellRef}
               onClick={toggleNotif}
-              className="relative p-2 text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 rounded-lg transition-colors"
+              className="relative p-2 text-zinc-300 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
               aria-label="Notifications"
             >
               <Bell className="w-5 h-5" />
               {unreadCount > 0 && (
-                <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white" />
+                <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-2 border-zinc-950" />
               )}
             </button>
 
@@ -404,9 +411,10 @@ export function AppShell({
         {desktopProfileOpen && (
           <div
             ref={desktopProfileRef}
-            className="hidden md:block fixed top-[60px] right-4 z-50 w-[220px] bg-white border border-zinc-200 rounded-xl shadow-lg overflow-hidden"
+            className="hidden md:block fixed top-[60px] right-4 z-50 w-[220px] bg-[var(--app-panel)] border rounded-2xl shadow-[0_18px_50px_rgba(24,24,18,0.12)] overflow-hidden"
+            style={{ borderColor: 'var(--app-border)' }}
           >
-            <div className="px-4 py-3 border-b border-zinc-200">
+            <div className="px-4 py-3 border-b" style={{ borderColor: 'var(--app-border)' }}>
               <p className="text-sm font-semibold text-zinc-900 truncate">
                 {[user?.firstName, user?.lastName].filter(Boolean).join(' ') || user?.username}
               </p>
@@ -414,15 +422,15 @@ export function AppShell({
             </div>
             <div className="py-1">
               <button onClick={() => { setDesktopProfileOpen(false); router.push('/settings?view=account'); }}
-                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-zinc-700 hover:bg-zinc-50 transition-colors">
+                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--app-text-muted)] hover:bg-[var(--app-panel-muted)] transition-colors">
                 <User className="w-4 h-4 text-zinc-400" /> Edit profile
               </button>
               <button onClick={() => { setDesktopProfileOpen(false); router.push('/settings'); }}
-                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-zinc-700 hover:bg-zinc-50 transition-colors">
+                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--app-text-muted)] hover:bg-[var(--app-panel-muted)] transition-colors">
                 <Settings className="w-4 h-4 text-zinc-400" /> Settings
               </button>
             </div>
-            <div className="border-t border-zinc-200 py-1">
+            <div className="border-t py-1" style={{ borderColor: 'var(--app-border)' }}>
               <button onClick={handleLogout}
                 className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors">
                 <LogOut className="w-4 h-4" /> Log out
@@ -435,9 +443,10 @@ export function AppShell({
         {notifOpen && (
           <div
             ref={notifRef}
-            className="fixed top-[56px] right-4 z-50 w-[340px] bg-white border border-zinc-200 rounded-xl shadow-lg overflow-hidden max-h-[480px] flex flex-col"
+            className="fixed top-[56px] right-4 z-50 w-[340px] bg-[var(--app-panel)] border rounded-2xl shadow-[0_20px_60px_rgba(24,24,18,0.12)] overflow-hidden max-h-[480px] flex flex-col"
+            style={{ borderColor: 'var(--app-border)' }}
           >
-            <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-200 shrink-0">
+            <div className="flex items-center justify-between px-4 py-3 border-b shrink-0" style={{ borderColor: 'var(--app-border)' }}>
               <div className="flex items-center gap-2">
                 <span className="text-sm font-semibold text-zinc-900">Notifications</span>
                 {unreadCount > 0 && (
@@ -491,9 +500,10 @@ export function AppShell({
         {mobileProfileOpen && (
           <div
             ref={mobileProfileRef}
-            className="md:hidden fixed top-[56px] right-3 z-50 w-[220px] bg-white border border-zinc-200 rounded-xl shadow-lg overflow-hidden"
+            className="md:hidden fixed top-[56px] right-3 z-50 w-[220px] bg-[var(--app-panel)] border rounded-2xl shadow-[0_20px_60px_rgba(24,24,18,0.12)] overflow-hidden"
+            style={{ borderColor: 'var(--app-border)' }}
           >
-            <div className="px-4 py-3 border-b border-zinc-200">
+            <div className="px-4 py-3 border-b" style={{ borderColor: 'var(--app-border)' }}>
               <p className="text-sm font-semibold text-zinc-900 truncate">
                 {[user?.firstName, user?.lastName].filter(Boolean).join(' ') || user?.username}
               </p>
@@ -501,22 +511,22 @@ export function AppShell({
             </div>
             <div className="py-1">
               <button onClick={() => { setMobileProfileOpen(false); router.push('/settings?view=account'); }}
-                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-zinc-700 hover:bg-zinc-50 transition-colors">
+                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--app-text-muted)] hover:bg-[var(--app-panel-muted)] transition-colors">
                 <User className="w-4 h-4 text-zinc-400" /> Edit profile
               </button>
               <button onClick={() => { setMobileProfileOpen(false); router.push('/settings'); }}
-                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-zinc-700 hover:bg-zinc-50 transition-colors">
+                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--app-text-muted)] hover:bg-[var(--app-panel-muted)] transition-colors">
                 <Settings className="w-4 h-4 text-zinc-400" /> Settings
               </button>
               {user?.username && (
                 <a href={getStoreUrl(user.username)} target="_blank" rel="noopener noreferrer"
                   onClick={() => setMobileProfileOpen(false)}
-                  className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-zinc-700 hover:bg-zinc-50 transition-colors">
+                  className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--app-text-muted)] hover:bg-[var(--app-panel-muted)] transition-colors">
                   <ExternalLink className="w-4 h-4 text-zinc-400" /> View store
                 </a>
               )}
             </div>
-            <div className="border-t border-zinc-200 py-1">
+            <div className="border-t py-1" style={{ borderColor: 'var(--app-border)' }}>
               <button onClick={handleLogout}
                 className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors">
                 <LogOut className="w-4 h-4" /> Log out
@@ -556,7 +566,7 @@ export function AppShell({
         })()}
 
         {/* CONTENT */}
-        <main className="flex-1 overflow-y-auto overflow-x-hidden pb-[52px] md:pb-6">
+        <main className="flex-1 overflow-y-auto overflow-x-hidden pt-14 pb-[52px] md:pb-6">
           <RenewalBanner />
           <div className={`px-4 pt-4 md:px-6 md:pt-6 min-w-0 ${isFullWidthPage ? 'w-full max-w-none' : 'max-w-[1200px]'}`}>
             {children}

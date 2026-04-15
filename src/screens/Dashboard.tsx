@@ -30,7 +30,7 @@ function getTrend(current: number, previous: number): Trend {
 
 // Shared section header style
 function SectionLabel({ children }: { children: React.ReactNode }) {
-  return <p className="text-xs font-semibold text-zinc-400 uppercase tracking-widest mb-3">{children}</p>;
+  return <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-[var(--app-text-muted)]">{children}</p>;
 }
 
 export function Dashboard() {
@@ -81,7 +81,7 @@ export function Dashboard() {
   ];
   const remainingChecklistCount = checklistItems.filter(i => !i.done).length;
 
-  const handleSaveOrder = (newOrder: { productId: string; quantity: number; revenue: number; notes: string; date: string }) => {
+  const handleSaveOrder = (newOrder: { productId: string; quantity: number; revenue: number; notes: string; internalNotes: string; date: string }) => {
     if (selectedOrder) updateOrder(selectedOrder.id, newOrder);
     else addOrder({ ...newOrder, status: 'confirmed' });
     setIsLogOrderModalOpen(false);
@@ -96,21 +96,22 @@ export function Dashboard() {
     <div className="w-full space-y-6 pb-8">
 
       {/* ── Greeting ── */}
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex items-start justify-between gap-4 rounded-[24px] border bg-[var(--app-panel)] px-5 py-5 shadow-[0_1px_0_rgba(0,0,0,0.03)]" style={{ borderColor: 'var(--app-border)' }}>
         <div>
-          <h1 className="text-xl font-semibold text-zinc-900">
+          <h1 className="text-[22px] font-semibold tracking-[-0.03em] text-[var(--app-text)]">
             Hello, {user?.firstName || 'there'} 👋
           </h1>
-          <p className="text-sm text-zinc-500 mt-0.5">Here's what's happening with your store today.</p>
+          <p className="mt-1 text-sm text-[var(--app-text-muted)]">Here&apos;s what&apos;s happening with your store today.</p>
         </div>
         {/* Plan pill */}
         {user?.plan === 'Free' ? (
           <Link href="/settings?view=billing"
-            className="shrink-0 inline-flex items-center gap-1.5 rounded-lg border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-semibold text-amber-800 hover:bg-amber-100 transition-colors">
+            className="shrink-0 inline-flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-semibold text-[#795f1a] transition-colors hover:bg-[#efe5d2]"
+            style={{ borderColor: '#dfd0aa', background: '#f5efe1' }}>
             Free plan · Upgrade →
           </Link>
         ) : (
-          <span className="shrink-0 inline-flex items-center gap-1.5 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-700">
+          <span className="shrink-0 inline-flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-semibold text-emerald-700" style={{ borderColor: '#c5d8c8', background: '#e8f2eb' }}>
             {isTrialPro ? 'Pro trial' : 'Pro'} ✓
           </span>
         )}
@@ -130,24 +131,24 @@ export function Dashboard() {
       </div>
 
       {/* ── Quick actions ── */}
-      <div className="bg-white border border-zinc-200 rounded-xl p-5">
+      <div className="rounded-[24px] border bg-[var(--app-panel)] p-5 shadow-[0_1px_0_rgba(0,0,0,0.03)]" style={{ borderColor: 'var(--app-border)' }}>
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="text-sm font-semibold text-zinc-900">Quick actions</p>
-            <p className="text-xs text-zinc-500 mt-0.5">Jump into the most common tasks.</p>
+            <p className="text-sm font-semibold text-[var(--app-text)]">Quick actions</p>
+            <p className="mt-0.5 text-xs text-[var(--app-text-muted)]">Jump into the most common tasks.</p>
           </div>
           <div className="flex flex-wrap gap-2">
             <button onClick={openNewOrderModal}
-              className="inline-flex h-9 items-center gap-2 rounded-lg border border-zinc-200 bg-white px-3.5 text-sm font-medium text-zinc-700 hover:bg-zinc-50 transition-colors">
+              className="inline-flex h-9 items-center gap-2 rounded-xl border bg-[var(--app-panel-muted)] px-3.5 text-sm font-medium text-[var(--app-text)] transition-colors hover:bg-[#ece9e4]" style={{ borderColor: 'var(--app-border)' }}>
               <Plus className="w-4 h-4" /> Add Order
             </button>
             <button onClick={() => setIsShareModalOpen(true)}
-              className="inline-flex h-9 items-center gap-2 rounded-lg border border-zinc-200 bg-white px-3.5 text-sm font-medium text-zinc-700 hover:bg-zinc-50 transition-colors">
+              className="inline-flex h-9 items-center gap-2 rounded-xl border bg-[var(--app-panel-muted)] px-3.5 text-sm font-medium text-[var(--app-text)] transition-colors hover:bg-[#ece9e4]" style={{ borderColor: 'var(--app-border)' }}>
               <Share2 className="w-4 h-4" /> Share Store
             </button>
             {user?.username && (
               <a href={getStoreUrl(user.username)} target="_blank" rel="noopener noreferrer"
-                className="inline-flex h-9 items-center gap-2 rounded-lg border border-zinc-200 bg-white px-3.5 text-sm font-medium text-zinc-700 hover:bg-zinc-50 transition-colors">
+                className="inline-flex h-9 items-center gap-2 rounded-xl border bg-[var(--app-panel-muted)] px-3.5 text-sm font-medium text-[var(--app-text)] transition-colors hover:bg-[#ece9e4]" style={{ borderColor: 'var(--app-border)' }}>
                 <ExternalLink className="w-4 h-4" /> View Store
               </a>
             )}
@@ -157,7 +158,7 @@ export function Dashboard() {
 
       {/* ── Product limit warning ── */}
       {(!user?.plan || user.plan === 'Free') && activeProductsCount >= 8 && (
-        <div className="flex items-start justify-between gap-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3.5">
+        <div className="flex items-start justify-between gap-4 rounded-2xl border px-4 py-3.5" style={{ borderColor: '#e9c7c4', background: '#f8eceb' }}>
           <div>
             <p className="text-sm font-semibold text-red-800">
               {activeProductsCount >= 10 ? 'Product limit reached' : 'Almost at your limit'}
@@ -177,21 +178,21 @@ export function Dashboard() {
 
       {/* ── Setup checklist ── */}
       {remainingChecklistCount > 0 && (
-        <div className="bg-white border border-zinc-200 rounded-xl overflow-hidden">
-          <div className="flex items-center justify-between px-5 py-3.5 border-b border-zinc-100">
-            <p className="text-sm font-semibold text-zinc-900">Get your store ready</p>
-            <span className="text-xs font-medium text-zinc-500">
+        <div className="overflow-hidden rounded-[24px] border bg-[var(--app-panel)] shadow-[0_1px_0_rgba(0,0,0,0.03)]" style={{ borderColor: 'var(--app-border)' }}>
+          <div className="flex items-center justify-between px-5 py-4 border-b" style={{ borderColor: 'var(--app-border)' }}>
+            <p className="text-sm font-semibold text-[var(--app-text)]">Get your store ready</p>
+            <span className="text-xs font-medium text-[var(--app-text-muted)]">
               {checklistItems.length - remainingChecklistCount}/{checklistItems.length} done
             </span>
           </div>
-          <div className="divide-y divide-zinc-100">
+          <div className="divide-y" style={{ borderColor: 'var(--app-border)' }}>
             {checklistItems.map((item, idx) => (
               <div key={item.label} className="flex items-center justify-between gap-4 px-5 py-3.5">
                 <div className="flex items-center gap-3 min-w-0">
-                  <div className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold ${item.done ? 'bg-emerald-100 text-emerald-700' : 'bg-zinc-100 text-zinc-500'}`}>
+                  <div className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold ${item.done ? 'bg-emerald-100 text-emerald-700' : 'bg-[var(--app-panel-muted)] text-[var(--app-text-muted)]'}`}>
                     {item.done ? '✓' : idx + 1}
                   </div>
-                  <p className={`text-sm ${item.done ? 'text-zinc-400 line-through' : 'text-zinc-700'}`}>{item.label}</p>
+                  <p className={`text-sm ${item.done ? 'text-zinc-400 line-through' : 'text-[var(--app-text)]'}`}>{item.label}</p>
                 </div>
                 {!item.done && (
                   item.href
@@ -267,21 +268,21 @@ export function Dashboard() {
           </div>
 
           {/* Desktop table */}
-          <div className="hidden md:block bg-white border border-zinc-200 rounded-xl overflow-hidden">
+          <div className="hidden md:block rounded-[24px] border bg-[var(--app-panel)] overflow-hidden" style={{ borderColor: 'var(--app-border)' }}>
             <table className="min-w-[860px] w-full text-sm">
               <thead>
-                <tr className="border-b border-zinc-100 bg-zinc-50">
+                <tr className="border-b bg-[var(--app-panel-muted)]" style={{ borderColor: 'var(--app-border)' }}>
                   {['Product', 'Qty', 'Status', 'Customer', 'Payment', 'Shipping', 'Actions'].map(h => (
                     <th key={h} className={`px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-zinc-400 ${h === 'Actions' ? 'text-right' : ''}`}>{h}</th>
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-zinc-100">
+              <tbody className="divide-y" style={{ borderColor: 'var(--app-border)' }}>
                 {pendingOrders.map((order) => {
                   const product = products.find(p => p.id === order.productId);
                   const lead = parseOrderLeadNotes(order.notes);
                   return (
-                    <tr key={order.id} className="hover:bg-zinc-50 transition-colors">
+                    <tr key={order.id} className="transition-colors hover:bg-[var(--app-panel-muted)]">
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-3">
                           {product?.imageUrl
@@ -329,17 +330,17 @@ export function Dashboard() {
       )}
 
       {/* ── Confirmed orders ── */}
-      <div className="bg-white border border-zinc-200 rounded-xl overflow-hidden">
-        <div className="flex items-center justify-between px-5 py-3.5 border-b border-zinc-100">
-          <p className="text-sm font-semibold text-zinc-900">Recent orders</p>
+      <div className="overflow-hidden rounded-[24px] border bg-[var(--app-panel)] shadow-[0_1px_0_rgba(0,0,0,0.03)]" style={{ borderColor: 'var(--app-border)' }}>
+        <div className="flex items-center justify-between px-5 py-4 border-b" style={{ borderColor: 'var(--app-border)' }}>
+          <p className="text-sm font-semibold text-[var(--app-text)]">Recent orders</p>
           {confirmedOrders.length > 0 && (
-            <span className="text-xs font-medium text-zinc-400">{confirmedOrders.length} total</span>
+            <span className="text-xs font-medium text-[var(--app-text-muted)]">{confirmedOrders.length} total</span>
           )}
         </div>
         <div className="p-5">
           {confirmedOrders.length === 0 ? (
             <div className="py-10 flex flex-col items-center text-center gap-3">
-              <div className="w-12 h-12 rounded-xl bg-zinc-100 flex items-center justify-center">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--app-panel-muted)]">
                 <Package className="w-6 h-6 text-zinc-400" />
               </div>
               <div>
@@ -353,8 +354,8 @@ export function Dashboard() {
             </div>
           ) : (
             <div>
-              <div className="flex items-center justify-between rounded-lg bg-emerald-50 border border-emerald-100 px-4 py-2.5 mb-4">
-                <span className="text-sm text-zinc-600">{confirmedOrders.length} confirmed {confirmedOrders.length === 1 ? 'sale' : 'sales'}</span>
+              <div className="mb-4 flex items-center justify-between rounded-2xl border px-4 py-3" style={{ borderColor: '#c5d8c8', background: '#e8f2eb' }}>
+                <span className="text-sm text-[var(--app-text-muted)]">{confirmedOrders.length} confirmed {confirmedOrders.length === 1 ? 'sale' : 'sales'}</span>
                 <span className="text-sm font-bold text-emerald-700">{currencySymbol}{confirmedOrders.reduce((s, o) => s + o.revenue, 0).toFixed(2)}</span>
               </div>
               <RecentOrdersTable

@@ -11,7 +11,7 @@ interface LogOrderModalProps {
   products: Product[];
   currencySymbol: string;
   todayStr: string;
-  onSave: (order: { productId: string; quantity: number; revenue: number; notes: string; date: string }) => void;
+  onSave: (order: { productId: string; quantity: number; revenue: number; notes: string; internalNotes: string; date: string }) => void;
   initialData?: Order | null;
 }
 
@@ -21,6 +21,7 @@ export function LogOrderModal({ isOpen, onClose, products, currencySymbol, today
     quantity: 1,
     revenue: 0,
     notes: '',
+    internalNotes: '',
     date: todayStr,
   });
 
@@ -32,6 +33,7 @@ export function LogOrderModal({ isOpen, onClose, products, currencySymbol, today
         quantity: initialData.quantity,
         revenue: initialData.revenue,
         notes: parsedNotes.buyerNotes,
+        internalNotes: initialData.internalNotes || '',
         date: initialData.date.split('T')[0],
       });
     } else {
@@ -40,6 +42,7 @@ export function LogOrderModal({ isOpen, onClose, products, currencySymbol, today
         quantity: 1,
         revenue: 0,
         notes: '',
+        internalNotes: '',
         date: todayStr,
       });
     }
@@ -129,10 +132,17 @@ export function LogOrderModal({ isOpen, onClose, products, currencySymbol, today
         />
 
         <Textarea
-          label="Notes (Optional)"
+          label="Customer notes"
           placeholder="Customer details, source, etc."
           value={newOrder.notes}
           onChange={(e) => setNewOrder(prev => ({ ...prev, notes: e.target.value }))}
+        />
+
+        <Textarea
+          label="Internal notes (private)"
+          placeholder="Gift wrap needed, address verified, etc."
+          value={newOrder.internalNotes}
+          onChange={(e) => setNewOrder(prev => ({ ...prev, internalNotes: e.target.value }))}
         />
 
         <div className="pt-4 flex justify-end gap-3 border-t border-gray-100">

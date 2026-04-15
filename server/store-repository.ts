@@ -32,6 +32,7 @@ interface StoreRow {
   banners_json: string | null | unknown;
   legal_json: string | null | unknown;
   payment_json: string | null | unknown;
+  product_accordion_defaults_json?: string | null | unknown;
   custom_domain: string | null;
   custom_domain_status: StoreSettings['customDomainStatus'] | null;
 }
@@ -57,7 +58,7 @@ interface ProductRow {
   is_demo: number | boolean | null;
 }
 
-const OPTIONAL_STORE_COLUMNS = ['legal_json', 'payment_json'] as const;
+const OPTIONAL_STORE_COLUMNS = ['legal_json', 'payment_json', 'product_accordion_defaults_json'] as const;
 const OPTIONAL_PRODUCT_COLUMNS = ['collections_json', 'variants_json', 'page_sections_json'] as const;
 
 function parseJson<T>(value: string | null | unknown, fallback: T): T {
@@ -176,6 +177,7 @@ export function ensureStoreSchema() {
       banners_json TEXT,
       legal_json TEXT,
       payment_json TEXT,
+      product_accordion_defaults_json TEXT,
       custom_domain TEXT,
       custom_domain_status TEXT
     );
@@ -207,6 +209,7 @@ export function ensureStoreSchema() {
   try { db.exec(`ALTER TABLE stores ADD COLUMN legal_json TEXT`); } catch { /* already exists */ }
   try { db.exec(`ALTER TABLE products ADD COLUMN collections_json TEXT`); } catch { /* already exists */ }
   try { db.exec(`ALTER TABLE stores ADD COLUMN payment_json TEXT`); } catch { /* already exists */ }
+  try { db.exec(`ALTER TABLE stores ADD COLUMN product_accordion_defaults_json TEXT`); } catch { /* already exists */ }
   try { db.exec(`ALTER TABLE products ADD COLUMN variants_json TEXT`); } catch { /* already exists */ }
   try { db.exec(`ALTER TABLE products ADD COLUMN page_sections_json TEXT`); } catch { /* already exists */ }
 }
@@ -234,6 +237,7 @@ function serializeStore(bundle: MerchantStorefrontBundle) {
     banners_json: store.banners ? JSON.stringify(store.banners) : null,
     legal_json: store.legalPages ? JSON.stringify(store.legalPages) : null,
     payment_json: store.paymentSettings ? JSON.stringify(store.paymentSettings) : null,
+    product_accordion_defaults_json: store.productAccordionDefaults ? JSON.stringify(store.productAccordionDefaults) : null,
     custom_domain: store.customDomain ?? null,
     custom_domain_status: store.customDomainStatus ?? null,
   };
@@ -291,6 +295,7 @@ function hydrateStore(row: StoreRow): { user: UserProfile; store: StoreSettings 
       banners: parseJson(row.banners_json, undefined),
       legalPages: parseJson(row.legal_json, undefined),
       paymentSettings: parseJson(row.payment_json, undefined),
+      productAccordionDefaults: parseJson(row.product_accordion_defaults_json, undefined),
       customDomain: row.custom_domain ?? undefined,
       customDomainStatus: row.custom_domain_status ?? undefined,
     },
@@ -336,11 +341,11 @@ if (db) {
   INSERT INTO stores (
     user_id, username, email, first_name, last_name, user_bio, whatsapp_number, avatar_url, plan,
     subscription_renewal_date, logo_url, store_name, tagline, store_bio, currency, theme,
-    trust_badges_json, banners_json, legal_json, payment_json, custom_domain, custom_domain_status
+    trust_badges_json, banners_json, legal_json, payment_json, product_accordion_defaults_json, custom_domain, custom_domain_status
   ) VALUES (
     @user_id, @username, @email, @first_name, @last_name, @user_bio, @whatsapp_number, @avatar_url, @plan,
     @subscription_renewal_date, @logo_url, @store_name, @tagline, @store_bio, @currency, @theme,
-    @trust_badges_json, @banners_json, @legal_json, @payment_json, @custom_domain, @custom_domain_status
+    @trust_badges_json, @banners_json, @legal_json, @payment_json, @product_accordion_defaults_json, @custom_domain, @custom_domain_status
   )
   ON CONFLICT(username) DO UPDATE SET
     user_id = excluded.user_id,
@@ -362,6 +367,7 @@ if (db) {
     banners_json = excluded.banners_json,
     legal_json = excluded.legal_json,
     payment_json = excluded.payment_json,
+    product_accordion_defaults_json = excluded.product_accordion_defaults_json,
     custom_domain = excluded.custom_domain,
     custom_domain_status = excluded.custom_domain_status
 `);

@@ -38,18 +38,21 @@ export function SnapshotCard({
   prefix?: string;
 }) {
   return (
-    <div className="bg-white border border-zinc-200 rounded-xl p-4 flex flex-col gap-3">
+    <div
+      className="rounded-2xl p-4 flex flex-col gap-3 bg-[var(--app-panel)] border shadow-[0_1px_0_rgba(0,0,0,0.03)]"
+      style={{ borderColor: 'var(--app-border)' }}
+    >
       <div className="flex items-center justify-between">
-        <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: `${accentColor}15` }}>
+        <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: `${accentColor}14` }}>
           {icon}
         </div>
         {trend && <TrendBadge trend={trend} />}
       </div>
       <div>
-        <p className="text-2xl font-bold text-zinc-900 leading-none tracking-tight">
+        <p className="text-[28px] font-semibold text-[var(--app-text)] leading-none tracking-[-0.03em]">
           {prefix}{typeof value === 'number' ? value.toLocaleString() : value}
         </p>
-        <p className="mt-1 text-xs font-medium text-zinc-500">{label}</p>
+        <p className="mt-1 text-xs font-medium text-[var(--app-text-muted)]">{label}</p>
       </div>
     </div>
   );

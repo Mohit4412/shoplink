@@ -339,10 +339,25 @@ export const StoreProvider: FC<{ children: ReactNode; initialUser: UserProfile |
   }, [mergeDashboardData, syncDashboardData]);
 
   const updateOrder = useCallback((id: string, updates: Partial<Order>) => {
-    setState(prev => ({
-      ...prev,
-      orders: prev.orders.map(o => o.id === id ? { ...o, ...updates } : o),
-    }));
+    setState(prev => {
+      const order = prev.orders.find(o => o.id === id);
+      let nextProducts = prev.products;
+
+      // Auto-decrement stock when order is confirmed
+      if (updates.status === 'confirmed' && order && order.status !== 'confirmed') {
+        nextProducts = prev.products.map(p =>
+          p.id === order.productId
+            ? { ...p, stock: Math.max(0, p.stock - order.quantity) }
+            : p
+        );
+      }
+
+      return {
+        ...prev,
+        orders: prev.orders.map(o => o.id === id ? { ...o, ...updates } : o),
+        products: nextProducts,
+      };
+    });
     void fetch(`/api/orders/${id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },

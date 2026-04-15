@@ -74,7 +74,7 @@ export function RecentOrdersTable({ orders, products, currencySymbol, onEditOrde
   if (orders.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-center">
-        <div className="w-14 h-14 rounded-xl bg-zinc-50 flex items-center justify-center mb-3">
+        <div className="w-14 h-14 rounded-2xl bg-[var(--app-panel-muted)] flex items-center justify-center mb-3">
           <ShoppingBag className="w-7 h-7 text-zinc-300" />
         </div>
         <p className="text-sm font-semibold text-zinc-500">No sales recorded yet</p>
@@ -87,21 +87,21 @@ export function RecentOrdersTable({ orders, products, currencySymbol, onEditOrde
     <div className="space-y-4">
       {/* CRM stat bar */}
       <div className="grid grid-cols-3 gap-3">
-        <div className="rounded-xl border border-zinc-200 bg-white p-4">
+        <div className="rounded-2xl border bg-[var(--app-panel)] p-4" style={{ borderColor: 'var(--app-border)' }}>
           <div className="flex items-center gap-2 mb-1">
             <Package className="w-3.5 h-3.5 text-zinc-400" />
             <span className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400">Orders</span>
           </div>
           <p className="text-xl font-black text-zinc-900">{orders.length}</p>
         </div>
-        <div className="rounded-xl border border-zinc-200 bg-white p-4">
+        <div className="rounded-2xl border bg-[var(--app-panel)] p-4" style={{ borderColor: 'var(--app-border)' }}>
           <div className="flex items-center gap-2 mb-1">
             <TrendingUp className="w-3.5 h-3.5 text-emerald-500" />
             <span className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400">Revenue</span>
           </div>
           <p className="text-xl font-black text-emerald-700">{currencySymbol}{totalRevenue.toFixed(0)}</p>
         </div>
-        <div className="rounded-xl border border-zinc-200 bg-white p-4">
+        <div className="rounded-2xl border bg-[var(--app-panel)] p-4" style={{ borderColor: 'var(--app-border)' }}>
           <div className="flex items-center gap-2 mb-1">
             <Users className="w-3.5 h-3.5 text-blue-400" />
             <span className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400">Customers</span>
@@ -121,10 +121,11 @@ export function RecentOrdersTable({ orders, products, currencySymbol, onEditOrde
               key={order.id}
               type="button"
               onClick={() => onEditOrder(order)}
-              className="w-full rounded-xl border border-zinc-200 bg-white overflow-hidden text-left hover:border-zinc-300 transition-colors"
+              className="w-full rounded-2xl border bg-[var(--app-panel)] overflow-hidden text-left transition-colors hover:bg-white"
+              style={{ borderColor: 'var(--app-border)' }}
             >
               {/* Card header */}
-              <div className="flex items-center gap-3 px-3 py-2.5 border-b border-zinc-100">
+              <div className="flex items-center gap-3 px-3 py-2.5 border-b" style={{ borderColor: 'var(--app-border)' }}>
                 <Avatar name={customerName} />
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold text-zinc-900 truncate">{customerName}</p>
@@ -165,10 +166,10 @@ export function RecentOrdersTable({ orders, products, currencySymbol, onEditOrde
       </div>
 
       {/* Desktop CRM table */}
-      <div className="hidden md:block rounded-xl border border-zinc-200 bg-white overflow-hidden">
+      <div className="hidden md:block rounded-2xl border bg-[var(--app-panel)] overflow-hidden" style={{ borderColor: 'var(--app-border)' }}>
         <table className="w-full text-sm">
           <thead>
-            <tr className="bg-zinc-50 border-b border-zinc-100">
+            <tr className="border-b bg-[var(--app-panel-muted)]" style={{ borderColor: 'var(--app-border)' }}>
               <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-zinc-400">Customer</th>
               <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-zinc-400">Product</th>
               <th className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-zinc-400">Contact</th>
@@ -180,7 +181,7 @@ export function RecentOrdersTable({ orders, products, currencySymbol, onEditOrde
               <th className="px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-wider text-zinc-400">Date</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-zinc-100">
+          <tbody className="divide-y" style={{ borderColor: 'var(--app-border)' }}>
             {paginated.map((order) => {
               const product = products.find(p => p.id === order.productId);
               const lead = parseOrderLeadNotes(order.notes);
@@ -188,7 +189,7 @@ export function RecentOrdersTable({ orders, products, currencySymbol, onEditOrde
               return (
                 <tr
                   key={order.id}
-                  className="hover:bg-zinc-50 transition-colors cursor-pointer"
+                  className="hover:bg-[var(--app-panel-muted)] transition-colors cursor-pointer"
                   onClick={() => onEditOrder(order)}
                 >
                   {/* Customer */}

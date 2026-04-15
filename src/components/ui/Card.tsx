@@ -3,7 +3,7 @@ import { cn } from './Button';
 
 export function Card({ className, children, ...props }: HTMLAttributes<HTMLDivElement>) {
   return (
-    <div className={cn("rounded-xl border border-gray-200 bg-white text-gray-950 shadow-sm", className)} {...props}>
+    <div className={cn("rounded-2xl border bg-[var(--app-panel)] text-[var(--app-text)] shadow-[0_1px_0_rgba(0,0,0,0.03)]", className)} style={{ borderColor: 'var(--app-border)' }} {...props}>
       {children}
     </div>
   );

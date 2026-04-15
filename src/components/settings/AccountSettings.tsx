@@ -101,19 +101,20 @@ export function AccountSettings() {
   const initials = displayName.charAt(0).toUpperCase();
 
   return (
-    <form onSubmit={handleSave} className="space-y-5">
+    <form onSubmit={handleSave} className="space-y-4">
 
       {/* Avatar row */}
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3.5 border-b pb-4" style={{ borderColor: 'var(--app-border)' }}>
         <div className="relative shrink-0">
           {form.avatarUrl ? (
             <img
               src={form.avatarUrl}
               alt="Avatar"
-              className="w-16 h-16 rounded-full object-cover border border-zinc-200"
+              className="h-14 w-14 rounded-full object-cover border"
+              style={{ borderColor: 'var(--app-border)' }}
             />
           ) : (
-            <div className="w-16 h-16 rounded-full bg-[#059669] flex items-center justify-center text-white text-xl font-bold">
+            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#4a9b6e] text-lg font-semibold text-white">
               {initials}
             </div>
           )}
@@ -125,11 +126,12 @@ export function AccountSettings() {
         </div>
 
         <div>
-          <p className="text-sm font-semibold text-zinc-900">{displayName}</p>
-          <p className="text-xs text-zinc-400">@{form.username || user?.username}</p>
+          <p className="text-[14px] font-semibold text-[var(--app-text)]">{displayName}</p>
+          <p className="text-[11px] text-[var(--app-text-muted)]">@{form.username || user?.username}</p>
           <label
             htmlFor="avatar-upload"
-            className="mt-2 inline-flex items-center gap-1.5 h-8 px-3 text-xs font-medium rounded-lg border border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50 cursor-pointer transition-colors"
+            className="mt-2 inline-flex h-8 items-center gap-1.5 rounded-xl border bg-white px-3 text-[11px] font-medium text-[var(--app-text-muted)] cursor-pointer transition-colors hover:bg-[var(--app-panel-muted)]"
+            style={{ borderColor: 'var(--app-border)' }}
           >
             <Upload className="w-3.5 h-3.5" />
             {isUploadingAvatar ? 'Uploading…' : 'Change photo'}
@@ -185,7 +187,7 @@ export function AccountSettings() {
 
       {/* WhatsApp */}
       <div className="space-y-1.5">
-        <label className="block text-sm font-medium text-zinc-700">WhatsApp number</label>
+        <label className="block text-[13px] font-medium text-[var(--app-text)]">WhatsApp number</label>
         <div className="flex gap-2">
           <div className="relative shrink-0">
             <select
@@ -194,7 +196,8 @@ export function AccountSettings() {
                 const c = countryCodes.find(c => c.code === e.target.value);
                 if (c) setSelectedCountry(c);
               }}
-              className="h-10 w-24 rounded-lg border border-zinc-200 bg-white pl-2 pr-6 text-sm focus:outline-none focus:border-zinc-400 focus:ring-2 focus:ring-zinc-900/10 appearance-none cursor-pointer"
+              className="h-10 w-24 appearance-none rounded-xl border bg-white pl-2 pr-6 text-[12px] text-[var(--app-text)] cursor-pointer focus:outline-none focus:ring-2 focus:ring-zinc-900/8"
+              style={{ borderColor: 'var(--app-border)' }}
             >
               {countryCodes.map(c => (
                 <option key={c.code} value={c.code}>{c.flag} {c.dialCode}</option>
@@ -207,11 +210,12 @@ export function AccountSettings() {
             value={phoneNumber}
             onChange={e => { setPhoneNumber(e.target.value); setWaError(''); }}
             placeholder="98765 43210"
-            className="flex-1 h-10 px-3 rounded-lg border border-zinc-200 text-sm focus:outline-none focus:border-zinc-400 focus:ring-2 focus:ring-zinc-900/10 placeholder:text-zinc-400"
+            className="h-10 flex-1 rounded-xl border px-3 text-[13px] text-[var(--app-text)] placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-900/8"
+            style={{ borderColor: 'var(--app-border)' }}
           />
         </div>
         {waError && <p className="text-xs text-red-500">{waError}</p>}
-        <p className="text-xs text-zinc-400">Customers contact you on this number to place orders.</p>
+        <p className="text-[11px] text-[var(--app-text-muted)]">Customers contact you on this number to place orders.</p>
       </div>
 
       {/* Bio */}
@@ -223,19 +227,19 @@ export function AccountSettings() {
       />
 
       {/* Save */}
-      {saveError && <p className="text-xs font-medium text-red-600 bg-red-50 px-3 py-2 rounded-lg border border-red-100">{saveError}</p>}
+      {saveError && <p className="rounded-xl border border-red-100 bg-red-50 px-3 py-2 text-[11px] font-medium text-red-600">{saveError}</p>}
 
       <button
         type="submit"
         disabled={isSaving}
-        className="w-full h-9 rounded-lg bg-zinc-900 text-white text-sm font-semibold flex items-center justify-center gap-2 hover:bg-zinc-700 transition-colors disabled:opacity-60"
+        className="flex h-9 w-full items-center justify-center gap-2 rounded-xl bg-zinc-950 text-[12px] font-semibold text-white transition-colors hover:bg-zinc-800 disabled:opacity-60"
       >
         {isSaving && <Loader2 className="w-4 h-4 animate-spin" />}
         {isSaving ? 'Saving…' : 'Save changes'}
       </button>
 
       {saveStatus === 'saved' && (
-        <p className="text-sm font-medium text-emerald-700 flex items-center gap-1.5 justify-center">
+        <p className="flex items-center justify-center gap-1.5 text-[12px] font-medium text-emerald-700">
           <CheckCircle2 className="w-3.5 h-3.5" /> Changes saved
         </p>
       )}

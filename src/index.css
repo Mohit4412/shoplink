@@ -6,7 +6,7 @@
   --font-heading: "Sora", ui-sans-serif, system-ui, sans-serif;
   --font-serif: "Instrument Serif", ui-serif, Georgia, serif;
 
-  /* Brand: Charcoal + Emerald */
+  /* Brand: Shopify-inspired neutral + emerald */
   --color-brand-50:  #ecfdf5;
   --color-brand-100: #d1fae5;
   --color-brand-200: #a7f3d0;
@@ -35,6 +35,23 @@
   --brand-text:   #065f46;
   --charcoal:     #1a1a1a;
   --charcoal-hover: #2a2a2a;
+  --app-canvas: #f1f1ef;
+  --app-sidebar: #eeedea;
+  --app-panel: #fbfbfa;
+  --app-panel-muted: #f6f5f3;
+  --app-border: #ddd9d2;
+  --app-border-strong: #cac5bd;
+  --app-text: #1f1f1b;
+  --app-text-muted: #6b6a63;
+}
+
+html {
+  background: var(--app-canvas);
+}
+
+body {
+  background: var(--app-canvas);
+  color: var(--app-text);
 }
 
 @layer utilities {
@@ -43,6 +60,18 @@
   }
   .hover-lift {
     @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-xl;
+  }
+  .app-panel {
+    background: var(--app-panel);
+    border-color: var(--app-border);
+  }
+  .app-panel-muted {
+    background: var(--app-panel-muted);
+    border-color: var(--app-border);
+  }
+  .app-sidebar-surface {
+    background: var(--app-sidebar);
+    border-color: var(--app-border);
   }
 }
 

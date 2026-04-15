@@ -39,11 +39,12 @@ export function CopyLinkButton({ username, productId, variant = 'icon' }: CopyLi
       <button
         type="button"
         onClick={handleCopy}
-        className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 text-xs font-semibold transition-colors border-r border-gray-100 ${
+        className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-[11px] font-semibold transition-colors border-r ${
           copied
-            ? 'text-emerald-600 bg-emerald-50'
-            : 'text-blue-600 hover:bg-blue-50'
+            ? 'text-emerald-700 bg-[#e8f2eb]'
+            : 'text-[#4f80ff] hover:bg-[#eef3ff]'
         }`}
+        style={{ borderColor: 'var(--app-border)' }}
       >
         {copied ? <Check className="w-3.5 h-3.5" /> : <Link2 className="w-3.5 h-3.5" />}
         {copied ? 'Copied!' : 'Copy Link'}
@@ -56,10 +57,10 @@ export function CopyLinkButton({ username, productId, variant = 'icon' }: CopyLi
       type="button"
       onClick={handleCopy}
       title={copied ? 'Copied!' : 'Copy product link'}
-      className={`inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-semibold transition-colors ${
+      className={`inline-flex items-center gap-1 rounded-lg px-2 py-1 text-[11px] font-semibold transition-colors ${
         copied
-          ? 'bg-emerald-50 text-emerald-600'
-          : 'bg-blue-50 text-blue-600 hover:bg-blue-100'
+          ? 'bg-[#e8f2eb] text-emerald-700'
+          : 'bg-[#eef3ff] text-[#4f80ff] hover:bg-[#e5edff]'
       }`}
     >
       {copied ? <Check className="w-3.5 h-3.5" /> : <Link2 className="w-3.5 h-3.5" />}

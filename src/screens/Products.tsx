@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo, FormEvent, ChangeEvent } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { Search, Bell, Plus, Edit2, Trash2, FolderPlus, Package, Zap, ChevronLeft, ChevronRight, X, Check } from 'lucide-react';
+import { Search, Bell, Plus, Edit2, Trash2, FolderPlus, Package, Zap, ChevronLeft, ChevronRight, X, Check, Download } from 'lucide-react';
 import { format } from 'date-fns';
 import { useStore } from '../context/StoreContext';
 import { Button } from '../components/ui/Button';
@@ -17,6 +17,7 @@ import { LogOrderModal } from '../components/dashboard/LogOrderModal';
 import { Modal } from '../components/ui/Modal';
 import { UpgradeModal, useUpgradeModal } from '../components/billing/UpgradeModal';
 import { formatPaymentMethodLabel, parseOrderLeadNotes } from '../utils/orderLeads';
+import { CustomersTab } from '../components/customers/CustomersTab';
 
 const COLLECTION_PRODUCTS_PAGE_SIZE = 6;
 
@@ -30,26 +31,15 @@ export function Products() {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortOption, setSortOption] = useState<'name' | 'price'>('name');
   const requestedView = searchParams?.get('view');
-  const activeTab = (['products', 'collections', 'orders', 'sales'] as const).includes((requestedView ?? '') as any)
-    ? (requestedView as 'products' | 'collections' | 'orders' | 'sales')
+  const activeTab = (['products', 'collections', 'orders', 'sales', 'customers'] as const).includes((requestedView ?? '') as any)
+    ? (requestedView as 'products' | 'collections' | 'orders' | 'sales' | 'customers')
     : 'products';
   const sectionMeta = {
-    products: {
-      title: 'Products',
-      subtitle: 'Manage your catalog',
-    },
-    collections: {
-      title: 'Collections',
-      subtitle: 'Organize products into curated groups',
-    },
-    orders: {
-      title: 'Orders',
-      subtitle: 'Review and manage incoming order requests',
-    },
-    sales: {
-      title: 'Sales History',
-      subtitle: 'Track confirmed orders and revenue',
-    },
+    products: { title: 'Products', subtitle: 'Manage your catalog' },
+    collections: { title: 'Collections', subtitle: 'Organize products into curated groups' },
+    orders: { title: 'Orders', subtitle: 'Review and manage incoming order requests' },
+    sales: { title: 'Sales History', subtitle: 'Track confirmed orders and revenue' },
+    customers: { title: 'Customers', subtitle: 'Everyone who has placed an order' },
   } as const;
   const currentSection = sectionMeta[activeTab];
 
@@ -418,27 +408,36 @@ export function Products() {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3.5">
       {/* Row 1: Title + conditional action button */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-zinc-900">{currentSection.title}</h1>
-          <p className="text-sm text-zinc-400 mt-0.5">{currentSection.subtitle}</p>
+          <h1 className="text-[18px] font-semibold tracking-[-0.02em] text-[var(--app-text)]">{currentSection.title}</h1>
+          <p className="mt-0.5 text-[13px] text-[var(--app-text-muted)]">{currentSection.subtitle}</p>
         </div>
         {activeTab === 'sales' && (
-          <button
-            onClick={() => { setSelectedOrder(null); setIsLogOrderModalOpen(true); }}
-            className="h-9 px-3 bg-zinc-900 text-white text-xs font-medium rounded-lg flex items-center gap-1.5 hover:bg-zinc-700 transition-colors shrink-0 mt-1"
-          >
-            <Plus className="w-3.5 h-3.5" /> Add Order Manually
-          </button>
+          <div className="mt-0.5 flex shrink-0 items-center gap-2">
+            <button
+              onClick={() => { import('../utils/exportCsv').then(m => m.exportOrdersCsv(orders.filter(o => o.status === 'confirmed' || o.status === 'paid'), products, currencySymbol)); }}
+              className="flex h-8 items-center gap-1.5 rounded-xl border bg-[var(--app-panel)] px-3 text-[11px] font-medium text-[var(--app-text-muted)] transition-colors hover:bg-[var(--app-panel-muted)]"
+              style={{ borderColor: 'var(--app-border)' }}
+            >
+              <Download className="w-3.5 h-3.5" /> Export CSV
+            </button>
+            <button
+              onClick={() => { setSelectedOrder(null); setIsLogOrderModalOpen(true); }}
+              className="flex h-8 items-center gap-1.5 rounded-xl bg-zinc-950 px-3 text-[11px] font-medium text-white transition-colors hover:bg-zinc-800"
+            >
+              <Plus className="w-3.5 h-3.5" /> Add Order Manually
+            </button>
+          </div>
         )}
       </div>
 
       {/* Row 2: Search + Sort + Add */}
       {activeTab === 'products' && (
-        <div className="rounded-xl border border-zinc-200 bg-white p-3">
-          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+        <div className="rounded-2xl border bg-[var(--app-panel)] p-2.5 shadow-[0_1px_0_rgba(0,0,0,0.03)]" style={{ borderColor: 'var(--app-border)' }}>
+          <div className="flex flex-col gap-2.5 lg:flex-row lg:items-center lg:justify-between">
             <form
             className="flex flex-1 flex-row items-center gap-2"
             onSubmit={(event) => {
@@ -447,26 +446,29 @@ export function Products() {
             }}
           >
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
+                <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-zinc-400" />
                 <input
                   type="text"
                   placeholder="Search products..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full h-10 pl-9 pr-3 bg-white border border-zinc-200 rounded-lg text-sm focus:outline-none focus:border-zinc-400 focus:ring-2 focus:ring-zinc-900/10"
+                  className="h-9 w-full rounded-xl border bg-white pl-8 pr-3 text-[13px] focus:outline-none focus:ring-2 focus:ring-zinc-900/8"
+                  style={{ borderColor: 'var(--app-border)' }}
                 />
               </div>
               <div className="flex items-center gap-2 shrink-0">
                 <button
                   type="submit"
-                  className="h-10 px-4 rounded-lg border border-zinc-200 bg-white text-xs font-semibold text-zinc-700 hover:bg-zinc-50 transition-colors"
+                  className="h-9 rounded-xl border bg-white px-3 text-[11px] font-semibold text-[var(--app-text-muted)] transition-colors hover:bg-[var(--app-panel-muted)]"
+                  style={{ borderColor: 'var(--app-border)' }}
                 >
                   Search
                 </button>
                 <select
                   value={sortOption}
                   onChange={(e) => setSortOption(e.target.value as 'name' | 'price')}
-                  className="h-10 min-w-[120px] px-3 bg-white border border-zinc-200 rounded-lg text-sm focus:outline-none focus:border-zinc-400"
+                  className="h-9 min-w-[112px] rounded-xl border bg-white px-3 text-[12px] text-[var(--app-text-muted)] focus:outline-none"
+                  style={{ borderColor: 'var(--app-border)' }}
                 >
                   <option value="name">Sort: Name</option>
                   <option value="price">Sort: Price</option>
@@ -480,9 +482,9 @@ export function Products() {
                 resetForm();
                 setIsAddModalOpen(true);
               }}
-              className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-lg bg-zinc-900 px-4 text-sm font-semibold text-white transition-colors hover:bg-zinc-700 lg:h-10 lg:w-auto lg:px-3.5 lg:text-xs"
+              className="inline-flex h-9 w-full items-center justify-center gap-1.5 rounded-xl bg-zinc-950 px-3.5 text-[12px] font-semibold text-white transition-colors hover:bg-zinc-800 lg:w-auto"
             >
-              <Plus className="w-4 h-4" />
+              <Plus className="h-3.5 w-3.5" />
               Add Product
             </button>
           </div>
@@ -491,17 +493,17 @@ export function Products() {
 
       {/* Limit banner */}
       {showLimitBanner && (
-        <div className="flex items-center justify-between bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
+        <div className="flex items-center justify-between rounded-2xl border px-4 py-3" style={{ background: '#f5efe1', borderColor: '#dfd0aa' }}>
           <div className="flex items-center gap-3">
             <Package className="w-4 h-4 text-amber-600 shrink-0" />
             <div>
-              <p className="text-sm font-bold text-amber-900">Product limit reached</p>
-              <p className="text-xs text-amber-700 mt-0.5">Free plan allows up to 10 products. Upgrade to Pro to add unlimited products.</p>
+              <p className="text-[13px] font-semibold text-amber-900">Product limit reached</p>
+              <p className="mt-0.5 text-[11px] text-amber-700">Free plan allows up to 10 products. Upgrade to Pro to add unlimited products.</p>
             </div>
           </div>
           <button
             onClick={() => { setShowLimitBanner(false); upgradeModal.open(); }}
-            className="shrink-0 ml-3 h-8 px-3 rounded-lg bg-zinc-900 text-white text-xs font-bold flex items-center gap-1.5 hover:bg-zinc-800 transition-colors"
+            className="ml-3 flex h-8 shrink-0 items-center gap-1.5 rounded-xl bg-zinc-950 px-3 text-[11px] font-bold text-white transition-colors hover:bg-zinc-800"
           >
             <Zap className="w-3.5 h-3.5" /> Upgrade
           </button>
@@ -511,13 +513,13 @@ export function Products() {
       {activeTab === 'products' && (
         <>
           {products.length === 0 ? (
-            <div className="text-center py-20 bg-white border border-dashed border-zinc-200 rounded-xl">
-              <div className="w-14 h-14 rounded-full bg-zinc-50 flex items-center justify-center mx-auto mb-4">
+            <div className="rounded-2xl border border-dashed bg-[var(--app-panel)] py-16 text-center" style={{ borderColor: 'var(--app-border-strong)' }}>
+              <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[var(--app-panel-muted)]">
                 <Plus className="w-7 h-7 text-zinc-400" />
               </div>
-              <h3 className="text-lg font-bold text-zinc-900 mb-2">No products yet</h3>
-              <p className="text-zinc-500 max-w-xs mx-auto mb-6">Add your first product and start selling on WhatsApp in minutes.</p>
-              <Button onClick={() => setIsAddModalOpen(true)}>
+              <h3 className="mb-2 text-base font-semibold text-[var(--app-text)]">No products yet</h3>
+              <p className="mx-auto mb-6 max-w-xs text-sm text-[var(--app-text-muted)]">Add your first product and start selling on WhatsApp in minutes.</p>
+              <Button onClick={() => setIsAddModalOpen(true)} size="sm">
                 <Plus className="w-4 h-4 mr-2" />
                 Add First Product
               </Button>
@@ -953,6 +955,15 @@ export function Products() {
             currencySymbol={currencySymbol}
             onEditOrder={handleEditOrder}
             onDeleteOrder={handleDeleteOrder}
+          />
+        </div>
+      )}
+
+      {activeTab === 'customers' && (
+        <div className="pt-1">
+          <CustomersTab
+            orders={orders}
+            currencySymbol={currencySymbol}
           />
         </div>
       )}

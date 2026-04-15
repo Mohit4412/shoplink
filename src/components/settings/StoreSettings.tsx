@@ -36,6 +36,10 @@ export function StoreSettings() {
     tagline: store.tagline || '',
     bio: store.bio || '',
     currency: store.currency || 'INR',
+    announcementBar: store.announcementBar || '',
+    detailsTitle: store.productAccordionDefaults?.detailsTitle || '',
+    shippingTitle: store.productAccordionDefaults?.shippingTitle || '',
+    careTitle: store.productAccordionDefaults?.careTitle || '',
   });
 
   const [paymentForm, setPaymentForm] = useState({
@@ -59,6 +63,11 @@ export function StoreSettings() {
         name: sanitizeName(storeForm.name),
         tagline: storeForm.tagline.trim(),
         bio: storeForm.bio.trim(),
+        productAccordionDefaults: {
+          detailsTitle: storeForm.detailsTitle.trim() || undefined,
+          shippingTitle: storeForm.shippingTitle.trim() || undefined,
+          careTitle: storeForm.careTitle.trim() || undefined,
+        },
         paymentSettings: {
           upiId: paymentForm.upiId.trim() || undefined,
           bankAccountName: paymentForm.bankAccountName.trim() || undefined,
@@ -213,6 +222,14 @@ export function StoreSettings() {
             placeholder="A short line about what you sell"
             className={controlClass}
           />
+          <Input
+            label="Announcement bar"
+            value={storeForm.announcementBar}
+            onChange={e => setStoreForm(p => ({ ...p, announcementBar: e.target.value }))}
+            placeholder="e.g. Free shipping above ₹500 · Sale ends Sunday"
+            className={controlClass}
+            helperText="Shown as a banner above your storefront. Leave empty to hide."
+          />
           <Textarea
             label="Store bio"
             value={storeForm.bio}
@@ -220,6 +237,41 @@ export function StoreSettings() {
             placeholder="Tell customers about your story and what you offer."
             className={`min-h-[120px] ${controlClass}`}
           />
+        </div>
+      </div>
+
+      <div className={panelClass}>
+        <div className={panelHeadClass}>
+          <FileText className="h-4 w-4 shrink-0 text-zinc-500" aria-hidden />
+          <span className={panelHeadLabelClass}>Product Page Defaults</span>
+        </div>
+        <div className={panelBodyClass}>
+          <p className="text-xs text-zinc-400">
+            Set default accordion headings for all product pages. Individual products can override these titles when needed.
+          </p>
+          <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
+            <Input
+              label="Details tab"
+              value={storeForm.detailsTitle}
+              onChange={e => setStoreForm(p => ({ ...p, detailsTitle: e.target.value }))}
+              placeholder="Product Details"
+              className={controlClass}
+            />
+            <Input
+              label="Shipping tab"
+              value={storeForm.shippingTitle}
+              onChange={e => setStoreForm(p => ({ ...p, shippingTitle: e.target.value }))}
+              placeholder="Shipping & Returns"
+              className={controlClass}
+            />
+            <Input
+              label="Care tab"
+              value={storeForm.careTitle}
+              onChange={e => setStoreForm(p => ({ ...p, careTitle: e.target.value }))}
+              placeholder="Care Instructions"
+              className={controlClass}
+            />
+          </div>
         </div>
       </div>
 

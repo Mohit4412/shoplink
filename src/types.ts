@@ -24,6 +24,12 @@ export interface ProductPageSections {
   careContent?: string;
 }
 
+export interface ProductAccordionDefaults {
+  detailsTitle?: string;
+  shippingTitle?: string;
+  careTitle?: string;
+}
+
 export interface Product {
   id: string;
   imageUrl: string;
@@ -60,6 +66,7 @@ export interface Order {
   revenue: number;
   date: string;
   notes?: string;
+  internalNotes?: string;
   status: OrderStatus;
   paymentProvider?: PaymentProvider;
   paymentStatus?: OrderPaymentStatus;
@@ -99,7 +106,9 @@ export interface StoreSettings {
   name: string;
   tagline: string;
   bio?: string;
+  announcementBar?: string;
   sections?: SectionConfig[];
+  productAccordionDefaults?: ProductAccordionDefaults;
   trustBadges?: TrustBadgeConfig[];
   currency: string;
   theme?: string;

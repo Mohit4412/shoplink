@@ -8,9 +8,10 @@ interface AppLogoProps {
   size?: 'sm' | 'md' | 'lg';
   href?: string;
   className?: string;
+  textClassName?: string;
 }
 
-export function AppLogo({ size = 'md', href = '/', className = '' }: AppLogoProps) {
+export function AppLogo({ size = 'md', href = '/', className = '', textClassName = 'text-gray-900' }: AppLogoProps) {
   const iconBox = size === 'sm' ? 'w-7 h-7' : 'w-8 h-8';
   const iconSize = size === 'sm' ? 'w-4 h-4' : 'w-5 h-5';
   const rounded = size === 'sm' ? 'rounded-md' : 'rounded-lg';
@@ -21,7 +22,7 @@ export function AppLogo({ size = 'md', href = '/', className = '' }: AppLogoProp
       <div className={`${iconBox} ${rounded} bg-[#059669] flex items-center justify-center shadow-sm shrink-0`}>
         <Store className={`${iconSize} text-white`} />
       </div>
-      <span className={`font-bold ${textSize} tracking-tight text-gray-900 font-heading`}>
+      <span className={`font-bold ${textSize} tracking-tight font-heading ${textClassName}`}>
         MyShopLink
       </span>
     </div>

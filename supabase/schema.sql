@@ -38,6 +38,7 @@ create table if not exists public.stores (
   banners_json jsonb,
   legal_json jsonb,
   payment_json jsonb,
+  product_accordion_defaults_json jsonb,
   custom_domain text,
   custom_domain_status text
 );
