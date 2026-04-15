@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { applySessionCookie, authenticateUser, createSession } from '@/server/auth';
+import { applySessionCookie, authenticateUser, createSessionWithOptions } from '@/server/auth';
 import { getMerchantBundleByUsername, replaceMerchantBundle } from '@/server/store-repository';
 import { getStarterMerchantBundle } from '@/src/lib/default-state';
 import { rateLimit, getClientIp, rateLimitedResponse } from '@/server/rate-limit';
@@ -13,6 +13,7 @@ export async function POST(request: NextRequest) {
   const body = await request.json();
   const email = String(body?.email ?? '').trim().toLowerCase();
   const password = String(body?.password ?? '');
+  const rememberMe = Boolean(body?.rememberMe);
 
   if (!email || !password) {
     return NextResponse.json({ error: 'Email and password are required' }, { status: 400 });
@@ -29,7 +30,7 @@ export async function POST(request: NextRequest) {
     await replaceMerchantBundle(getStarterMerchantBundle(user));
   }
 
-  const session = await createSession(user.id);
+  const session = await createSessionWithOptions(user.id, { rememberMe });
   const response = NextResponse.json({ user });
   applySessionCookie(response, session.token, session.expiresAt);
   return response;

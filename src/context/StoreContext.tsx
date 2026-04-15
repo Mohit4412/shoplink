@@ -3,6 +3,7 @@
 import { createContext, useContext, useState, useRef, ReactNode, useCallback, useMemo, useEffect, FC } from 'react';
 import { AppState, Order, Product, ProductStatus, AppNotification, UserProfile } from '../types';
 import { getDefaultAppState, normalizeProduct } from '../lib/default-state';
+import { trackEvent } from '../lib/google-analytics';
 
 const VERSION = 4;
 
@@ -243,12 +244,29 @@ export const StoreProvider: FC<{ children: ReactNode; initialUser: UserProfile |
   const refreshUser = useCallback(async () => {
     try {
       const res = await fetch('/api/auth/session', { cache: 'no-store' });
+      if (!res.ok) {
+        return;
+      }
       const data = await res.json();
       if (data?.user) {
         setState(prev => ({ ...prev, user: data.user }));
+      } else {
+        setState(prev => ({ ...prev, user: null }));
       }
     } catch { /* ignore */ }
   }, []);
+
+  useEffect(() => {
+    if (!hydrated || !state.user) {
+      return;
+    }
+
+    const interval = window.setInterval(() => {
+      void refreshUser();
+    }, 15 * 60 * 1000);
+
+    return () => window.clearInterval(interval);
+  }, [hydrated, refreshUser, state.user]);
 
   const login = useCallback((user: UserProfile) => {
     setState(prev => ({
@@ -483,6 +501,9 @@ export const StoreProvider: FC<{ children: ReactNode; initialUser: UserProfile |
     if (!targetUsername) {
       return;
     }
+    trackEvent('store_view', {
+      username: targetUsername,
+    });
     void fetch('/api/analytics/track', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -512,6 +533,10 @@ export const StoreProvider: FC<{ children: ReactNode; initialUser: UserProfile |
       }
       lastClickRef.current.set(productId, now);
     }
+    trackEvent('whatsapp_click', {
+      username: targetUsername,
+      product_id: productId,
+    });
     void fetch('/api/analytics/track', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

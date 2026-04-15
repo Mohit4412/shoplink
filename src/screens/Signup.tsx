@@ -25,6 +25,7 @@ export function Signup() {
   
   const [showPassword, setShowPassword] = useState(false);
   const [agreeTerms, setAgreeTerms] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   
   const [isLoading, setIsLoading] = useState(false);
   const [hasSubmitted, setHasSubmitted] = useState(false);
@@ -130,6 +131,7 @@ export function Signup() {
         body: JSON.stringify({
           email,
           password,
+          rememberMe,
           username: username || email.split('@')[0],
           firstName: firstName || '',
           lastName: lastName || '',
@@ -216,6 +218,16 @@ export function Signup() {
                 </div>
                 {errors.password && <p className="text-xs text-red-500">{errors.password}</p>}
               </div>
+
+              <label className="flex items-center gap-2.5 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  className="h-4 w-4 rounded border-gray-300 text-[#059669] focus:ring-[#059669]"
+                />
+                <span className="text-sm font-medium text-gray-600">Remember me for 1 day</span>
+              </label>
 
               {authError && <p className="text-sm text-red-600 bg-red-50 p-3 rounded-lg border border-red-100">{authError}</p>}
 

@@ -96,7 +96,7 @@ export function Dashboard() {
     <div className="w-full space-y-6 pb-8">
 
       {/* ── Greeting ── */}
-      <div className="flex items-start justify-between gap-4 rounded-[24px] border bg-[var(--app-panel)] px-5 py-5 shadow-[0_1px_0_rgba(0,0,0,0.03)]" style={{ borderColor: 'var(--app-border)' }}>
+      <div className="flex items-start justify-between gap-4 rounded-2xl border bg-[var(--app-panel)] px-5 py-5 shadow-[0_1px_0_rgba(0,0,0,0.03)]" style={{ borderColor: 'var(--app-border)' }}>
         <div>
           <h1 className="text-[22px] font-semibold tracking-[-0.03em] text-[var(--app-text)]">
             Hello, {user?.firstName || 'there'} 👋
@@ -131,7 +131,7 @@ export function Dashboard() {
       </div>
 
       {/* ── Quick actions ── */}
-      <div className="rounded-[24px] border bg-[var(--app-panel)] p-5 shadow-[0_1px_0_rgba(0,0,0,0.03)]" style={{ borderColor: 'var(--app-border)' }}>
+      <div className="rounded-2xl border bg-[var(--app-panel)] p-5 shadow-[0_1px_0_rgba(0,0,0,0.03)]" style={{ borderColor: 'var(--app-border)' }}>
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-sm font-semibold text-[var(--app-text)]">Quick actions</p>
@@ -178,7 +178,7 @@ export function Dashboard() {
 
       {/* ── Setup checklist ── */}
       {remainingChecklistCount > 0 && (
-        <div className="overflow-hidden rounded-[24px] border bg-[var(--app-panel)] shadow-[0_1px_0_rgba(0,0,0,0.03)]" style={{ borderColor: 'var(--app-border)' }}>
+        <div className="overflow-hidden rounded-2xl border bg-[var(--app-panel)] shadow-[0_1px_0_rgba(0,0,0,0.03)]" style={{ borderColor: 'var(--app-border)' }}>
           <div className="flex items-center justify-between px-5 py-4 border-b" style={{ borderColor: 'var(--app-border)' }}>
             <p className="text-sm font-semibold text-[var(--app-text)]">Get your store ready</p>
             <span className="text-xs font-medium text-[var(--app-text-muted)]">
@@ -268,7 +268,7 @@ export function Dashboard() {
           </div>
 
           {/* Desktop table */}
-          <div className="hidden md:block rounded-[24px] border bg-[var(--app-panel)] overflow-hidden" style={{ borderColor: 'var(--app-border)' }}>
+          <div className="hidden md:block rounded-2xl border bg-[var(--app-panel)] overflow-hidden" style={{ borderColor: 'var(--app-border)' }}>
             <table className="min-w-[860px] w-full text-sm">
               <thead>
                 <tr className="border-b bg-[var(--app-panel-muted)]" style={{ borderColor: 'var(--app-border)' }}>
@@ -330,7 +330,7 @@ export function Dashboard() {
       )}
 
       {/* ── Confirmed orders ── */}
-      <div className="overflow-hidden rounded-[24px] border bg-[var(--app-panel)] shadow-[0_1px_0_rgba(0,0,0,0.03)]" style={{ borderColor: 'var(--app-border)' }}>
+      <div className="overflow-hidden rounded-2xl border bg-[var(--app-panel)] shadow-[0_1px_0_rgba(0,0,0,0.03)]" style={{ borderColor: 'var(--app-border)' }}>
         <div className="flex items-center justify-between px-5 py-4 border-b" style={{ borderColor: 'var(--app-border)' }}>
           <p className="text-sm font-semibold text-[var(--app-text)]">Recent orders</p>
           {confirmedOrders.length > 0 && (

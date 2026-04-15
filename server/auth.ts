@@ -10,7 +10,8 @@ import { isSupabaseEnabled, supabaseDelete, supabaseInsert, supabasePatch, supab
 import { UserProfile } from '@/src/types';
 
 const SESSION_COOKIE = 'myshoplink_session';
-const SESSION_TTL_DAYS = 30;
+const DEFAULT_SESSION_TTL_HOURS = 1;
+const REMEMBER_ME_SESSION_TTL_HOURS = 24;
 const HASH_ITERATIONS = 120000;
 const HASH_KEYLEN = 64;
 const HASH_DIGEST = 'sha512';
@@ -611,10 +612,26 @@ export async function updateAuthUserProfile(userId: string, updates: Partial<Use
 }
 
 export async function createSession(userId: string) {
-  const token = randomBytes(32).toString('hex');
+  return createSessionWithOptions(userId);
+}
+
+function getSessionTtlHours(token: string) {
+  return token.startsWith('rm_') ? REMEMBER_ME_SESSION_TTL_HOURS : DEFAULT_SESSION_TTL_HOURS;
+}
+
+function isRememberMeToken(token: string) {
+  return token.startsWith('rm_');
+}
+
+function getSessionExpiry(token: string, from = new Date()) {
+  return new Date(from.getTime() + getSessionTtlHours(token) * 60 * 60 * 1000);
+}
+
+export async function createSessionWithOptions(userId: string, options?: { rememberMe?: boolean }) {
+  const prefix = options?.rememberMe ? 'rm_' : 'ms_';
+  const token = `${prefix}${randomBytes(32).toString('hex')}`;
   const createdAt = new Date();
-  const expiresAt = new Date(createdAt);
-  expiresAt.setDate(expiresAt.getDate() + SESSION_TTL_DAYS);
+  const expiresAt = getSessionExpiry(token, createdAt);
   if (isSupabaseEnabled()) {
     await supabaseInsert('sessions', {
       token,
@@ -625,10 +642,7 @@ export async function createSession(userId: string) {
   } else {
     insertSessionStmt.run(token, userId, expiresAt.toISOString(), createdAt.toISOString());
   }
-  return {
-    token,
-    expiresAt,
-  };
+  return { token, expiresAt };
 }
 
 export async function deleteSession(token: string) {
@@ -662,6 +676,30 @@ export async function getSessionUserByToken(token?: string | null) {
   return row ? toUserProfile(row) : null;
 }
 
+export async function refreshSession(token?: string | null) {
+  if (!token) {
+    return null;
+  }
+
+  const expiresAt = getSessionExpiry(token);
+
+  if (isSupabaseEnabled()) {
+    const [session] = await supabaseSelect<{ token: string }>('sessions', {
+      token: `eq.${token}`,
+      select: 'token',
+      limit: 1,
+    });
+    if (!session?.token) {
+      return null;
+    }
+    await supabasePatch('sessions', { expires_at: expiresAt.toISOString() }, { token: `eq.${token}` });
+    return expiresAt;
+  }
+
+  const updated = db?.prepare('UPDATE sessions SET expires_at = ? WHERE token = ?').run(expiresAt.toISOString(), token);
+  return updated && updated.changes > 0 ? expiresAt : null;
+}
+
 export async function getCurrentSessionUser() {
   const store = await cookies();
   const token = store.get(SESSION_COOKIE)?.value;
@@ -676,11 +714,11 @@ export function applySessionCookie(response: NextResponse, token: string, expire
   response.cookies.set({
     name: SESSION_COOKIE,
     value: token,
-    expires: expiresAt,
     httpOnly: true,
     sameSite: 'lax',
     secure: process.env.NODE_ENV === 'production',
     path: '/',
+    ...(isRememberMeToken(token) ? { expires: expiresAt } : {}),
   });
 }
 
